@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+# Secure Me
+=======
+>>>>>>> 51be5c3 (Initial commit — secure me app)
 # secure_me
 
 A new Flutter project.
@@ -14,3 +20,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+<<<<<<< HEAD
+=======
+>>>>>>> d8cc719 (Initial commit — secure me app)
+>>>>>>> 51be5c3 (Initial commit — secure me app)
