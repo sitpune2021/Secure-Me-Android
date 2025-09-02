@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/home_controller/home_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/view/contact_view/contact_view.dart';
+import 'package:secure_me/view/community_view/community_view.dart';
 import 'package:secure_me/view/track_me_view/track_me_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
 
@@ -19,9 +20,12 @@ class HomeView extends StatelessWidget {
           onPressed: controller.sosAction,
           backgroundColor: Colors.pink,
           shape: const CircleBorder(),
-          child: const Text(
-            "Sos",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          child: Text(
+            "SOS",
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -36,7 +40,7 @@ class HomeView extends StatelessWidget {
     } else if (index == 1) {
       return TrackMeView();
     } else if (index == 2) {
-      return ContactView();
+      return CommunityView();
     } else if (index == 3) {
       return ProfileView();
     } else {
@@ -57,7 +61,7 @@ class HomeView extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: Get.width * 0.07,
-                  backgroundImage: AssetImage("assets/images/profile.png"),
+                  // backgroundImage: AssetImage("assets/images/profile.png"),
                 ),
                 SizedBox(width: Get.width * 0.03),
                 Column(
@@ -65,14 +69,14 @@ class HomeView extends StatelessWidget {
                   children: [
                     Text(
                       "Hello ! Rupa,",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: Get.width * 0.045,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       "Good Morning !",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: Get.width * 0.035,
                         color: Colors.grey,
                       ),
@@ -110,7 +114,7 @@ class HomeView extends StatelessWidget {
             // 🔹 Section Title
             Text(
               "Helpline Numbers",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: Get.width * 0.045,
                 fontWeight: FontWeight.w600,
               ),
@@ -127,24 +131,42 @@ class HomeView extends StatelessWidget {
               mainAxisSpacing: Get.height * 0.02,
               childAspectRatio: 1.1,
               children: [
-                _menuCard("Safe area", "assets/safe.png"),
-                _menuCard("Danger Zone", "assets/danger.png"),
-                _menuCard("Fake Call", "assets/fake.png"),
-                _menuCard("Share Live Location", "assets/location.png"),
+                _menuCard("Safe area", "assets/images/safe_area.png"),
+                _menuCard("Danger Zone", "assets/images/danger.png"),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(AppRoutes.fakecall);
+                  },
+                  child: _menuCard("Fake Call", "assets/images/fake_call.png"),
+                ),
+                _menuCard(
+                  "Share Live Location",
+                  "assets/images/share_location.png",
+                ),
               ],
             ),
 
             SizedBox(height: Get.height * 0.02),
 
             // 🔹 Bottom full-width cards
-            _listTile(
-              "Share My Live Location",
-              "To upgrade your security share your live location to your near and dear one’s",
+            GestureDetector(
+              onTap: () {},
+              child: _listTile(
+                "Share My Live Location",
+                "To upgrade your security share your live location to your near and dear one’s",
+                "assets/images/share_location.png",
+              ),
             ),
             SizedBox(height: Get.height * 0.015),
-            _listTile(
-              "Add Close People",
-              "Add close people and friends for SOS",
+            GestureDetector(
+              onTap: () {
+                Get.toNamed(AppRoutes.friends);
+              },
+              child: _listTile(
+                "Add Close People",
+                "Add close people and friends for SOS",
+                "assets/images/add_friend.png",
+              ),
             ),
           ],
         ),
@@ -164,11 +186,11 @@ class HomeView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Image.asset(imagePath, height: Get.height * 0.08),
+          Image.asset(imagePath, height: Get.height * 0.08),
           SizedBox(height: Get.height * 0.015),
           Text(
             title,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: Get.width * 0.035,
               fontWeight: FontWeight.w500,
             ),
@@ -178,7 +200,7 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _listTile(String title, String subtitle) {
+  Widget _listTile(String title, String subtitle, String imagePath) {
     return Container(
       margin: EdgeInsets.only(top: Get.height * 0.02),
       padding: EdgeInsets.all(Get.width * 0.04),
@@ -191,13 +213,14 @@ class HomeView extends StatelessWidget {
       ),
       child: Row(
         children: [
+          Image.asset(imagePath, height: Get.height * 0.08),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: Get.width * 0.04,
                     fontWeight: FontWeight.bold,
                   ),
@@ -205,7 +228,7 @@ class HomeView extends StatelessWidget {
                 SizedBox(height: Get.height * 0.005),
                 Text(
                   subtitle,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: Get.width * 0.032,
                     color: Colors.grey,
                   ),

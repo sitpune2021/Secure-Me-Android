@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:remixicon/remixicon.dart';
+
+import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/routes/app_pages.dart';
 
 class ProfileView extends StatelessWidget {
@@ -9,58 +10,150 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Profile"),
-        centerTitle: false,
-        elevation: 0,
+        // leading: IconButton(
+        //   onPressed: () {
+        //     Get.back();
+        //   },
+        //   icon: Icon(Icons.arrow_back),
+        // ),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 15),
+          child: Text(
+            "Profile",
+            style: GoogleFonts.poppins(
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        elevation: 0,
+        centerTitle: false,
+        surfaceTintColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.blueAccent,
-              child: Icon(Icons.person, size: 60, color: Colors.white),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "Karina Mandhare",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 30),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Profile Header
+              Row(
+                children: [
+                  // const CircleAvatar(
+                  //   radius: 35,
+                  //   backgroundImage: AssetImage(
+                  //     "assets/images/user.jpg",
+                  //   ), // replace with NetworkImage if needed
+                  // ),
+                  const SizedBox(width: 15),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Rupa Jenny",
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "+91 9670302800",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
 
-            // Menu Items
-            _buildMenuItem(Icons.settings, "Setting", () {
-              // Get.toNamed(AppRoutes.setting);
-            }),
-            _buildMenuItem(Icons.group_outlined, "Friends", () {
-              // Get.toNamed(AppRoutes.friends);
-            }),
-            _buildMenuItem(RemixIcons.question_line, "Help", () {
-              // Get.toNamed(AppRoutes.help);
-            }),
-            _buildMenuItem(RemixIcons.information_2_line, "App Info", () {
-              // Get.toNamed(AppRoutes.appInfo);
-            }),
-            _buildMenuItem(Icons.star_border, "Feedback", () {
-              // Get.toNamed(AppRoutes.feedback);
-            }),
-            _buildMenuItem(Icons.logout, "Log Out", () {
-              Get.offAllNamed(AppRoutes.loginView);
-            }),
-          ],
+              const SizedBox(height: 20),
+              const Divider(),
+
+              // Menu items
+              _buildMenuItem("Edit Profile", () {
+                Get.toNamed(AppRoutes.editProfile);
+              }),
+              _buildMenuItem("Location", () {
+                Get.toNamed(AppRoutes.location);
+              }),
+              _buildMenuItem("Friends", () {
+                Get.toNamed(AppRoutes.friends);
+              }),
+              _buildMenuItem("Push Notifications", () {
+                Get.toNamed(AppRoutes.pushnotification);
+              }),
+              _buildMenuItem("Settings", () {
+                Get.toNamed(AppRoutes.setting);
+              }),
+              _buildMenuItem("Help", () {
+                // Get.toNamed(AppRoutes.help);
+              }),
+
+              // Dark Mode switch
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  "Dark Mode",
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                ),
+                trailing: Switch(
+                  value: false,
+                  onChanged: (val) {
+                    // TODO: Add GetX theme controller logic
+                  },
+                ),
+              ),
+
+              const Divider(),
+
+              // More
+              const SizedBox(height: 10),
+              Text(
+                "More",
+                style: GoogleFonts.poppins(
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 5),
+
+              _buildMenuItem("About Us", () {
+                // Get.toNamed(AppRoutes.aboutUs);
+              }),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.logout, color: Colors.black54),
+                title: Text(
+                  "Log Out",
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+                ),
+                onTap: () {
+                  Get.offAllNamed(AppRoutes.loginView);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
+  Widget _buildMenuItem(String title, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black54),
-      title: Text(title, style: const TextStyle(fontSize: 16)),
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
+      ),
+      trailing: const Icon(Icons.chevron_right, color: Colors.black38),
       onTap: onTap,
     );
   }

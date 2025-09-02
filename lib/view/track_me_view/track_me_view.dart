@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/track_me_controller.dart/track_me_controller.dart';
 
 class TrackMeView extends StatelessWidget {
@@ -11,9 +12,12 @@ class TrackMeView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Track Me",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -28,9 +32,12 @@ class TrackMeView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "Your Location",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 12),
 
@@ -70,13 +77,16 @@ class TrackMeView extends StatelessWidget {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               "Current Location",
-                              style: TextStyle(fontSize: 16),
+                              style: GoogleFonts.poppins(fontSize: 16),
                             ),
-                            SizedBox(height: 20),
-                            Text("Destination", style: TextStyle(fontSize: 16)),
+                            const SizedBox(height: 20),
+                            Text(
+                              "Destination",
+                              style: GoogleFonts.poppins(fontSize: 16),
+                            ),
                           ],
                         ),
                       ),
@@ -166,7 +176,7 @@ class TrackMeView extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: isSelected ? Colors.purple : Colors.black54,
                 fontSize: 13,
               ),

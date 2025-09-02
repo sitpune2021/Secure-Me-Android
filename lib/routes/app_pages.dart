@@ -10,4 +10,11 @@ class AppRoutes {
   static const appInfo = '/appInfo';
   static const feedback = '/feedback';
   static const login = '/login';
+  static const editProfile = '/editprofile';
+  static const contactList = '/contactList';
+  static const addContact = '/addcontact';
+  static const location = '/location';
+  static const pushnotification = '/pushnotification';
+  static const fakecall = '/fakecall';
+  static const sosActivate = '/sos';
 }
