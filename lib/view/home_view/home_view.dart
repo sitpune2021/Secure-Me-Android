@@ -53,17 +53,15 @@ class HomeView extends StatelessWidget {
   Widget _dashboardUI() {
     return SafeArea(
       child: SingleChildScrollView(
+        physics: ClampingScrollPhysics(), // scroll only if needed
         padding: EdgeInsets.all(Get.width * 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🔹 Profile Row
+            // Profile Row
             Row(
               children: [
-                CircleAvatar(
-                  radius: Get.width * 0.07,
-                  // backgroundImage: AssetImage("assets/images/profile.png"),
-                ),
+                CircleAvatar(radius: Get.width * 0.07),
                 SizedBox(width: Get.width * 0.03),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +82,7 @@ class HomeView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Spacer(),
+                Spacer(),
                 CircleAvatar(
                   backgroundColor: Colors.purple,
                   radius: Get.width * 0.05,
@@ -112,7 +110,6 @@ class HomeView extends StatelessWidget {
 
             SizedBox(height: Get.height * 0.03),
 
-            // 🔹 Section Title
             Text(
               "Helpline Numbers",
               style: GoogleFonts.poppins(
@@ -120,13 +117,12 @@ class HomeView extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-
             SizedBox(height: Get.height * 0.02),
 
-            // 🔹 Grid
+            // Grid
             GridView.count(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+              physics: NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               crossAxisSpacing: Get.width * 0.04,
               mainAxisSpacing: Get.height * 0.02,
@@ -135,9 +131,7 @@ class HomeView extends StatelessWidget {
                 _menuCard("Safe area", "assets/images/safe_area.png"),
                 _menuCard("Danger Zone", "assets/images/danger.png"),
                 GestureDetector(
-                  onTap: () {
-                    Get.toNamed(AppRoutes.fakecall);
-                  },
+                  onTap: () => Get.toNamed(AppRoutes.fakecall),
                   child: _menuCard("Fake Call", "assets/images/fake_call.png"),
                 ),
                 _menuCard(
@@ -149,7 +143,6 @@ class HomeView extends StatelessWidget {
 
             SizedBox(height: Get.height * 0.02),
 
-            // 🔹 Bottom full-width cards
             GestureDetector(
               onTap: () {},
               child: _listTile(
@@ -160,15 +153,15 @@ class HomeView extends StatelessWidget {
             ),
             SizedBox(height: Get.height * 0.015),
             GestureDetector(
-              onTap: () {
-                Get.toNamed(AppRoutes.friends);
-              },
+              onTap: () => Get.toNamed(AppRoutes.friends),
               child: _listTile(
                 "Add Close People",
                 "Add close people and friends for SOS",
                 "assets/images/add_friend.png",
               ),
             ),
+
+            SizedBox(height: 20), // bottom padding
           ],
         ),
       ),
