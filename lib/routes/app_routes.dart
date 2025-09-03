@@ -14,6 +14,7 @@ import 'package:secure_me/view/notification_view/notification_view.dart';
 import 'package:secure_me/view/otp_view/otp_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
 import 'package:secure_me/view/push_notification_view/push_nptification_view.dart';
+import 'package:secure_me/view/register_view.dart/register_view.dart';
 import 'package:secure_me/view/setting_view/setting_view.dart';
 import 'package:secure_me/view/sos_active_view/sos_active_view.dart';
 
@@ -36,6 +37,7 @@ class AppPages {
     ),
     GetPage(name: AppRoutes.fakecall, page: () => FakeCallView()),
     GetPage(name: AppRoutes.sosActivate, page: () => SosActivatedView()),
+    GetPage(name: AppRoutes.registerView, page: () => RegisterView()),
     // GetPage(name: AppRoutes.help, page: () => const HelpView()),
     // GetPage(name: AppRoutes.appInfo, page: () => const AppInfoView()),
     // GetPage(name: AppRoutes.feedback, page: () => const FeedbackView()),

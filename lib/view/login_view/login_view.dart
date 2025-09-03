@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/login_controller/login_controller.dart';
+import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/theme/app_color.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -129,6 +131,31 @@ class _LoginViewState extends State<LoginView> {
                       style: GoogleFonts.poppins(
                         fontSize: Get.width * 0.05,
                         color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: Get.height * .03),
+                Center(
+                  child: Text(
+                    'OR',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                SizedBox(height: Get.height * .01),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Get.toNamed(AppRoutes.registerView);
+                    },
+                    child: Text(
+                      'Create Account',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: AppColors.darkPrimary,
                       ),
                     ),
                   ),

@@ -1,5 +1,6 @@
 class AppRoutes {
   static const loginView = '/login';
+  static const registerView = '/register';
   static const otpView = '/otp';
   static const homeView = '/home';
   static const notification = '/notification';
