@@ -23,7 +23,7 @@ class AppPages {
     GetPage(name: AppRoutes.otpView, page: () => OtpView()),
     GetPage(name: AppRoutes.homeView, page: () => HomeView()),
     GetPage(name: AppRoutes.notification, page: () => NotificationView()),
-    GetPage(name: AppRoutes.profile, page: () => const ProfileView()),
+    GetPage(name: AppRoutes.profile, page: () => ProfileView()),
     GetPage(name: AppRoutes.setting, page: () => SettingsView()),
     GetPage(name: AppRoutes.friends, page: () => const AddFriendsView()),
     GetPage(name: AppRoutes.editProfile, page: () => EditProfileView()),

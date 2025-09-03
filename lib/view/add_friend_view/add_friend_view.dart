@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:secure_me/controller/add_friend_controlller.dart/add_friend_controller.dart';
+import 'package:secure_me/controller/add_friend_controller/add_friend_controller.dart';
 
 class AddFriendsView extends StatelessWidget {
   const AddFriendsView({super.key});

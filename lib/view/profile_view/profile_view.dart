@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 
 class ProfileView extends StatelessWidget {
-  const ProfileView({super.key});
+  ProfileView({super.key});
+  final ThemeController themeController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -104,11 +106,13 @@ class ProfileView extends StatelessWidget {
                   "Dark Mode",
                   style: GoogleFonts.poppins(fontSize: 16, color: Colors.black),
                 ),
-                trailing: Switch(
-                  value: false,
-                  onChanged: (val) {
-                    // TODO: Add GetX theme controller logic
-                  },
+                trailing: Obx(
+                  () => Switch(
+                    value: themeController.isDarkMode.value,
+                    onChanged: (val) {
+                      themeController.toggleTheme(val);
+                    },
+                  ),
                 ),
               ),
 

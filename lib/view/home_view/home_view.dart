@@ -248,10 +248,13 @@ class HomeView extends StatelessWidget {
 
   /// Bottom navigation bar
   Widget _buildBottomNav() {
+    final theme = Theme.of(Get.context!);
+
     return Obx(
       () => BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 6,
+        color: theme.bottomAppBarTheme.color, // ✅ Background color from theme
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -260,8 +263,10 @@ class HomeView extends StatelessWidget {
               icon: Icon(
                 Icons.home,
                 color: controller.currentIndex.value == 0
-                    ? Colors.purple
-                    : Colors.grey,
+                    ? theme
+                          .colorScheme
+                          .primary // active
+                    : theme.iconTheme.color, // inactive
               ),
             ),
             IconButton(
@@ -271,8 +276,8 @@ class HomeView extends StatelessWidget {
                 child: Icon(
                   Icons.navigation,
                   color: controller.currentIndex.value == 1
-                      ? Colors.purple
-                      : Colors.grey,
+                      ? theme.colorScheme.primary
+                      : theme.iconTheme.color,
                 ),
               ),
             ),
@@ -282,8 +287,8 @@ class HomeView extends StatelessWidget {
               icon: Icon(
                 Icons.people,
                 color: controller.currentIndex.value == 2
-                    ? Colors.purple
-                    : Colors.grey,
+                    ? theme.colorScheme.primary
+                    : theme.iconTheme.color,
               ),
             ),
             IconButton(
@@ -291,8 +296,8 @@ class HomeView extends StatelessWidget {
               icon: Icon(
                 Icons.person,
                 color: controller.currentIndex.value == 3
-                    ? Colors.purple
-                    : Colors.grey,
+                    ? theme.colorScheme.primary
+                    : theme.iconTheme.color,
               ),
             ),
           ],

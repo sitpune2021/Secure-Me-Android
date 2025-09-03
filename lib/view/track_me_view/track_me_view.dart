@@ -130,24 +130,6 @@ class TrackMeView extends StatelessWidget {
                 ],
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            // Map Preview
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage("assets/images/map_sample.png"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -170,7 +152,8 @@ class TrackMeView extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           color: isSelected ? Colors.purple.shade50 : Colors.transparent,
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: isSelected ? Colors.purple : Colors.grey),
             const SizedBox(height: 4),

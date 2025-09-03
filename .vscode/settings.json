@@ -1,3 +1,6 @@
 {
-    "cmake.ignoreCMakeListsMissing": true
+  "files.associations": {
+    "*.gradle.kts": "plaintext"
+  },
+  "cmake.ignoreCMakeListsMissing": true
 }

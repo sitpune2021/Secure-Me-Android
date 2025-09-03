@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/routes/app_routes.dart';
-import 'package:secure_me/view/login_view/login_view.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
 
   // This widget is the root of your application.
+  final ThemeController themeController = Get.put(ThemeController());
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Secure Me',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return Obx(
+      () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Secure Me',
+        theme: themeController.theme,
+        initialRoute: AppRoutes.loginView,
+        getPages: AppPages.pages,
       ),
-      initialRoute: AppRoutes.loginView,
-      getPages: AppPages.pages,
     );
   }
 }
