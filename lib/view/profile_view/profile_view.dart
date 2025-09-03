@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,13 +28,14 @@ class ProfileView extends StatelessWidget {
             "Profile",
             style: GoogleFonts.poppins(
               color: Colors.black,
+              fontSize: 22,
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: false,
+        centerTitle: Platform.isAndroid ? false : true,
         surfaceTintColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.black),
       ),

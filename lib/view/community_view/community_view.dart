@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,13 +17,15 @@ class CommunityView extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: Platform.isAndroid
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               Text(
                 "Community",
                 style: GoogleFonts.poppins(
                   fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 16),

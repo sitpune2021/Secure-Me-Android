@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:secure_me/routes/app_pages.dart';
 
 class AddContactView extends StatefulWidget {
   const AddContactView({super.key});
@@ -21,6 +24,110 @@ class _AddContactViewState extends State<AddContactView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // light background
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 1,
+        title: Text(
+          "New Contact",
+          style: GoogleFonts.poppins(
+            fontSize: Get.width * 0.05,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+
+        // title: Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     if (!Platform.isIOS)
+        //       IconButton(
+        //         icon: Icon(Icons.arrow_back, color: Colors.black),
+        //         onPressed: () => Get.back(),
+        //       ),
+        //     Text(
+        //       "Add Friends",
+        //       style: GoogleFonts.poppins(
+        //         fontSize: Get.width * 0.05,
+        //         fontWeight: FontWeight.bold,
+        //         color: Colors.black,
+        //       ),
+        //     ),
+        //     const Spacer(),
+        //     InkWell(
+        //       onTap: () {
+        //         // TODO: Add new friend action
+        //       },
+        //       child: Container(
+        //         decoration: BoxDecoration(
+        //           color: Colors.purple,
+        //           borderRadius: BorderRadius.circular(8),
+        //         ),
+        //         padding: const EdgeInsets.all(8),
+        //         child: const Icon(Icons.add, color: Colors.white, size: 24),
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        centerTitle: Platform.isAndroid ? false : true,
+        surfaceTintColor: Colors.transparent,
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(
+              left: Get.width * .01,
+              right: Get.width * .03,
+            ),
+            child: TextButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  Get.snackbar(
+                    "Saved",
+                    "Contact saved successfully",
+                    backgroundColor: Colors.green.shade400,
+                    colorText: Colors.white,
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                }
+              },
+              child: Text(
+                "Save",
+                style: GoogleFonts.poppins(
+                  color: Colors.blue,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            // child: Container(
+            //   height: Get.height * .05,
+            //   width: Get.width * .15,
+            //   decoration: BoxDecoration(
+            //     border: Border.all(color: Colors.black54),
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   child: IconButton(
+            //     icon: const Icon(Icons.add, color: Colors.black),
+            //     onPressed: () {
+            //       Get.toNamed(AppRoutes.addContact);
+            //       // Get.snackbar(
+            //       //   "Add Contact",
+            //       //   "Feature coming soon",
+            //       //   snackPosition: SnackPosition.BOTTOM,
+            //       //   backgroundColor: Colors.grey.shade200,
+            //       //   colorText: Colors.black,
+            //       // );
+            //     },
+            //   ),
+            // ),
+          ),
+        ],
+        leading: Platform.isIOS
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+                onPressed: () => Get.back(),
+              )
+            : null,
+      ),
 
       body: SafeArea(
         child: Padding(
@@ -29,57 +136,6 @@ class _AddContactViewState extends State<AddContactView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: () => Get.back(),
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        "New Contact",
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Get.snackbar(
-                          "Saved",
-                          "Contact saved successfully",
-                          backgroundColor: Colors.green.shade400,
-                          colorText: Colors.white,
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                      }
-                    },
-                    child: Text(
-                      "Save",
-                      style: GoogleFonts.poppins(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const Divider(color: Colors.black26),
-
               Expanded(
                 child: Form(
                   key: _formKey,

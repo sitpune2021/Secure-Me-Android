@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,6 +15,89 @@ class ContactListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // light theme background
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 1,
+        title: Text(
+          "Contact List",
+          style: GoogleFonts.poppins(
+            fontSize: Get.width * 0.05,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+
+        // title: Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     if (!Platform.isIOS)
+        //       IconButton(
+        //         icon: Icon(Icons.arrow_back, color: Colors.black),
+        //         onPressed: () => Get.back(),
+        //       ),
+        //     Text(
+        //       "Add Friends",
+        //       style: GoogleFonts.poppins(
+        //         fontSize: Get.width * 0.05,
+        //         fontWeight: FontWeight.bold,
+        //         color: Colors.black,
+        //       ),
+        //     ),
+        //     const Spacer(),
+        //     InkWell(
+        //       onTap: () {
+        //         // TODO: Add new friend action
+        //       },
+        //       child: Container(
+        //         decoration: BoxDecoration(
+        //           color: Colors.purple,
+        //           borderRadius: BorderRadius.circular(8),
+        //         ),
+        //         padding: const EdgeInsets.all(8),
+        //         child: const Icon(Icons.add, color: Colors.white, size: 24),
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        centerTitle: Platform.isAndroid ? false : true,
+        surfaceTintColor: Colors.transparent,
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(
+              left: Get.width * .01,
+              right: Get.width * .03,
+            ),
+            child: Container(
+              height: Get.height * .05,
+              width: Get.width * .15,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black54),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.add, color: Colors.black),
+                onPressed: () {
+                  Get.toNamed(AppRoutes.addContact);
+                  // Get.snackbar(
+                  //   "Add Contact",
+                  //   "Feature coming soon",
+                  //   snackPosition: SnackPosition.BOTTOM,
+                  //   backgroundColor: Colors.grey.shade200,
+                  //   colorText: Colors.black,
+                  // );
+                },
+              ),
+            ),
+          ),
+        ],
+        leading: Platform.isIOS
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+                onPressed: () => Get.back(),
+              )
+            : null,
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -23,54 +108,26 @@ class ContactListView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Get.back(),
-                        icon: Icon(Icons.arrow_back, color: Colors.black),
-                      ),
-                      SizedBox(width: Get.width * 0.02),
-                      Text(
-                        "Contact List",
-                        style: GoogleFonts.poppins(
-                          fontSize: Get.width * 0.05,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black54),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.add, color: Colors.black),
-                      onPressed: () {
-                        Get.toNamed(AppRoutes.addContact);
-                        // Get.snackbar(
-                        //   "Add Contact",
-                        //   "Feature coming soon",
-                        //   snackPosition: SnackPosition.BOTTOM,
-                        //   backgroundColor: Colors.grey.shade200,
-                        //   colorText: Colors.black,
-                        // );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: Get.height * 0.02),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Row(
+              //       children: [
+              //         IconButton(
+              //           onPressed: () => Get.back(),
+              //           icon: Icon(Icons.arrow_back, color: Colors.black),
+              //         ),
+              //         SizedBox(width: Get.width * 0.02),
+              //       ],
+              //     ),
+              //   ],
+              // ),
+              // SizedBox(height: Get.height * 0.02),
 
               // Search bar
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                  color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: TextField(

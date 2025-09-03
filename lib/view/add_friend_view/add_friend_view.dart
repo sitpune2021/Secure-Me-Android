@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,49 +13,80 @@ class AddFriendsView extends StatelessWidget {
     final controller = Get.put(AddFriendsController());
 
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 1,
+        title: Text(
+          'Add Friends',
+          style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w600),
+        ),
+
+        // title: Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     if (!Platform.isIOS)
+        //       IconButton(
+        //         icon: Icon(Icons.arrow_back, color: Colors.black),
+        //         onPressed: () => Get.back(),
+        //       ),
+        //     Text(
+        //       "Add Friends",
+        //       style: GoogleFonts.poppins(
+        //         fontSize: Get.width * 0.05,
+        //         fontWeight: FontWeight.bold,
+        //         color: Colors.black,
+        //       ),
+        //     ),
+        //     const Spacer(),
+        //     InkWell(
+        //       onTap: () {
+        //         // TODO: Add new friend action
+        //       },
+        //       child: Container(
+        //         decoration: BoxDecoration(
+        //           color: Colors.purple,
+        //           borderRadius: BorderRadius.circular(8),
+        //         ),
+        //         padding: const EdgeInsets.all(8),
+        //         child: const Icon(Icons.add, color: Colors.white, size: 24),
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        centerTitle: Platform.isAndroid ? false : true,
+        surfaceTintColor: Colors.transparent,
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: Get.width * .03),
+            child: InkWell(
+              onTap: () {
+                // TODO: Add new friend action
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.purple,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: const Icon(Icons.add, color: Colors.white, size: 24),
+              ),
+            ),
+          ),
+        ],
+        leading: Platform.isIOS
+            ? IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+                onPressed: () => Get.back(),
+              )
+            : null,
+      ),
+
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(Get.width * 0.05),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🔹 Header Row
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, size: 28),
-                    onPressed: () => Get.back(),
-                  ),
-                  Text(
-                    "Add Friends",
-                    style: GoogleFonts.poppins(
-                      fontSize: Get.width * 0.05,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  InkWell(
-                    onTap: () {
-                      // TODO: Add new friend action
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.purple,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: Get.height * 0.02),
-
               // 🔹 Search Bar
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),

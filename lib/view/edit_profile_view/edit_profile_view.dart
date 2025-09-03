@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -26,12 +28,14 @@ class _EditProfileViewState extends State<EditProfileView> {
           "Edit Profile",
           style: GoogleFonts.poppins(
             color: Colors.black87,
+            fontSize: 22,
             fontWeight: FontWeight.w600,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black87),
+        centerTitle: Platform.isAndroid ? false : true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -165,7 +169,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         Get.snackbar(
-                          "Success",
+                          "Edit",
                           "Profile updated successfully",
                           backgroundColor: Colors.green.shade100,
                           colorText: Colors.black87,

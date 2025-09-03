@@ -16,12 +16,9 @@ class TrackMeView extends StatelessWidget {
           "Track Me",
           style: GoogleFonts.poppins(
             color: Colors.black,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
         ),
         backgroundColor: Colors.white,
         elevation: 0,

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,17 +15,21 @@ class LocationView extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
           onPressed: () => Get.back(),
         ),
         title: Text(
           "Location",
           style: GoogleFonts.poppins(
-            fontSize: 18,
+            fontSize: 22,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
         ),
+        centerTitle: Platform.isAndroid ? false : true,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(

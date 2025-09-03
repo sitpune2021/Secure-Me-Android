@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -24,7 +26,12 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+        ),
         title: Text(
           "Create Account",
           style: GoogleFonts.poppins(

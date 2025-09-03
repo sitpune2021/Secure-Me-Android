@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,10 +13,11 @@ class PushNotificationView extends StatelessWidget {
       backgroundColor: Colors.white, // light theme
       appBar: AppBar(
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back,
+            Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
             color: Colors.black,
             size: Get.height * 0.03,
           ),
@@ -23,11 +26,12 @@ class PushNotificationView extends StatelessWidget {
         title: Text(
           "Push Notification",
           style: GoogleFonts.poppins(
-            fontSize: Get.height * 0.022,
+            fontSize: 22,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
         ),
+        centerTitle: Platform.isAndroid ? false : true,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
