@@ -175,7 +175,7 @@ class _RegisterViewState extends State<RegisterView> {
                           colorText: Colors.black87,
                           snackPosition: SnackPosition.BOTTOM,
                         );
-                        Get.toNamed(AppRoutes.homeView);
+                        Get.toNamed(AppRoutes.loginView);
                       }
                     },
                     child: Text(
