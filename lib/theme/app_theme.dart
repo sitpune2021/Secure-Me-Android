@@ -7,9 +7,9 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.lightBackground,
     primaryColor: AppColors.lightPrimary,
-    colorScheme: ColorScheme.light(
+    colorScheme: const ColorScheme.light(
       primary: AppColors.lightPrimary,
-      secondary: AppColors.lightAccent,
+      secondary: AppColors.lightSecondary,
       surface: AppColors.lightBackground,
       onSurface: AppColors.lightText,
     ),
@@ -28,6 +28,7 @@ class AppTheme {
       bodyLarge: TextStyle(color: AppColors.lightText),
       bodyMedium: TextStyle(color: AppColors.lightText),
     ),
+    dividerColor: AppColors.lightDivider,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.lightBackground,
       selectedItemColor: AppColors.lightPrimary,
@@ -38,6 +39,19 @@ class AppTheme {
       backgroundColor: AppColors.lightPrimary,
       foregroundColor: Colors.white,
     ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.black.withOpacity(0.05),
+      hintStyle: const TextStyle(color: AppColors.lightHint),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: BorderSide.none,
+      ),
+    ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: AppColors.lightSecondary,
+      contentTextStyle: TextStyle(color: Colors.white),
+    ),
   );
 
   // ------------------ Dark Theme ------------------
@@ -45,11 +59,11 @@ class AppTheme {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.darkBackground,
     primaryColor: AppColors.darkPrimary,
-    colorScheme: ColorScheme.dark(
+    colorScheme: const ColorScheme.dark(
       primary: AppColors.darkPrimary,
-      secondary: AppColors.darkAccent,
+      secondary: AppColors.darkSecondary,
       surface: AppColors.darkBackground,
-      surfaceBright: AppColors.darkText,
+      onSurface: AppColors.darkText,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.darkBackground,
@@ -64,17 +78,31 @@ class AppTheme {
     iconTheme: const IconThemeData(color: AppColors.darkText),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: AppColors.darkText),
-      bodyMedium: TextStyle(color: AppColors.darkText),
+      bodyMedium: TextStyle(color: AppColors.darkHint),
     ),
+    dividerColor: AppColors.darkDivider,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.darkBackground,
-      selectedItemColor: AppColors.darkPrimary,
+      selectedItemColor: AppColors.lightPrimary,
       unselectedItemColor: AppColors.darkUnselected,
       showUnselectedLabels: true,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.darkPrimary,
+      backgroundColor: AppColors.lightPrimary,
       foregroundColor: Colors.white,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white.withOpacity(0.08),
+      hintStyle: const TextStyle(color: AppColors.darkHint),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: BorderSide.none,
+      ),
+    ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: AppColors.darkSecondary,
+      contentTextStyle: TextStyle(color: Colors.white),
     ),
   );
 }

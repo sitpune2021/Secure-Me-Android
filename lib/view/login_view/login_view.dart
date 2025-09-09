@@ -175,7 +175,7 @@ class _LoginViewState extends State<LoginView> {
                               'Create Account',
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
-                                color: AppColors.darkPrimary,
+                                color: AppColors.lightPrimary,
                               ),
                             ),
                           ),

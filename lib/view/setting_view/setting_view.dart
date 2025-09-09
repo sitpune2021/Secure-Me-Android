@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/setting_controller/setting_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/theme/app_color.dart';
 
 class SettingsView extends StatefulWidget {
   SettingsView({super.key});
@@ -18,122 +18,85 @@ class _SettingsViewState extends State<SettingsView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white, // light theme
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         title: Text(
           'Settings',
-          style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            color: isDark ? AppColors.darkText : AppColors.lightText,
+          ),
         ),
-
-        // title: Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     if (!Platform.isIOS)
-        //       IconButton(
-        //         icon: Icon(Icons.arrow_back, color: Colors.black),
-        //         onPressed: () => Get.back(),
-        //       ),
-        //     Text(
-        //       "Add Friends",
-        //       style: GoogleFonts.poppins(
-        //         fontSize: Get.width * 0.05,
-        //         fontWeight: FontWeight.bold,
-        //         color: Colors.black,
-        //       ),
-        //     ),
-        //     const Spacer(),
-        //     InkWell(
-        //       onTap: () {
-        //         // TODO: Add new friend action
-        //       },
-        //       child: Container(
-        //         decoration: BoxDecoration(
-        //           color: Colors.purple,
-        //           borderRadius: BorderRadius.circular(8),
-        //         ),
-        //         padding: const EdgeInsets.all(8),
-        //         child: const Icon(Icons.add, color: Colors.white, size: 24),
-        //       ),
-        //     ),
-        //   ],
-        // ),
         centerTitle: Platform.isAndroid ? false : true,
         surfaceTintColor: Colors.transparent,
-        // actions: [
-        //   Padding(
-        //     padding: EdgeInsets.only(right: Get.width * .03),
-        //     child: InkWell(
-        //       onTap: () {
-        //         // TODO: Add new friend action
-        //       },
-        //       child: Container(
-        //         decoration: BoxDecoration(
-        //           color: Colors.purple,
-        //           borderRadius: BorderRadius.circular(8),
-        //         ),
-        //         padding: const EdgeInsets.all(8),
-        //         child: const Icon(Icons.add, color: Colors.white, size: 24),
-        //       ),
-        //     ),
-        //   ),
-        // ],
         leading: Platform.isIOS
             ? IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: isDark ? AppColors.darkText : AppColors.lightText,
+                ),
                 onPressed: () => Get.back(),
               )
             : null,
       ),
       body: Padding(
-        padding: EdgeInsets.only(
-          left: Get.width * .035,
-          right: Get.width * .035,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: Get.width * .035),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Add Edit Emergency
+            // Add/Edit Emergency
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(
-                "Add Edit Emergency",
+                "Add/Edit Emergency",
                 style: GoogleFonts.poppins(
                   fontSize: Get.width * 0.045,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: isDark ? AppColors.darkText : AppColors.lightText,
                 ),
               ),
               trailing: Icon(
                 Icons.chevron_right,
-                size: Get.width * .1,
-                color: Colors.black,
+                size: Get.width * .08,
+                color: isDark ? AppColors.darkText : AppColors.lightText,
               ),
               onTap: () {
                 Get.toNamed(AppRoutes.contactList);
               },
             ),
 
-            //Divider(color: Colors.grey.shade300),
+            Divider(
+              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+            ),
 
             // Auto Call on SOS
             Obx(
               () => SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(
-                  "Auto Call On Sos",
+                  "Auto Call On SOS",
                   style: GoogleFonts.poppins(
                     fontSize: Get.width * 0.045,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                    color: isDark ? AppColors.darkText : AppColors.lightText,
                   ),
                 ),
                 value: controller.autoCallOnSos.value,
                 onChanged: controller.toggleAutoCall,
-                activeColor: Colors.purple,
+                activeColor: isDark
+                    ? AppColors.darkPrimary
+                    : AppColors.lightPrimary,
               ),
             ),
           ],

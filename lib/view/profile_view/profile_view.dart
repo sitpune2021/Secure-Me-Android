@@ -13,6 +13,7 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -112,6 +113,7 @@ class ProfileView extends StatelessWidget {
                 trailing: Obx(
                   () => Switch(
                     value: themeController.isDarkMode.value,
+                    activeColor: theme.primaryColor,
                     onChanged: (val) {
                       themeController.toggleTheme(val);
                     },

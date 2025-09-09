@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/contact_controller/contact_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/theme/app_color.dart';
 
 class ContactListView extends StatelessWidget {
   final ContactController controller = Get.put(ContactController());
@@ -13,55 +13,38 @@ class ContactListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white, // light theme background
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        elevation: 1,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Text(
           "Contact List",
           style: GoogleFonts.poppins(
             fontSize: Get.width * 0.05,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color:
+                theme.appBarTheme.titleTextStyle?.color ??
+                (isDark ? AppColors.darkText : AppColors.lightText),
           ),
         ),
-
-        // title: Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     if (!Platform.isIOS)
-        //       IconButton(
-        //         icon: Icon(Icons.arrow_back, color: Colors.black),
-        //         onPressed: () => Get.back(),
-        //       ),
-        //     Text(
-        //       "Add Friends",
-        //       style: GoogleFonts.poppins(
-        //         fontSize: Get.width * 0.05,
-        //         fontWeight: FontWeight.bold,
-        //         color: Colors.black,
-        //       ),
-        //     ),
-        //     const Spacer(),
-        //     InkWell(
-        //       onTap: () {
-        //         // TODO: Add new friend action
-        //       },
-        //       child: Container(
-        //         decoration: BoxDecoration(
-        //           color: Colors.purple,
-        //           borderRadius: BorderRadius.circular(8),
-        //         ),
-        //         padding: const EdgeInsets.all(8),
-        //         child: const Icon(Icons.add, color: Colors.white, size: 24),
-        //       ),
-        //     ),
-        //   ],
-        // ),
         centerTitle: Platform.isAndroid ? false : true,
         surfaceTintColor: Colors.transparent,
+        leading: Platform.isIOS
+            ? IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color:
+                      theme.iconTheme.color ??
+                      (isDark ? AppColors.darkText : AppColors.lightText),
+                ),
+                onPressed: () => Get.back(),
+              )
+            : null,
         actions: [
           Padding(
             padding: EdgeInsets.only(
@@ -70,117 +53,191 @@ class ContactListView extends StatelessWidget {
             ),
             child: Container(
               height: Get.height * .05,
-              width: Get.width * .15,
+              width: Get.width * .12,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black54),
-                borderRadius: BorderRadius.circular(8),
+                color: isDark
+                    ? AppColors.darkAddButtonBg
+                    : AppColors.lightAddButtonBg,
+                border: Border.all(
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: isDark
+                    ? [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 12,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : [],
               ),
               child: IconButton(
-                icon: const Icon(Icons.add, color: Colors.black),
-                onPressed: () {
-                  Get.toNamed(AppRoutes.addContact);
-                  // Get.snackbar(
-                  //   "Add Contact",
-                  //   "Feature coming soon",
-                  //   snackPosition: SnackPosition.BOTTOM,
-                  //   backgroundColor: Colors.grey.shade200,
-                  //   colorText: Colors.black,
-                  // );
-                },
+                icon: Icon(
+                  Icons.add,
+                  color: isDark ? AppColors.darkText : AppColors.lightText,
+                  size: 22,
+                ),
+                onPressed: () => Get.toNamed(AppRoutes.addContact),
               ),
             ),
           ),
         ],
-        leading: Platform.isIOS
-            ? IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-                onPressed: () => Get.back(),
-              )
-            : null,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: Get.width * 0.05,
-            vertical: Get.height * 0.02,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     Row(
-              //       children: [
-              //         IconButton(
-              //           onPressed: () => Get.back(),
-              //           icon: Icon(Icons.arrow_back, color: Colors.black),
-              //         ),
-              //         SizedBox(width: Get.width * 0.02),
-              //       ],
-              //     ),
-              //   ],
-              // ),
-              // SizedBox(height: Get.height * 0.02),
-
-              // Search bar
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(30),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? LinearGradient(
+                  colors: [
+                    AppColors.darkBackground,
+                    AppColors.darkSecondaryBackground,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : const LinearGradient(
+                  colors: [
+                    AppColors.lightBackground,
+                    AppColors.lightBackground,
+                  ],
                 ),
-                child: TextField(
-                  onChanged: (value) => controller.updateSearch(value),
-                  style: GoogleFonts.poppins(color: Colors.black),
-                  decoration: InputDecoration(
-                    hintText: "Search",
-                    hintStyle: GoogleFonts.poppins(color: Colors.black54),
-                    prefixIcon: Icon(Icons.search, color: Colors.black54),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 15),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: isDark
+                ? RadialGradient(
+                    colors: [
+                      AppColors.darkRadialGlow.withOpacity(0.7),
+                      Colors.transparent,
+                    ],
+                    radius: 1,
+                    center: Alignment.topRight,
+                  )
+                : const RadialGradient(
+                    colors: [Colors.transparent, Colors.transparent],
+                    radius: 1,
+                    center: Alignment.topRight,
                   ),
-                ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Get.width * 0.05,
+                vertical: Get.height * 0.02,
               ),
-
-              SizedBox(height: Get.height * 0.02),
-              Divider(color: Colors.grey.shade400),
-
-              // Contact List
-              Expanded(
-                child: Obx(
-                  () => ListView.builder(
-                    itemCount: controller.filteredContacts.length,
-                    itemBuilder: (context, index) {
-                      final contact = controller.filteredContacts[index];
-                      return ListTile(
-                        title: Text(
-                          contact,
-                          style: GoogleFonts.poppins(
-                            fontSize: Get.width * 0.045,
-                            color: Colors.black,
-                          ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 🔍 Search bar
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        25,
+                      ), // match TextField radius
+                      border: Border.all(
+                        color: isDark
+                            ? AppColors.darkDivider
+                            : AppColors.lightDivider,
+                        width: 1,
+                      ),
+                    ),
+                    child: TextField(
+                      onChanged: (value) => controller.updateSearch(value),
+                      style: GoogleFonts.poppins(
+                        color: isDark
+                            ? AppColors.darkText
+                            : AppColors.lightText, // typed text
+                      ),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: isDark
+                            ? AppColors.darkSearchBg
+                            : AppColors.lightSearchBg, // background color
+                        hintText: "Search",
+                        hintStyle: GoogleFonts.poppins(
+                          color: isDark
+                              ? AppColors.darkHint
+                              : AppColors.lightHint, // hint text
                         ),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.black54,
-                          size: 18,
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: isDark
+                              ? AppColors.darkHint
+                              : AppColors.lightHint, // icon
                         ),
-                        onTap: () {
-                          Get.snackbar(
-                            "Selected",
-                            contact,
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.grey.shade200,
-                            colorText: Colors.black,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide
+                              .none, // removes internal TextField border
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 0,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: Get.height * 0.02),
+                  Divider(
+                    color: isDark
+                        ? AppColors.darkDivider
+                        : AppColors.lightDivider,
+                  ),
+
+                  // 📋 Contact List
+                  Expanded(
+                    child: Obx(
+                      () => ListView.builder(
+                        itemCount: controller.filteredContacts.length,
+                        itemBuilder: (context, index) {
+                          final contact = controller.filteredContacts[index];
+                          return ListTile(
+                            title: Text(
+                              contact,
+                              style: GoogleFonts.poppins(
+                                fontSize: Get.width * 0.045,
+                                color: isDark
+                                    ? AppColors.darkText
+                                    : AppColors.lightText,
+                              ),
+                            ),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              color: isDark
+                                  ? AppColors.darkUnselected
+                                  : AppColors.lightUnselected,
+                              size: 18,
+                            ),
+                            onTap: () {
+                              Get.snackbar(
+                                "Selected",
+                                contact,
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor:
+                                    theme.snackBarTheme.backgroundColor ??
+                                    (isDark
+                                        ? AppColors.darkBackground
+                                        : AppColors.lightBackground),
+                                colorText:
+                                    theme
+                                        .snackBarTheme
+                                        .contentTextStyle
+                                        ?.color ??
+                                    (isDark
+                                        ? AppColors.darkText
+                                        : AppColors.lightText),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

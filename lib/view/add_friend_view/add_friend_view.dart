@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/add_friend_controller/add_friend_controller.dart';
+import 'package:secure_me/theme/app_color.dart';
 
 class AddFriendsView extends StatelessWidget {
   const AddFriendsView({super.key});
@@ -11,10 +12,11 @@ class AddFriendsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(AddFriendsController());
-
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        //automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 1,
         title: Text(
@@ -91,16 +93,37 @@ class AddFriendsView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark
+                      ? AppColors.darkSearchBg
+                      : AppColors.lightSearchBg,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Colors.grey.shade300),
+                  border: Border.all(
+                    color: isDark
+                        ? AppColors.darkDivider
+                        : AppColors.lightDivider,
+                  ),
                 ),
                 child: TextField(
                   onChanged: (value) => controller.searchFriends(value),
-                  decoration: const InputDecoration(
+                  style: TextStyle(
+                    color: isDark
+                        ? AppColors.darkText
+                        : AppColors.lightText, // typed text color
+                  ),
+                  decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Search by name or phone",
-                    icon: Icon(Icons.search, color: Colors.grey),
+                    hintStyle: TextStyle(
+                      color: isDark
+                          ? AppColors.darkHint
+                          : AppColors.lightHint, // hint color
+                    ),
+                    icon: Icon(
+                      Icons.search,
+                      color: isDark
+                          ? AppColors.darkHint
+                          : AppColors.lightHint, // icon color
+                    ),
                   ),
                 ),
               ),

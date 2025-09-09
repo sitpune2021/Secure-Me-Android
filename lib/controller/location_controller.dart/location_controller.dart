@@ -59,7 +59,7 @@ class LocationController extends GetxController {
               onTap: () {
                 Get.back();
                 shareViaWhatsApp(
-                  "+917058700755",
+                  "+917219410523",
                   "Here is my live location: $mapUrl",
                 );
               },
@@ -70,7 +70,7 @@ class LocationController extends GetxController {
               onTap: () {
                 Get.back();
                 shareViaSMS(
-                  "+917058700755",
+                  "+917219410523",
                   "Here is my live location: $mapUrl",
                 );
               },
