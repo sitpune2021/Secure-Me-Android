@@ -13,7 +13,7 @@ import 'package:secure_me/view/login_view/login_view.dart';
 import 'package:secure_me/view/notification_view/notification_view.dart';
 import 'package:secure_me/view/otp_view/otp_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
-import 'package:secure_me/view/push_notification_view/push_nptification_view.dart';
+import 'package:secure_me/view/push_notification_view/push_notification_view.dart';
 import 'package:secure_me/view/register_view.dart/register_view.dart';
 import 'package:secure_me/view/setting_view/setting_view.dart';
 import 'package:secure_me/view/share_location_view/share_location_view.dart';

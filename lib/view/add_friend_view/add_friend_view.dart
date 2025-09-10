@@ -1,10 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/add_friend_controller/add_friend_controller.dart';
-import 'package:secure_me/theme/app_color.dart';
 
 class AddFriendsView extends StatelessWidget {
   const AddFriendsView({super.key});
@@ -12,76 +10,51 @@ class AddFriendsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(AddFriendsController());
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF0D0B1A) : Colors.white,
+
       appBar: AppBar(
-        //automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        elevation: 1,
+        backgroundColor: isDark ? const Color(0xFF0D0B1A) : Colors.white,
+        elevation: 0,
         title: Text(
           'Add Friends',
-          style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            fontSize: Get.width * 0.055,
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.pinkAccent : Colors.black,
+          ),
         ),
-
-        // title: Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     if (!Platform.isIOS)
-        //       IconButton(
-        //         icon: Icon(Icons.arrow_back, color: Colors.black),
-        //         onPressed: () => Get.back(),
-        //       ),
-        //     Text(
-        //       "Add Friends",
-        //       style: GoogleFonts.poppins(
-        //         fontSize: Get.width * 0.05,
-        //         fontWeight: FontWeight.bold,
-        //         color: Colors.black,
-        //       ),
-        //     ),
-        //     const Spacer(),
-        //     InkWell(
-        //       onTap: () {
-        //         // TODO: Add new friend action
-        //       },
-        //       child: Container(
-        //         decoration: BoxDecoration(
-        //           color: Colors.purple,
-        //           borderRadius: BorderRadius.circular(8),
-        //         ),
-        //         padding: const EdgeInsets.all(8),
-        //         child: const Icon(Icons.add, color: Colors.white, size: 24),
-        //       ),
-        //     ),
-        //   ],
-        // ),
         centerTitle: Platform.isAndroid ? false : true,
         surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black,
+          ),
+          onPressed: () => Get.back(),
+        ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: Get.width * .03),
-            child: InkWell(
-              onTap: () {
-                // TODO: Add new friend action
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.purple,
-                  borderRadius: BorderRadius.circular(8),
+            padding: EdgeInsets.only(right: Get.width * .04),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: isDark ? Colors.purpleAccent : Colors.grey.shade500,
+                  width: 1.5,
                 ),
-                padding: const EdgeInsets.all(8),
-                child: const Icon(Icons.add, color: Colors.white, size: 24),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.all(6),
+              child: Icon(
+                Icons.add,
+                color: isDark ? Colors.white : Colors.black,
+                size: 26,
               ),
             ),
           ),
         ],
-        leading: Platform.isIOS
-            ? IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-                onPressed: () => Get.back(),
-              )
-            : null,
       ),
 
       body: SafeArea(
@@ -93,36 +66,31 @@ class AddFriendsView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.darkSearchBg
-                      : AppColors.lightSearchBg,
+                  color: isDark ? const Color(0xFF1E1C2A) : Colors.white,
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: isDark
-                        ? AppColors.darkDivider
-                        : AppColors.lightDivider,
+                    color: isDark ? Colors.purpleAccent : Colors.grey.shade500,
+                    width: 1,
                   ),
                 ),
                 child: TextField(
                   onChanged: (value) => controller.searchFriends(value),
                   style: TextStyle(
-                    color: isDark
-                        ? AppColors.darkText
-                        : AppColors.lightText, // typed text color
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "Search by name or phone",
+                    hintText: "Search",
                     hintStyle: TextStyle(
                       color: isDark
-                          ? AppColors.darkHint
-                          : AppColors.lightHint, // hint color
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
                     ),
                     icon: Icon(
                       Icons.search,
                       color: isDark
-                          ? AppColors.darkHint
-                          : AppColors.lightHint, // icon color
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
                     ),
                   ),
                 ),
@@ -134,7 +102,14 @@ class AddFriendsView extends StatelessWidget {
               Expanded(
                 child: Obx(() {
                   if (controller.filteredFriends.isEmpty) {
-                    return const Center(child: Text("No friends found"));
+                    return Center(
+                      child: Text(
+                        "No friends found",
+                        style: TextStyle(
+                          color: isDark ? Colors.grey.shade400 : Colors.grey,
+                        ),
+                      ),
+                    );
                   }
                   return ListView.builder(
                     itemCount: controller.filteredFriends.length,
@@ -143,20 +118,24 @@ class AddFriendsView extends StatelessWidget {
                       return Container(
                         margin: EdgeInsets.only(bottom: Get.height * 0.015),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: isDark
+                              ? const Color(0xFF1E1C2A)
+                              : Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade300),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.1),
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.purpleAccent
+                                : Colors.grey.shade500,
+                            width: 1,
+                          ),
                         ),
                         child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: Get.width * 0.04,
+                            vertical: Get.height * 0.01,
+                          ),
                           leading: CircleAvatar(
-                            radius: 24,
+                            radius: Get.width * 0.08,
                             backgroundImage: AssetImage(friend["image"]!),
                           ),
                           title: Text(
@@ -164,12 +143,17 @@ class AddFriendsView extends StatelessWidget {
                             style: GoogleFonts.poppins(
                               fontSize: Get.width * 0.045,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: isDark ? Colors.white : Colors.black,
                             ),
                           ),
                           subtitle: Text(
                             friend["phone"]!,
-                            style: GoogleFonts.poppins(color: Colors.grey),
+                            style: GoogleFonts.poppins(
+                              fontSize: Get.width * 0.035,
+                              color: isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey,
+                            ),
                           ),
                           onTap: () {
                             Get.snackbar("Friend Selected", friend["name"]!);

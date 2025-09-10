@@ -71,7 +71,9 @@ class _AddContactViewState extends State<AddContactView> {
             child: Text(
               "Save",
               style: GoogleFonts.poppins(
-                color: isDark ? AppColors.darkPrimary : AppColors.lightPrimary,
+                color: isDark
+                    ? AppColors.saveButtonColor
+                    : AppColors.lightPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -138,16 +140,12 @@ class _AddContactViewState extends State<AddContactView> {
                     width: double.infinity,
                     child: Container(
                       decoration: BoxDecoration(
-                        gradient: isDark
-                            ? AppColors.darkGradient
-                            : AppColors.lightGradient,
+                        gradient: AppColors.addButtonGradient,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark
-                              ? Colors.purple
-                              : Colors.transparent,
+                          backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
                           padding: const EdgeInsets.symmetric(
                             vertical: 16,

@@ -9,6 +9,8 @@ class AppColors {
   static const Color lightHint = Color(0xFF9E9E9E);
   static const Color lightDivider = Color(0xFFDDDDDD);
   static const Color lightUnselected = Colors.grey;
+  static const Color whiteColor = Colors.white;
+  static const Color blackColor = Colors.black;
 
   // Search box bg for light mode
   static const Color lightSearchBg = Color(0xFFF5F5F5);
@@ -24,7 +26,8 @@ class AppColors {
   );
 
   // ---------------- DARK THEME ----------------
-  static const Color darkBackground = Color(0xFF0F0D19); // deep dark
+  static const Color darkBackground = Color(0xFF0E0B16); // adjust if needed
+  static const Color glowPurple = Color(0xFF7C3A82); // purple glow// deep dark
   static const Color darkSecondaryBackground = Color(
     0xFF1A0B2E,
   ); // bottom gradient
@@ -40,10 +43,22 @@ class AppColors {
 
   // Add button background & subtle overlay
   static const Color darkAddButtonBg = Color(0x0DFFFFFF); // white 5%
+  static const Gradient addButtonGradient = LinearGradient(
+    colors: [
+      Color(0xFFC37DB5), // light purple-pink
+      Color(0xFF7C3A82), // deep purple
+    ],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
+
+  static const Color glowPurpleTopLeft = Color(0xFF7C3A82); // deep purple
+  static const Color glowPurpleBottomRight = Color(0xFF2B0A2F); // darker tone
 
   // Borders
   static const Color darkBorder = Color(0x66FFFFFF); // 40% white
   static const Color lightBorder = Color(0x33000000); // 20% black
+  static const Color saveButtonColor = Color(0xFFA6A0A7);
 
   // Radial glow (dark mode)
   static const Color darkRadialGlow = Colors.purpleAccent;
@@ -54,4 +69,33 @@ class AppColors {
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
   );
+
+  // ---------------- NEW ADDITIONS ----------------
+
+  // Cards
+  static const Color lightCard = Colors.white;
+  static const Color darkCard = Color(0xFF1E1C2A);
+
+  // Shadows
+  static const Color lightShadow = Color(0x33000000); // subtle black shadow
+  static const Color darkShadow = Color(0x66000000); // stronger shadow
+
+  // Glow gradients
+  static const Gradient lightGlowGradient = RadialGradient(
+    colors: [
+      Color(0xFF8E2DE2), // violet
+      Colors.transparent,
+    ],
+    radius: 0.6,
+  );
+
+  static const Gradient darkGlowGradient = RadialGradient(
+    colors: [darkRadialGlow, Colors.transparent],
+    radius: 0.6,
+  );
+  static const Color greyTextLight = Color(
+    0xFF757575,
+  ); // light grey for light mode
+  static const Color greyTextDark = Color(0xFFBDBDBD);
+  static const Color accent = Color(0xFF9C27B0);
 }

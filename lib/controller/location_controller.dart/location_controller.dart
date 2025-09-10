@@ -181,6 +181,12 @@ class LocationController extends GetxController {
     isFetching.value = false;
   }
 
+  var autoCallOnSos = false.obs;
+
+  void toggleAutoCall(bool value) {
+    autoCallOnSos.value = value;
+  }
+
   /// GoogleMap onMapCreated
   void onMapCreated(GoogleMapController controller) {
     if (!mapController.isCompleted) {

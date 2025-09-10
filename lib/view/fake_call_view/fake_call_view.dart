@@ -10,15 +10,17 @@ class FakeCallView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF0B0213) : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF0B0213) : Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.black,
+            color: isDark ? Colors.white : Colors.black,
             size: Get.height * 0.03,
           ),
           onPressed: () => Get.back(),
@@ -28,7 +30,7 @@ class FakeCallView extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: Get.height * 0.022,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: isDark ? Colors.white : Colors.black,
           ),
         ),
       ),
@@ -40,59 +42,50 @@ class FakeCallView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Divider(color: Colors.grey.shade300, thickness: 1),
+            Divider(
+              color: isDark ? Colors.white24 : Colors.grey.shade300,
+              thickness: 1,
+            ),
             SizedBox(height: Get.height * 0.02),
 
-            // Call Delay
+            /// Call Delay
             Text(
               "Set Call Delay",
               style: GoogleFonts.poppins(
                 fontSize: Get.height * 0.02,
                 fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: Get.height * 0.015),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDelayButton("5 Sec"),
-                _buildDelayButton("30 Sec"),
-                _buildDelayButton("1 Min"),
+                _buildDelayButton("5 Sec", isDark),
+                _buildDelayButton("30 Sec", isDark),
+                _buildDelayButton("1 Min", isDark),
               ],
             ),
 
             SizedBox(height: Get.height * 0.03),
 
-            // Caller Selection
+            /// Caller Selection
             Text(
               "Choose Caller",
               style: GoogleFonts.poppins(
                 fontSize: Get.height * 0.02,
                 fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(height: Get.height * 0.015),
-            _buildCallerItem("assets/images/mom.png", "Mom"),
-            _buildCallerItem("assets/images/police.png", "Police"),
-            _buildCallerItem("assets/images/boss.png", "Boss"),
+            _buildCallerItem("assets/images/mom.png", "Mom", isDark),
+            _buildCallerItem("assets/images/police.png", "Police", isDark),
+            _buildCallerItem("assets/images/boss.png", "Boss", isDark),
 
-            SizedBox(height: Get.height * 0.03),
-
-            // Live Call Duration
-            // Obx(() {
-            //   int minutes = controller.callDuration.value ~/ 60;
-            //   int seconds = controller.callDuration.value % 60;
-            //   return Text(
-            //     'Call Duration: $minutes:${seconds.toString().padLeft(2, '0')}',
-            //     style: const TextStyle(
-            //       fontSize: 16,
-            //       fontWeight: FontWeight.bold,
-            //     ),
-            //   );
-            // }),
             const Spacer(),
 
-            // Start Fake Call Button
+            /// Start Fake Call Button
             SizedBox(
               width: double.infinity,
               height: Get.height * 0.07,
@@ -101,17 +94,32 @@ class FakeCallView extends StatelessWidget {
                   controller.startCustomFakeCall();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  padding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
+                  backgroundColor: Colors.transparent, // transparent
+                  shadowColor: Colors.transparent,
                 ),
-                child: Text(
-                  "Start Fake Call",
-                  style: GoogleFonts.poppins(
-                    fontSize: Get.height * 0.022,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: isDark
+                        ? const LinearGradient(
+                            colors: [Color(0xFF9C27B0), Color(0xFFE040FB)],
+                          )
+                        : null,
+                    color: !isDark ? Colors.purple : null,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Start Fake Call",
+                      style: GoogleFonts.poppins(
+                        fontSize: Get.height * 0.022,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -122,7 +130,7 @@ class FakeCallView extends StatelessWidget {
     );
   }
 
-  Widget _buildDelayButton(String text) {
+  Widget _buildDelayButton(String text, bool isDark) {
     final FakeCallController controller = Get.find();
     return GestureDetector(
       onTap: () => controller.setDelay(text),
@@ -132,10 +140,14 @@ class FakeCallView extends StatelessWidget {
           width: Get.width * 0.25,
           height: Get.height * 0.05,
           decoration: BoxDecoration(
-            color: isSelected ? Colors.purple.shade100 : Colors.grey.shade200,
+            color: isSelected
+                ? (isDark ? Colors.white10 : Colors.purple.shade50)
+                : (isDark ? Colors.white12 : Colors.grey.shade200),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isSelected ? Colors.purple : Colors.grey.shade400,
+              color: isSelected
+                  ? Colors.purpleAccent
+                  : (isDark ? Colors.white24 : Colors.grey.shade400),
               width: 1.5,
             ),
           ),
@@ -143,7 +155,9 @@ class FakeCallView extends StatelessWidget {
           child: Text(
             text,
             style: GoogleFonts.poppins(
-              color: isSelected ? Colors.purple : Colors.black,
+              color: isSelected
+                  ? Colors.purpleAccent
+                  : (isDark ? Colors.white70 : Colors.black),
               fontWeight: FontWeight.w600,
               fontSize: Get.height * 0.018,
             ),
@@ -153,7 +167,7 @@ class FakeCallView extends StatelessWidget {
     );
   }
 
-  Widget _buildCallerItem(String imgPath, String name) {
+  Widget _buildCallerItem(String imgPath, String name, bool isDark) {
     final FakeCallController controller = Get.find();
     return GestureDetector(
       onTap: () => controller.setCaller(name),
@@ -173,18 +187,21 @@ class FakeCallView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        name,
+                        "$name\nIncoming Call From $name",
                         style: GoogleFonts.poppins(
-                          fontSize: Get.height * 0.02,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected ? Colors.purple : Colors.black,
+                          fontSize: Get.height * 0.018,
+                          fontWeight: FontWeight.w500,
+                          height: 1.2,
+                          color: isSelected
+                              ? Colors.purpleAccent
+                              : (isDark ? Colors.white : Colors.black),
                         ),
                       ),
                     ),
                     if (isSelected)
                       Icon(
                         Icons.check_circle,
-                        color: Colors.purple,
+                        color: Colors.purpleAccent,
                         size: Get.height * 0.03,
                       ),
                   ],

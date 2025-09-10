@@ -21,87 +21,115 @@ class _SettingsViewState extends State<SettingsView> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: isDark
-          ? AppColors.darkBackground
-          : AppColors.lightBackground,
-      appBar: AppBar(
-        backgroundColor: isDark
-            ? AppColors.darkBackground
-            : AppColors.lightBackground,
-        elevation: 0,
-        title: Text(
-          'Settings',
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: isDark ? AppColors.darkText : AppColors.lightText,
-          ),
+    return Stack(
+      children: [
+        // 🌗 Theme-aware background
+        Container(
+          color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         ),
-        centerTitle: Platform.isAndroid ? false : true,
-        surfaceTintColor: Colors.transparent,
-        leading: Platform.isIOS
-            ? IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: isDark ? AppColors.darkText : AppColors.lightText,
-                ),
-                onPressed: () => Get.back(),
-              )
-            : null,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: Get.width * .035),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Add/Edit Emergency
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                "Add/Edit Emergency",
-                style: GoogleFonts.poppins(
-                  fontSize: Get.width * 0.045,
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? AppColors.darkText : AppColors.lightText,
+
+        // 🌟 Glow only in Dark Theme
+        if (isDark)
+          Positioned(
+            top: -Get.height * 0.1,
+            left: -Get.width * 0.1,
+            child: Container(
+              width: Get.width * 0.7,
+              height: Get.width * 0.7,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [AppColors.glowPurple, Colors.transparent],
+                  radius: 0.7,
                 ),
               ),
-              trailing: Icon(
-                Icons.chevron_right,
-                size: Get.width * .08,
+            ),
+          ),
+
+        // 📝 Main content
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Text(
+              'Setting',
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
                 color: isDark ? AppColors.darkText : AppColors.lightText,
               ),
-              onTap: () {
-                Get.toNamed(AppRoutes.contactList);
-              },
             ),
-
-            Divider(
-              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
-            ),
-
-            // Auto Call on SOS
-            Obx(
-              () => SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  "Auto Call On SOS",
-                  style: GoogleFonts.poppins(
-                    fontSize: Get.width * 0.045,
-                    fontWeight: FontWeight.w500,
+            centerTitle: Platform.isAndroid ? false : true,
+            surfaceTintColor: Colors.transparent,
+            leading: Platform.isIOS
+                ? IconButton(
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: isDark ? AppColors.darkText : AppColors.lightText,
+                    ),
+                    onPressed: () => Get.back(),
+                  )
+                : null,
+          ),
+          body: Padding(
+            padding: EdgeInsets.symmetric(horizontal: Get.width * .035),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 📌 Add/Edit Emergency
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    "Add Edit Emergency",
+                    style: GoogleFonts.poppins(
+                      fontSize: Get.width * 0.045,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? AppColors.darkText : AppColors.lightText,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    size: Get.width * .08,
                     color: isDark ? AppColors.darkText : AppColors.lightText,
                   ),
+                  onTap: () {
+                    Get.toNamed(AppRoutes.contactList);
+                  },
                 ),
-                value: controller.autoCallOnSos.value,
-                onChanged: controller.toggleAutoCall,
-                activeColor: isDark
-                    ? AppColors.darkPrimary
-                    : AppColors.lightPrimary,
-              ),
+
+                Divider(
+                  color: isDark
+                      ? AppColors.darkDivider
+                      : AppColors.lightDivider,
+                ),
+
+                // 📌 Auto Call on SOS
+                Obx(
+                  () => SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      "Auto Call On SOS",
+                      style: GoogleFonts.poppins(
+                        fontSize: Get.width * 0.045,
+                        fontWeight: FontWeight.w500,
+                        color: isDark
+                            ? AppColors.darkText
+                            : AppColors.lightText,
+                      ),
+                    ),
+                    value: controller.autoCallOnSos.value,
+                    onChanged: controller.toggleAutoCall,
+                    activeColor: isDark
+                        ? AppColors.glowPurple
+                        : AppColors.lightPrimary, // ✅ theme-aware switch
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
