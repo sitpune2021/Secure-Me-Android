@@ -27,7 +27,7 @@ class AppPages {
     GetPage(name: AppRoutes.notification, page: () => NotificationView()),
     GetPage(name: AppRoutes.profile, page: () => ProfileView()),
     GetPage(name: AppRoutes.setting, page: () => SettingsView()),
-    GetPage(name: AppRoutes.friends, page: () => const AddFriendsView()),
+    GetPage(name: AppRoutes.friends, page: () => AddFriendsView()),
     GetPage(name: AppRoutes.editProfile, page: () => EditProfileView()),
     GetPage(name: AppRoutes.contactList, page: () => ContactListView()),
     GetPage(name: AppRoutes.addContact, page: () => AddContactView()),

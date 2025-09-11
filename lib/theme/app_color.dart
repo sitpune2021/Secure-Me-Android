@@ -93,9 +93,37 @@ class AppColors {
     colors: [darkRadialGlow, Colors.transparent],
     radius: 0.6,
   );
+
   static const Color greyTextLight = Color(
     0xFF757575,
   ); // light grey for light mode
   static const Color greyTextDark = Color(0xFFBDBDBD);
   static const Color accent = Color(0xFF9C27B0);
+
+  // ---------------- SCREEN-SPECIFIC COLOR HELPERS ----------------
+
+  // Login Screen
+  static Color loginButtonBackground(bool isDark) =>
+      isDark ? glowPurpleTopLeft : lightPrimary;
+
+  static Color loginTextColor(bool isDark) => isDark ? darkText : lightText;
+
+  static Color loginHintTextColor(bool isDark) => isDark ? darkHint : lightHint;
+
+  static Color loginTextFieldBg(bool isDark) =>
+      isDark ? darkSearchBg : lightSearchBg;
+
+  // Register Screen
+  static Color registerAvatarGlow(bool isDark) =>
+      isDark ? darkRadialGlow : Colors.transparent;
+
+  static Gradient registerAvatarGlowGradient(bool isDark) =>
+      isDark ? darkGlowGradient : lightGlowGradient;
+
+  // Snackbar colors
+  static Color snackBarBg(bool isDark) =>
+      isDark ? AppColors.darkAddButtonBg : AppColors.lightAddButtonBg;
+
+  static Color snackBarText(bool isDark) =>
+      isDark ? AppColors.darkText : AppColors.lightText;
 }

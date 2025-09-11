@@ -44,20 +44,25 @@ class AppTheme {
       fillColor: Colors.black.withOpacity(0.05),
       hintStyle: const TextStyle(color: AppColors.lightHint),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.all(Radius.circular(30)),
         borderSide: BorderSide.none,
       ),
     ),
-    snackBarTheme: const SnackBarThemeData(
+    snackBarTheme: SnackBarThemeData(
       backgroundColor: AppColors.lightSecondary,
-      contentTextStyle: TextStyle(color: Colors.white),
+      contentTextStyle: const TextStyle(color: Colors.white),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
   );
 
   // ------------------ Dark Theme ------------------
   static final ThemeData dark = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.darkBackground,
+
+    /// Instead of plain color, we will use gradient at screen level
+    scaffoldBackgroundColor: Colors.transparent,
+
     primaryColor: AppColors.darkPrimary,
     colorScheme: const ColorScheme.dark(
       primary: AppColors.darkPrimary,
@@ -66,7 +71,7 @@ class AppTheme {
       onSurface: AppColors.darkText,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: Colors.transparent, // let gradient show
       elevation: 0,
       iconTheme: IconThemeData(color: AppColors.darkText),
       titleTextStyle: TextStyle(
@@ -81,28 +86,56 @@ class AppTheme {
       bodyMedium: TextStyle(color: AppColors.darkHint),
     ),
     dividerColor: AppColors.darkDivider,
+
+    /// Bottom navigation styled like screenshot
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: Colors.transparent, // gradient container will handle
       selectedItemColor: AppColors.lightPrimary,
       unselectedItemColor: AppColors.darkUnselected,
       showUnselectedLabels: true,
     ),
+
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: AppColors.lightPrimary,
       foregroundColor: Colors.white,
     ),
+
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.white.withOpacity(0.08),
       hintStyle: const TextStyle(color: AppColors.darkHint),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.all(Radius.circular(30)),
         borderSide: BorderSide.none,
       ),
     ),
-    snackBarTheme: const SnackBarThemeData(
+
+    snackBarTheme: SnackBarThemeData(
       backgroundColor: AppColors.darkSecondary,
-      contentTextStyle: TextStyle(color: Colors.white),
+      contentTextStyle: const TextStyle(color: Colors.white),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
   );
+
+  // ------------------ SCREEN-SPECIFIC HELPERS ------------------
+  // Login Screen
+  static Color loginButtonBackground(bool isDark) =>
+      isDark ? AppColors.glowPurpleTopLeft : AppColors.lightPrimary;
+
+  static Color loginTextColor(bool isDark) =>
+      isDark ? AppColors.darkText : AppColors.lightText;
+
+  static Color loginHintTextColor(bool isDark) =>
+      isDark ? AppColors.darkHint : AppColors.lightHint;
+
+  static Color loginTextFieldBg(bool isDark) =>
+      isDark ? AppColors.darkSearchBg : AppColors.lightSearchBg;
+
+  // Register Screen
+  static Color registerAvatarGlow(bool isDark) =>
+      isDark ? AppColors.darkRadialGlow : Colors.transparent;
+
+  static Gradient registerAvatarGlowGradient(bool isDark) =>
+      isDark ? AppColors.darkGlowGradient : AppColors.lightGlowGradient;
 }

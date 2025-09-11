@@ -1,9 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
 
@@ -15,6 +15,7 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
+  final ThemeController themeController = Get.find<ThemeController>();
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
@@ -23,163 +24,180 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Get.back();
-          },
-          icon: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-        ),
-        title: Text(
-          "Create Account",
-          style: GoogleFonts.poppins(
-            color: Colors.black87,
-            fontWeight: FontWeight.w600,
+    return Obx(() {
+      final isDark = themeController.isDarkMode.value;
+      final theme = themeController.theme;
+
+      return Scaffold(
+        backgroundColor: theme.colorScheme.background,
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: Icon(
+              Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back,
+            ),
           ),
+          title: Text(
+            "Create Account",
+            style: GoogleFonts.poppins(
+              color: theme.colorScheme.onBackground,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: theme.colorScheme.background,
+          elevation: 0,
+          iconTheme: IconThemeData(color: theme.colorScheme.onBackground),
         ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(Get.width * 0.05),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: Get.height * 0.02),
 
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: Get.height * 0.02),
-
-              // Profile Avatar with glow
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: Get.width * 0.38,
-                    height: Get.width * 0.38,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          Colors.purple.withOpacity(0.15),
-                          Colors.transparent,
-                        ],
-                        radius: 0.9,
+                // Profile Avatar with glow (Glow only in Dark Mode)
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (isDark)
+                      Container(
+                        width: Get.width * 0.42,
+                        height: Get.width * 0.42,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.accent.withOpacity(0.4),
+                              spreadRadius: 8,
+                              blurRadius: 24,
+                            ),
+                            BoxShadow(
+                              color: AppColors.accent.withOpacity(0.3),
+                              spreadRadius: 16,
+                              blurRadius: 48,
+                            ),
+                          ],
+                        ),
+                      ),
+                    CircleAvatar(
+                      radius: Get.width * 0.18,
+                      backgroundImage: const NetworkImage(
+                        "https://i.pravatar.cc/150?img=47",
                       ),
                     ),
-                  ),
-                  CircleAvatar(
-                    radius: Get.width * 0.18,
-                    backgroundImage: const NetworkImage(
-                      "https://i.pravatar.cc/150?img=47",
-                    ),
-                  ),
-                  Positioned(
-                    top: Get.height * 0.02,
-                    right: Get.width * 0.01,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.purple,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
+                    Positioned(
+                      top: Get.height * 0.02,
+                      right: Get.width * 0.01,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: isDark
+                                ? [
+                                    AppColors.darkRadialGlow,
+                                    AppColors.lightPrimary,
+                                  ]
+                                : [
+                                    AppColors.glowPurple,
+                                    AppColors.darkRadialGlow,
+                                  ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.rectangle,
+                          border: Border.all(
+                            color: isDark
+                                ? AppColors.darkBorder
+                                : AppColors.lightBorder,
+                            width: 1.2,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(
+                          Icons.edit,
+                          color: theme.colorScheme.onBackground,
+                          size: 18,
+                        ),
                       ),
-                      padding: const EdgeInsets.all(8),
-                      child: const Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: 18,
-                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              SizedBox(height: Get.height * 0.05),
+                SizedBox(height: Get.height * 0.05),
 
-              // Name Field
-              _buildProfileField("Name", _nameController, "Abc", (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return "Name is required";
-                }
-                return null;
-              }),
-              SizedBox(height: Get.height * 0.03),
-
-              // Phone Field
-              _buildProfileField(
-                "Phone",
-                _phoneController,
-                "1111111111",
-                (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Phone number is required";
-                  }
-                  if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
-                    return "Enter a valid 10-digit phone number";
-                  }
+                // Name Field
+                _buildProfileField("Name", _nameController, "Abc", isDark, (
+                  value,
+                ) {
+                  if (value == null || value.trim().isEmpty)
+                    return "Name is required";
                   return null;
-                },
-                keyboardType: TextInputType.phone,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(10),
-                ],
-              ),
-              SizedBox(height: Get.height * 0.03),
+                }),
+                SizedBox(height: Get.height * 0.03),
 
-              // Email Field
-              _buildProfileField(
-                "Email",
-                _emailController,
-                "abc@email.com",
-                (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Email is required";
-                  }
-                  if (!RegExp(
-                    r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$',
-                  ).hasMatch(value)) {
-                    return "Enter a valid email";
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: Get.height * 0.06),
+                // Phone Field
+                _buildProfileField(
+                  "Phone",
+                  _phoneController,
+                  "1111111111",
+                  isDark,
+                  (value) {
+                    if (value == null || value.trim().isEmpty)
+                      return "Phone number is required";
+                    if (!RegExp(r'^[0-9]{10}$').hasMatch(value))
+                      return "Enter a valid 10-digit phone number";
+                    return null;
+                  },
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                ),
+                SizedBox(height: Get.height * 0.03),
 
-              // rigister Button
-              SizedBox(
-                width: double.infinity,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF7B2FF7), Color(0xFF9C1AFF)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                // Email Field
+                _buildProfileField(
+                  "Email",
+                  _emailController,
+                  "abc@email.com",
+                  isDark,
+                  (value) {
+                    if (value == null || value.trim().isEmpty)
+                      return "Email is required";
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$',
+                    ).hasMatch(value))
+                      return "Enter a valid email";
+                    return null;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: Get.height * 0.06),
+
+                // Register Button
+                SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.lightPrimary,
-                      shadowColor: Colors.transparent,
                       padding: EdgeInsets.symmetric(
                         vertical: Get.height * 0.02,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
+                      backgroundColor: isDark
+                          ? AppColors.glowPurpleTopLeft
+                          : AppColors.lightPrimary,
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         Get.snackbar(
                           "Register",
                           "Account created successfully",
-                          backgroundColor: Colors.green.shade100,
-                          colorText: Colors.black87,
+                          backgroundColor: AppColors.snackBarBg(isDark),
+                          colorText: AppColors.snackBarText(isDark),
                           snackPosition: SnackPosition.BOTTOM,
                         );
                         Get.toNamed(AppRoutes.loginView);
@@ -190,23 +208,26 @@ class _RegisterViewState extends State<RegisterView> {
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: isDark
+                            ? AppColors.darkText
+                            : AppColors.lightText,
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildProfileField(
     String label,
     TextEditingController controller,
     String hint,
+    bool isDark,
     String? Function(String?) validator, {
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
@@ -216,7 +237,12 @@ class _RegisterViewState extends State<RegisterView> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(color: Colors.black54, fontSize: 14),
+          style: GoogleFonts.poppins(
+            color: isDark
+                ? AppColors.darkText.withOpacity(0.7)
+                : AppColors.lightText.withOpacity(0.7),
+            fontSize: 14,
+          ),
         ),
         SizedBox(height: Get.height * 0.008),
         TextFormField(
@@ -228,17 +254,24 @@ class _RegisterViewState extends State<RegisterView> {
             isDense: true,
             border: InputBorder.none,
             hintText: hint,
-            hintStyle: GoogleFonts.poppins(color: Colors.grey),
+            hintStyle: GoogleFonts.poppins(
+              color: isDark
+                  ? AppColors.darkHint.withOpacity(0.7)
+                  : AppColors.lightHint.withOpacity(0.7),
+            ),
             contentPadding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
           ),
           style: GoogleFonts.poppins(
-            color: Colors.black87,
+            color: isDark ? AppColors.darkText : AppColors.lightText,
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
         SizedBox(height: Get.height * 0.01),
-        Container(height: 1, color: Colors.grey.shade300),
+        Container(
+          height: 1,
+          color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+        ),
       ],
     );
   }

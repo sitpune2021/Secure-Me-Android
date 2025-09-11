@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,57 +12,79 @@ import 'package:secure_me/view/profile_view/profile_view.dart';
 class HomeView extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
 
+  HomeView({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Obx(
       () => Scaffold(
-        body: _buildBody(controller.currentIndex.value),
-        bottomNavigationBar: _buildBottomNav(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: controller.sosAction,
-          backgroundColor: Colors.pink,
-          shape: const CircleBorder(),
-          child: Text(
-            "SOS",
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
+        backgroundColor: isDark ? Colors.black : Colors.white,
+        body: _buildBody(controller.currentIndex.value, theme, isDark),
+        bottomNavigationBar: _buildBottomNav(Theme.of(context)),
+        floatingActionButton: buildSosButton(Theme.of(context)),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
 
-  /// Handle different pages (tabs)
-  Widget _buildBody(int index) {
-    if (index == 0) {
-      return _dashboardUI();
-    } else if (index == 1) {
-      return TrackMeView();
-    } else if (index == 2) {
-      return CommunityView();
-    } else if (index == 3) {
-      return ProfileView();
-    } else {
-      return _dashboardUI();
+  Widget _buildBody(int index, ThemeData theme, bool isDark) {
+    switch (index) {
+      case 0:
+        return _dashboardUI(theme, isDark);
+      case 1:
+        return TrackMeView();
+      case 2:
+        return CommunityView();
+      case 3:
+        return ProfileView();
+      default:
+        return _dashboardUI(theme, isDark);
     }
   }
 
-  /// Dashboard UI
-  Widget _dashboardUI() {
+  Widget _dashboardUI(ThemeData theme, bool isDark) {
+    final textColor = isDark ? Colors.white : Colors.black;
+
     return SafeArea(
       child: SingleChildScrollView(
-        physics: ClampingScrollPhysics(), // scroll only if needed
+        physics: const ClampingScrollPhysics(),
         padding: EdgeInsets.all(Get.width * 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Row
+            // 🔹 Profile Row
             Row(
               children: [
-                CircleAvatar(radius: Get.width * 0.07),
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: isDark
+                      ? BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [Colors.purple, Colors.pink],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.pink.withOpacity(0.6),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        )
+                      : const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.transparent,
+                        ),
+                  child: CircleAvatar(
+                    radius: Get.width * 0.07,
+                    backgroundImage: const AssetImage("assets/images/user.jpg"),
+                  ),
+                ),
                 SizedBox(width: Get.width * 0.03),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,89 +94,80 @@ class HomeView extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: Get.width * 0.045,
                         fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
                     Text(
                       "Good Morning !",
                       style: GoogleFonts.poppins(
                         fontSize: Get.width * 0.035,
-                        color: Colors.grey,
+                        color: isDark ? Colors.white70 : Colors.black54,
                       ),
                     ),
                   ],
                 ),
-                Spacer(),
-                CircleAvatar(
-                  backgroundColor: Colors.purple,
-                  radius: Get.width * 0.05,
-                  child: Icon(
-                    Icons.mic,
-                    color: Colors.white,
-                    size: Get.width * 0.06,
-                  ),
-                ),
+                const Spacer(),
+                _gradientCircleIcon(Icons.mic, isDark),
                 SizedBox(width: Get.width * 0.03),
                 GestureDetector(
                   onTap: () => Get.toNamed(AppRoutes.notification),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.purple,
-                    radius: Get.width * 0.05,
-                    child: Icon(
-                      Icons.notifications_outlined,
-                      color: Colors.white,
-                      size: Get.width * 0.06,
-                    ),
+                  child: _gradientCircleIcon(
+                    Icons.notifications_outlined,
+                    isDark,
                   ),
                 ),
               ],
             ),
 
             SizedBox(height: Get.height * 0.03),
-
             Text(
               "Helpline Numbers",
               style: GoogleFonts.poppins(
                 fontSize: Get.width * 0.045,
                 fontWeight: FontWeight.w600,
+                color: textColor,
               ),
             ),
             SizedBox(height: Get.height * 0.02),
 
-            // Grid
+            // 🔹 Grid
             GridView.count(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               crossAxisSpacing: Get.width * 0.04,
               mainAxisSpacing: Get.height * 0.02,
               childAspectRatio: 1.1,
               children: [
-                _menuCard("Safe area", "assets/images/safe_area.png"),
-                _menuCard("Danger Zone", "assets/images/danger.png"),
+                _menuCard("Safe area", "assets/images/safe_area.png", isDark),
+                _menuCard("Danger Zone", "assets/images/danger.png", isDark),
                 GestureDetector(
                   onTap: () => Get.toNamed(AppRoutes.fakecall),
-                  child: _menuCard("Fake Call", "assets/images/fake_call.png"),
+                  child: _menuCard(
+                    "Fake Call",
+                    "assets/images/fake_call.png",
+                    isDark,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {},
                   child: _menuCard(
                     "Share Live Location",
                     "assets/images/share_location.png",
+                    isDark,
                   ),
                 ),
               ],
             ),
 
             SizedBox(height: Get.height * 0.02),
-
             GestureDetector(
-              onTap: () {
-                Get.toNamed(AppRoutes.shareLiveLocation);
-              },
+              onTap: () => Get.toNamed(AppRoutes.shareLiveLocation),
               child: _listTile(
                 "Share My Live Location",
                 "To upgrade your security share your live location to your near and dear one’s",
                 "assets/images/share_location.png",
+                isDark,
               ),
             ),
             SizedBox(height: Get.height * 0.015),
@@ -163,35 +177,65 @@ class HomeView extends StatelessWidget {
                 "Add Close People",
                 "Add close people and friends for SOS",
                 "assets/images/add_friend.png",
+                isDark,
               ),
             ),
-
-            SizedBox(height: 20), // bottom padding
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  Widget _menuCard(String title, String imagePath) {
+  Widget _menuCard(String title, String imagePath, bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        gradient: isDark
+            ? const LinearGradient(
+                colors: [Color(0xFF0D0D0D), Color(0xFF1A001F)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : const LinearGradient(
+                colors: [Colors.white, Colors.white],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+        borderRadius: BorderRadius.circular(18),
+        border: isDark
+            ? Border.all(color: const Color(0xFF9C27B0), width: 1.5)
+            : null,
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+          if (isDark)
+            BoxShadow(
+              color: const Color(0xFF9C27B0).withOpacity(0.6),
+              blurRadius: 20,
+              spreadRadius: 2,
+              offset: const Offset(0, 4),
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(imagePath, height: Get.height * 0.08),
+          Image.asset(
+            imagePath,
+            height: Get.height * 0.08,
+            color: isDark ? Colors.white : null,
+          ),
           SizedBox(height: Get.height * 0.015),
           Text(
             title,
             style: GoogleFonts.poppins(
               fontSize: Get.width * 0.035,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black87,
             ),
           ),
         ],
@@ -199,20 +243,51 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _listTile(String title, String subtitle, String imagePath) {
+  Widget _listTile(
+    String title,
+    String subtitle,
+    String imagePath,
+    bool isDark,
+  ) {
     return Container(
       margin: EdgeInsets.only(top: Get.height * 0.02),
       padding: EdgeInsets.all(Get.width * 0.04),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        gradient: isDark
+            ? const LinearGradient(
+                colors: [Color(0xFF0D0D0D), Color(0xFF1A001F)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : const LinearGradient(colors: [Colors.white, Colors.white]),
+        borderRadius: BorderRadius.circular(18),
+        border: isDark
+            ? Border.all(color: const Color(0xFF9C27B0), width: 1.5)
+            : null,
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+          if (isDark)
+            BoxShadow(
+              color: const Color(0xFF9C27B0).withOpacity(0.6),
+              blurRadius: 20,
+              spreadRadius: 2,
+              offset: const Offset(0, 4),
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
         ],
       ),
       child: Row(
         children: [
-          Image.asset(imagePath, height: Get.height * 0.08),
+          Image.asset(
+            imagePath,
+            height: Get.height * 0.08,
+            color: isDark ? Colors.white : null,
+          ),
+          SizedBox(width: Get.width * 0.03),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,6 +297,7 @@ class HomeView extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: Get.width * 0.04,
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
                 SizedBox(height: Get.height * 0.005),
@@ -229,7 +305,7 @@ class HomeView extends StatelessWidget {
                   subtitle,
                   style: GoogleFonts.poppins(
                     fontSize: Get.width * 0.032,
-                    color: Colors.grey,
+                    color: isDark ? Colors.white70 : Colors.black54,
                   ),
                 ),
               ],
@@ -238,22 +314,53 @@ class HomeView extends StatelessWidget {
           Icon(
             Icons.arrow_forward_ios,
             size: Get.width * 0.045,
-            color: Colors.grey,
+            color: isDark ? Colors.white : Colors.black54,
           ),
         ],
       ),
     );
   }
 
-  /// Bottom navigation bar
-  Widget _buildBottomNav() {
-    final theme = Theme.of(Get.context!);
+  Widget _gradientCircleIcon(IconData icon, bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: isDark
+            ? const LinearGradient(
+                colors: [Colors.purple, Colors.pink],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : const LinearGradient(colors: [Colors.white, Colors.white]),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.pink.withOpacity(0.6)
+                : Colors.black.withOpacity(0.1),
+            blurRadius: isDark ? 15 : 4,
+            spreadRadius: isDark ? 2 : 1,
+            offset: isDark ? const Offset(0, 0) : const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(Get.width * 0.02),
+      child: Icon(
+        icon,
+        color: isDark ? Colors.white : Colors.black87,
+        size: Get.width * 0.055,
+      ),
+    );
+  }
 
-    return Obx(
-      () => BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 6,
-        color: AppColors.lightBackground,
+  Widget _buildBottomNav(ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
+
+    return CustomPaint(
+      painter: CurvedNavBarPainter(
+        isDark ? const Color(0xFF0D0D0D) : Colors.white,
+      ),
+      child: SizedBox(
+        height: 70,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -262,32 +369,30 @@ class HomeView extends StatelessWidget {
               icon: Icon(
                 Icons.home,
                 color: controller.currentIndex.value == 0
-                    ? theme
-                          .colorScheme
-                          .primary // active
-                    : theme.iconTheme.color, // inactive
+                    ? (isDark ? Colors.white : Colors.black)
+                    : (isDark ? Colors.white70 : Colors.black54),
               ),
             ),
             IconButton(
               onPressed: () => controller.changeTab(1),
               icon: Transform.rotate(
-                angle: 45 * 3.1416 / 180,
+                angle: 45 * math.pi / 180,
                 child: Icon(
                   Icons.navigation,
                   color: controller.currentIndex.value == 1
-                      ? theme.colorScheme.primary
-                      : theme.iconTheme.color,
+                      ? (isDark ? Colors.white : Colors.black)
+                      : (isDark ? Colors.white70 : Colors.black54),
                 ),
               ),
             ),
-            const SizedBox(width: 40), // space for FAB
+            const SizedBox(width: 40), // space for SOS button
             IconButton(
               onPressed: () => controller.changeTab(2),
               icon: Icon(
                 Icons.people,
                 color: controller.currentIndex.value == 2
-                    ? theme.colorScheme.primary
-                    : theme.iconTheme.color,
+                    ? (isDark ? Colors.white : Colors.black)
+                    : (isDark ? Colors.white70 : Colors.black54),
               ),
             ),
             IconButton(
@@ -295,8 +400,8 @@ class HomeView extends StatelessWidget {
               icon: Icon(
                 Icons.person,
                 color: controller.currentIndex.value == 3
-                    ? theme.colorScheme.primary
-                    : theme.iconTheme.color,
+                    ? (isDark ? Colors.white : Colors.black)
+                    : (isDark ? Colors.white70 : Colors.black54),
               ),
             ),
           ],
@@ -304,4 +409,93 @@ class HomeView extends StatelessWidget {
       ),
     );
   }
+
+  // Floating SOS Button
+  Widget buildSosButton(ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: () => Get.toNamed(AppRoutes.sosActivate),
+      child: Container(
+        width: Get.width * 0.20,
+        height: Get.height * 0.20,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isDark
+              ? Colors.redAccent
+              : Colors.redAccent, // white fill on light theme
+          gradient: isDark
+              ? const LinearGradient(
+                  colors: [Colors.redAccent, Colors.redAccent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          boxShadow: [
+            if (isDark)
+              BoxShadow(
+                color: AppColors.darkRadialGlow.withOpacity(0),
+                blurRadius: 20,
+                spreadRadius: 2,
+              )
+            else
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            "sos",
+            style: GoogleFonts.poppins(
+              color: isDark ? Colors.white : Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CurvedNavBarPainter extends CustomPainter {
+  final Color color;
+  CurvedNavBarPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    double centerX = size.width / 2;
+    double notchRadius = 45; // adjust to match SOS size
+
+    Path path = Path()..moveTo(0, 0);
+
+    // Left edge
+    path.lineTo(centerX - notchRadius - 25, 0);
+
+    // Big curve around SOS button
+    path.quadraticBezierTo(
+      centerX,
+      -40, // control point (depth of curve)
+      centerX + notchRadius + 25,
+      0,
+    );
+
+    // Right edge
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
