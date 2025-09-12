@@ -410,49 +410,31 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  // Floating SOS Button
+  // SOS Button
   Widget buildSosButton(ThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: () => Get.toNamed(AppRoutes.sosActivate),
       child: Container(
-        width: Get.width * 0.20,
-        height: Get.height * 0.20,
+        width: 65, // Fixed size instead of relative
+        height: 65,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isDark
-              ? Colors.redAccent
-              : Colors.redAccent, // white fill on light theme
-          gradient: isDark
-              ? const LinearGradient(
-                  colors: [Colors.redAccent, Colors.redAccent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
+          color: Colors.redAccent,
           boxShadow: [
-            if (isDark)
-              BoxShadow(
-                color: AppColors.darkRadialGlow.withOpacity(0),
-                blurRadius: 20,
-                spreadRadius: 2,
-              )
-            else
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
+            BoxShadow(
+              color: Colors.redAccent.withOpacity(0.4),
+              blurRadius: 12,
+              spreadRadius: 2,
+            ),
           ],
         ),
         child: Center(
           child: Text(
-            "sos",
+            "SOS",
             style: GoogleFonts.poppins(
-              color: isDark ? Colors.white : Colors.white,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
-              fontSize: 18,
+              fontSize: 16,
             ),
           ),
         ),
@@ -461,6 +443,7 @@ class HomeView extends StatelessWidget {
   }
 }
 
+// Bottom Nav Painter
 class CurvedNavBarPainter extends CustomPainter {
   final Color color;
   CurvedNavBarPainter(this.color);
@@ -472,22 +455,22 @@ class CurvedNavBarPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     double centerX = size.width / 2;
-    double notchRadius = 45; // adjust to match SOS size
+    double notchRadius = 35; // match SOS radius (~65/2)
 
     Path path = Path()..moveTo(0, 0);
 
     // Left edge
-    path.lineTo(centerX - notchRadius - 25, 0);
+    path.lineTo(centerX - notchRadius - 20, 0);
 
-    // Big curve around SOS button
+    // Curve for notch
     path.quadraticBezierTo(
       centerX,
-      -40, // control point (depth of curve)
-      centerX + notchRadius + 25,
+      -notchRadius, // deeper curve
+      centerX + notchRadius + 20,
       0,
     );
 
-    // Right edge
+    // Rest of navbar
     path.lineTo(size.width, 0);
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);

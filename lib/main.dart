@@ -11,8 +11,10 @@ import 'package:secure_me/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init(); // initialize storage
+  final _storage = GetStorage();
   final themeController = Get.put(ThemeController());
-  await Future.delayed(Duration(milliseconds: 50));
+  await Future.delayed(const Duration(milliseconds: 50));
+  _storage.remove('isDarkMode');
   runApp(MyApp());
 }
 
@@ -42,7 +44,10 @@ class MyApp extends StatelessWidget {
           title: 'Secure Me',
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
+
+          // ✅ Let ThemeController decide automatically
           themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+
           initialRoute: AppRoutes.loginView,
           getPages: AppPages.pages,
           builder: (context, child) {

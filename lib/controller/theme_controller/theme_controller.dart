@@ -9,18 +9,45 @@ class ThemeController extends GetxController {
   final _key = 'isDarkMode';
 
   var isDarkMode = false.obs;
+  var userOverride = false.obs; // 👈 track if user manually toggled
 
   ThemeData get theme => isDarkMode.value ? AppTheme.dark : AppTheme.light;
 
   @override
   void onInit() {
     super.onInit();
-    isDarkMode.value = _storage.read(_key) ?? false;
+
+    // ✅ Check saved preference
+    if (_storage.hasData(_key)) {
+      isDarkMode.value = _storage.read(_key);
+      userOverride.value = true;
+    } else {
+      // ✅ Otherwise follow system
+      final brightness =
+          WidgetsBinding.instance.platformDispatcher.platformBrightness;
+      isDarkMode.value = brightness == Brightness.dark;
+    }
+
     Get.changeTheme(theme);
     _setSystemUI(isDarkMode.value);
+
+    // ✅ Listen for system theme changes
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
+        () {
+          if (!userOverride.value) {
+            final brightness =
+                WidgetsBinding.instance.platformDispatcher.platformBrightness;
+            final systemDark = brightness == Brightness.dark;
+
+            isDarkMode.value = systemDark;
+            Get.changeTheme(theme);
+            _setSystemUI(systemDark);
+          }
+        };
   }
 
   void toggleTheme(bool value) {
+    userOverride.value = true; // 👈 mark that user manually changed
     isDarkMode.value = value;
     Get.changeTheme(theme);
     _setSystemUI(value);

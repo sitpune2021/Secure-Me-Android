@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/add_friend_controller/add_friend_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/theme/app_color.dart';
 
 class AddFriendsView extends StatelessWidget {
   const AddFriendsView({super.key});
@@ -70,43 +71,62 @@ class AddFriendsView extends StatelessWidget {
             padding: EdgeInsets.all(Get.width * 0.05),
             child: Column(
               children: [
-                // 🔹 Search Bar
+                // 🔹 Search Box (theme-aware)
+                // 🔹 Search Box (theme-aware)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E1C2A) : Colors.white,
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(25),
                     border: Border.all(
                       color: isDark
-                          ? Colors.purpleAccent
-                          : Colors.grey.shade500,
+                          ? AppColors.darkDivider
+                          : AppColors.lightDivider,
                       width: 1,
                     ),
                   ),
                   child: TextField(
-                    onChanged: (value) => controller.searchFriends(value),
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black87,
+                    onChanged: (value) =>
+                        controller.searchFriends(value), // ✅ call controller
+                    style: GoogleFonts.poppins(
+                      color: isDark ? AppColors.darkText : AppColors.lightText,
                     ),
                     decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Search",
-                      hintStyle: TextStyle(
+                      filled: true,
+                      fillColor: isDark
+                          ? AppColors.darkSearchBg
+                          : AppColors.lightSearchBg,
+                      hintText: "Search by name or number",
+                      hintStyle: GoogleFonts.poppins(
                         color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade600,
+                            ? AppColors.darkHint
+                            : AppColors.lightHint,
                       ),
-                      icon: Icon(
+                      prefixIcon: Icon(
                         Icons.search,
                         color: isDark
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade600,
+                            ? AppColors.darkHint
+                            : AppColors.lightHint,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15,
+                        horizontal: 0,
                       ),
                     ),
                   ),
                 ),
+
                 SizedBox(height: Get.height * 0.02),
 
+                Divider(
+                  color: isDark
+                      ? AppColors.darkDivider
+                      : AppColors.lightDivider,
+                  thickness: 1,
+                ),
+                SizedBox(height: Get.height * 0.02),
                 // 🔹 Friends List
                 Expanded(
                   child: Obx(() {
