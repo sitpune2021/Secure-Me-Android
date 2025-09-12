@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:secure_me/controller/permission_controller/permission_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/routes/app_routes.dart';
 import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/theme/app_theme.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init(); // initialize storage
-  final _storage = GetStorage();
-  final themeController = Get.put(ThemeController());
-  await Future.delayed(const Duration(milliseconds: 50));
-  _storage.remove('isDarkMode');
+  await GetStorage.init();
+
+  // Initialize controllers
+  Get.put(ThemeController());
+  final permissionController = Get.put(PermissionController());
+  await GetStorage.init();
+  final storage = GetStorage();
   runApp(MyApp());
+
+  // Use a small delay to ensure UI is ready
+  Future.delayed(Duration.zero, () async {
+    bool isFirstLaunch = storage.read('permissionsRequested') ?? false;
+
+    if (!isFirstLaunch) {
+      await permissionController.requestAllPermissions();
+      storage.write('permissionsRequested', true); // mark as requested
+    }
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -44,10 +57,7 @@ class MyApp extends StatelessWidget {
           title: 'Secure Me',
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-
-          // ✅ Let ThemeController decide automatically
           themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-
           initialRoute: AppRoutes.loginView,
           getPages: AppPages.pages,
           builder: (context, child) {

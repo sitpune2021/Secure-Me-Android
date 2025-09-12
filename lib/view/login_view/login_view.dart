@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/login_controller/login_controller.dart';
+import 'package:secure_me/controller/permission_controller/permission_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/theme/app_theme.dart';
@@ -19,6 +20,17 @@ class _LoginViewState extends State<LoginView> {
   final LoginController controller = Get.put(LoginController());
   final ThemeController themeController = Get.find<ThemeController>();
   final TextEditingController mobileController = TextEditingController();
+  final PermissionController permissionController = Get.put(
+    PermissionController(),
+  );
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      permissionController.requestAllPermissions();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
