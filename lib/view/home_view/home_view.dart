@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/home_controller/home_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/view/community_view/community_view.dart';
 import 'package:secure_me/view/track_me_view/track_me_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
@@ -19,12 +18,15 @@ class HomeView extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    double height = Get.height;
+    double width = Get.width;
+
     return Obx(
       () => Scaffold(
         backgroundColor: isDark ? Colors.black : Colors.white,
         body: _buildBody(controller.currentIndex.value, theme, isDark),
-        bottomNavigationBar: _buildBottomNav(Theme.of(context)),
-        floatingActionButton: buildSosButton(Theme.of(context)),
+        bottomNavigationBar: _buildBottomNav(isDark, height, width),
+        floatingActionButton: buildSosButton(isDark, height, width),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
@@ -48,10 +50,13 @@ class HomeView extends StatelessWidget {
   Widget _dashboardUI(ThemeData theme, bool isDark) {
     final textColor = isDark ? Colors.white : Colors.black;
 
+    double height = Get.height;
+    double width = Get.width;
+
     return SafeArea(
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
-        padding: EdgeInsets.all(Get.width * 0.05),
+        padding: EdgeInsets.all(width * 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -59,7 +64,7 @@ class HomeView extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(3),
+                  padding: EdgeInsets.all(width * 0.01),
                   decoration: isDark
                       ? BoxDecoration(
                           shape: BoxShape.circle,
@@ -81,18 +86,18 @@ class HomeView extends StatelessWidget {
                           color: Colors.transparent,
                         ),
                   child: CircleAvatar(
-                    radius: Get.width * 0.07,
+                    radius: width * 0.07,
                     backgroundImage: const AssetImage("assets/images/user.jpg"),
                   ),
                 ),
-                SizedBox(width: Get.width * 0.03),
+                SizedBox(width: width * 0.03),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "Hello ! Rupa,",
                       style: GoogleFonts.poppins(
-                        fontSize: Get.width * 0.045,
+                        fontSize: width * 0.045,
                         fontWeight: FontWeight.bold,
                         color: textColor,
                       ),
@@ -100,53 +105,65 @@ class HomeView extends StatelessWidget {
                     Text(
                       "Good Morning !",
                       style: GoogleFonts.poppins(
-                        fontSize: Get.width * 0.035,
+                        fontSize: width * 0.035,
                         color: isDark ? Colors.white70 : Colors.black54,
                       ),
                     ),
                   ],
                 ),
                 const Spacer(),
-                _gradientCircleIcon(Icons.mic, isDark),
-                SizedBox(width: Get.width * 0.03),
+                _gradientCircleIcon(Icons.mic, isDark, width),
+                SizedBox(width: width * 0.03),
                 GestureDetector(
                   onTap: () => Get.toNamed(AppRoutes.notification),
                   child: _gradientCircleIcon(
                     Icons.notifications_outlined,
                     isDark,
+                    width,
                   ),
                 ),
               ],
             ),
-
-            SizedBox(height: Get.height * 0.03),
+            SizedBox(height: height * 0.03),
             Text(
               "Helpline Numbers",
               style: GoogleFonts.poppins(
-                fontSize: Get.width * 0.045,
+                fontSize: width * 0.045,
                 fontWeight: FontWeight.w600,
                 color: textColor,
               ),
             ),
-            SizedBox(height: Get.height * 0.02),
-
-            // 🔹 Grid
+            SizedBox(height: height * 0.02),
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
-              crossAxisSpacing: Get.width * 0.04,
-              mainAxisSpacing: Get.height * 0.02,
+              crossAxisSpacing: width * 0.04,
+              mainAxisSpacing: height * 0.02,
               childAspectRatio: 1.1,
               children: [
-                _menuCard("Safe area", "assets/images/safe_area.png", isDark),
-                _menuCard("Danger Zone", "assets/images/danger.png", isDark),
+                _menuCard(
+                  "Safe area",
+                  "assets/images/safe_area.png",
+                  isDark,
+                  height,
+                  width,
+                ),
+                _menuCard(
+                  "Danger Zone",
+                  "assets/images/danger.png",
+                  isDark,
+                  height,
+                  width,
+                ),
                 GestureDetector(
                   onTap: () => Get.toNamed(AppRoutes.fakecall),
                   child: _menuCard(
                     "Fake Call",
                     "assets/images/fake_call.png",
                     isDark,
+                    height,
+                    width,
                   ),
                 ),
                 GestureDetector(
@@ -155,12 +172,13 @@ class HomeView extends StatelessWidget {
                     "Share Live Location",
                     "assets/images/share_location.png",
                     isDark,
+                    height,
+                    width,
                   ),
                 ),
               ],
             ),
-
-            SizedBox(height: Get.height * 0.02),
+            SizedBox(height: height * 0.02),
             GestureDetector(
               onTap: () => Get.toNamed(AppRoutes.shareLiveLocation),
               child: _listTile(
@@ -168,9 +186,11 @@ class HomeView extends StatelessWidget {
                 "To upgrade your security share your live location to your near and dear one’s",
                 "assets/images/share_location.png",
                 isDark,
+                height,
+                width,
               ),
             ),
-            SizedBox(height: Get.height * 0.015),
+            SizedBox(height: height * 0.015),
             GestureDetector(
               onTap: () => Get.toNamed(AppRoutes.friends),
               child: _listTile(
@@ -178,16 +198,24 @@ class HomeView extends StatelessWidget {
                 "Add close people and friends for SOS",
                 "assets/images/add_friend.png",
                 isDark,
+                height,
+                width,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: height * 0.02),
           ],
         ),
       ),
     );
   }
 
-  Widget _menuCard(String title, String imagePath, bool isDark) {
+  Widget _menuCard(
+    String title,
+    String imagePath,
+    bool isDark,
+    double height,
+    double width,
+  ) {
     return Container(
       decoration: BoxDecoration(
         gradient: isDark
@@ -196,11 +224,7 @@ class HomeView extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
-            : const LinearGradient(
-                colors: [Colors.white, Colors.white],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+            : const LinearGradient(colors: [Colors.white, Colors.white]),
         borderRadius: BorderRadius.circular(18),
         border: isDark
             ? Border.all(color: const Color(0xFF9C27B0), width: 1.5)
@@ -226,14 +250,14 @@ class HomeView extends StatelessWidget {
         children: [
           Image.asset(
             imagePath,
-            height: Get.height * 0.08,
+            height: height * 0.08,
             color: isDark ? Colors.white : null,
           ),
-          SizedBox(height: Get.height * 0.015),
+          SizedBox(height: height * 0.015),
           Text(
             title,
             style: GoogleFonts.poppins(
-              fontSize: Get.width * 0.035,
+              fontSize: width * 0.035,
               fontWeight: FontWeight.w600,
               color: isDark ? Colors.white : Colors.black87,
             ),
@@ -248,16 +272,16 @@ class HomeView extends StatelessWidget {
     String subtitle,
     String imagePath,
     bool isDark,
+    double height,
+    double width,
   ) {
     return Container(
-      margin: EdgeInsets.only(top: Get.height * 0.02),
-      padding: EdgeInsets.all(Get.width * 0.04),
+      margin: EdgeInsets.only(top: height * 0.02),
+      padding: EdgeInsets.all(width * 0.04),
       decoration: BoxDecoration(
         gradient: isDark
             ? const LinearGradient(
                 colors: [Color(0xFF0D0D0D), Color(0xFF1A001F)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
               )
             : const LinearGradient(colors: [Colors.white, Colors.white]),
         borderRadius: BorderRadius.circular(18),
@@ -284,10 +308,10 @@ class HomeView extends StatelessWidget {
         children: [
           Image.asset(
             imagePath,
-            height: Get.height * 0.08,
+            height: height * 0.08,
             color: isDark ? Colors.white : null,
           ),
-          SizedBox(width: Get.width * 0.03),
+          SizedBox(width: width * 0.03),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,16 +319,16 @@ class HomeView extends StatelessWidget {
                 Text(
                   title,
                   style: GoogleFonts.poppins(
-                    fontSize: Get.width * 0.04,
+                    fontSize: width * 0.04,
                     fontWeight: FontWeight.bold,
                     color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
-                SizedBox(height: Get.height * 0.005),
+                SizedBox(height: height * 0.005),
                 Text(
                   subtitle,
                   style: GoogleFonts.poppins(
-                    fontSize: Get.width * 0.032,
+                    fontSize: width * 0.032,
                     color: isDark ? Colors.white70 : Colors.black54,
                   ),
                 ),
@@ -313,7 +337,7 @@ class HomeView extends StatelessWidget {
           ),
           Icon(
             Icons.arrow_forward_ios,
-            size: Get.width * 0.045,
+            size: width * 0.045,
             color: isDark ? Colors.white : Colors.black54,
           ),
         ],
@@ -321,16 +345,12 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _gradientCircleIcon(IconData icon, bool isDark) {
+  Widget _gradientCircleIcon(IconData icon, bool isDark, double width) {
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: isDark
-            ? const LinearGradient(
-                colors: [Colors.purple, Colors.pink],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
+            ? const LinearGradient(colors: [Colors.purple, Colors.pink])
             : const LinearGradient(colors: [Colors.white, Colors.white]),
         boxShadow: [
           BoxShadow(
@@ -343,99 +363,113 @@ class HomeView extends StatelessWidget {
           ),
         ],
       ),
-      padding: EdgeInsets.all(Get.width * 0.02),
+      padding: EdgeInsets.all(width * 0.02),
       child: Icon(
         icon,
         color: isDark ? Colors.white : Colors.black87,
-        size: Get.width * 0.055,
-      ),
-    );
-  }
-
-  Widget _buildBottomNav(ThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
-
-    return CustomPaint(
-      painter: CurvedNavBarPainter(
-        isDark ? const Color(0xFF0D0D0D) : Colors.white,
-      ),
-      child: SizedBox(
-        height: 70,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              onPressed: () => controller.changeTab(0),
-              icon: Icon(
-                Icons.home,
-                color: controller.currentIndex.value == 0
-                    ? (isDark ? Colors.white : Colors.black)
-                    : (isDark ? Colors.white70 : Colors.black54),
-              ),
-            ),
-            IconButton(
-              onPressed: () => controller.changeTab(1),
-              icon: Transform.rotate(
-                angle: 45 * math.pi / 180,
-                child: Icon(
-                  Icons.navigation,
-                  color: controller.currentIndex.value == 1
-                      ? (isDark ? Colors.white : Colors.black)
-                      : (isDark ? Colors.white70 : Colors.black54),
-                ),
-              ),
-            ),
-            const SizedBox(width: 40), // space for SOS button
-            IconButton(
-              onPressed: () => controller.changeTab(2),
-              icon: Icon(
-                Icons.people,
-                color: controller.currentIndex.value == 2
-                    ? (isDark ? Colors.white : Colors.black)
-                    : (isDark ? Colors.white70 : Colors.black54),
-              ),
-            ),
-            IconButton(
-              onPressed: () => controller.changeTab(3),
-              icon: Icon(
-                Icons.person,
-                color: controller.currentIndex.value == 3
-                    ? (isDark ? Colors.white : Colors.black)
-                    : (isDark ? Colors.white70 : Colors.black54),
-              ),
-            ),
-          ],
-        ),
+        size: width * 0.055,
       ),
     );
   }
 
   // SOS Button
-  Widget buildSosButton(ThemeData theme) {
-    return GestureDetector(
-      onTap: () => Get.toNamed(AppRoutes.sosActivate),
-      child: Container(
-        width: 65, // Fixed size instead of relative
-        height: 65,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.redAccent,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.redAccent.withOpacity(0.4),
-              blurRadius: 12,
-              spreadRadius: 2,
+  Widget buildSosButton(bool isDark, double height, double width) {
+    double bottomPadding =
+        MediaQuery.of(Get.context!).viewPadding.bottom + height * 0.01;
+
+    return Positioned(
+      bottom: bottomPadding, // place above home indicator
+      left: (width / 2) - (width * 0.08), // center horizontally
+      child: GestureDetector(
+        onTap: () => Get.toNamed(AppRoutes.sosActivate),
+        child: Container(
+          width: width * 0.16,
+          height: width * 0.16,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.redAccent,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.redAccent.withOpacity(0.4),
+                blurRadius: 12,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              "SOS",
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: width * 0.045,
+              ),
             ),
-          ],
+          ),
         ),
-        child: Center(
-          child: Text(
-            "SOS",
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+      ),
+    );
+  }
+
+  // Bottom Navigation
+  Widget _buildBottomNav(bool isDark, double height, double width) {
+    double bottomPadding =
+        MediaQuery.of(Get.context!).viewPadding.bottom + height * 0.01;
+
+    return CustomPaint(
+      painter: CurvedNavBarPainter(
+        isDark ? const Color(0xFF0D0D0D) : Colors.white,
+        height,
+        width,
+      ),
+      child: SizedBox(
+        height: height * 0.09 + bottomPadding,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: bottomPadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                onPressed: () => controller.changeTab(0),
+                icon: Icon(
+                  Icons.home,
+                  color: controller.currentIndex.value == 0
+                      ? (isDark ? Colors.white : Colors.black)
+                      : (isDark ? Colors.white70 : Colors.black54),
+                ),
+              ),
+              IconButton(
+                onPressed: () => controller.changeTab(1),
+                icon: Transform.rotate(
+                  angle: 45 * math.pi / 180,
+                  child: Icon(
+                    Icons.navigation,
+                    color: controller.currentIndex.value == 1
+                        ? (isDark ? Colors.white : Colors.black)
+                        : (isDark ? Colors.white70 : Colors.black54),
+                  ),
+                ),
+              ),
+              SizedBox(width: width * 0.15), // space for SOS button
+              IconButton(
+                onPressed: () => controller.changeTab(2),
+                icon: Icon(
+                  Icons.people,
+                  color: controller.currentIndex.value == 2
+                      ? (isDark ? Colors.white : Colors.black)
+                      : (isDark ? Colors.white70 : Colors.black54),
+                ),
+              ),
+              IconButton(
+                onPressed: () => controller.changeTab(3),
+                icon: Icon(
+                  Icons.person,
+                  color: controller.currentIndex.value == 3
+                      ? (isDark ? Colors.white : Colors.black)
+                      : (isDark ? Colors.white70 : Colors.black54),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -443,10 +477,12 @@ class HomeView extends StatelessWidget {
   }
 }
 
-// Bottom Nav Painter
+// Custom Painter for Bottom Nav
 class CurvedNavBarPainter extends CustomPainter {
   final Color color;
-  CurvedNavBarPainter(this.color);
+  final double height;
+  final double width;
+  CurvedNavBarPainter(this.color, this.height, this.width);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -455,22 +491,18 @@ class CurvedNavBarPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     double centerX = size.width / 2;
-    double notchRadius = 35; // match SOS radius (~65/2)
+    double notchRadius = width * 0.08; // match SOS radius
 
     Path path = Path()..moveTo(0, 0);
+    path.lineTo(centerX - notchRadius - 10, 0);
 
-    // Left edge
-    path.lineTo(centerX - notchRadius - 20, 0);
-
-    // Curve for notch
     path.quadraticBezierTo(
       centerX,
       -notchRadius, // deeper curve
-      centerX + notchRadius + 20,
+      centerX + notchRadius + 10,
       0,
     );
 
-    // Rest of navbar
     path.lineTo(size.width, 0);
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,9 +24,8 @@ class FakeCallView extends StatelessWidget {
           elevation: 0,
           leading: IconButton(
             icon: Icon(
-              Icons.arrow_back,
+              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
               color: isDark ? Colors.white : Colors.black,
-              size: Get.height * 0.03,
             ),
             onPressed: () => Get.back(),
           ),
@@ -109,56 +110,61 @@ class FakeCallView extends StatelessWidget {
               }),
 
               /// Start Fake Call Button
-              SizedBox(
-                width: double.infinity,
-                height: Get.height * 0.07,
-                child: Obx(() {
-                  bool isDisabled = controller.countdownText.value.isNotEmpty;
-                  return ElevatedButton(
-                    onPressed: isDisabled
-                        ? null
-                        : () async {
-                            controller.startCustomFakeCall();
-                          },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: Platform.isAndroid ? 0 : Get.height * .015,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: Get.height * 0.07,
+                  child: Obx(() {
+                    bool isDisabled = controller.countdownText.value.isNotEmpty;
+                    return ElevatedButton(
+                      onPressed: isDisabled
+                          ? null
+                          : () async {
+                              controller.startCustomFakeCall();
+                            },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        disabledBackgroundColor: Colors.grey,
                       ),
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      disabledBackgroundColor: Colors.grey,
-                    ),
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        gradient: isDisabled
-                            ? null
-                            : (isDark
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF9C27B0),
-                                        Color(0xFFE040FB),
-                                      ],
-                                    )
-                                  : null),
-                        color: isDisabled
-                            ? Colors.grey
-                            : (!isDark ? Colors.purple : null),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Start Fake Call",
-                          style: GoogleFonts.poppins(
-                            fontSize: Get.height * 0.022,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          gradient: isDisabled
+                              ? null
+                              : (isDark
+                                    ? const LinearGradient(
+                                        colors: [
+                                          Color(0xFF9C27B0),
+                                          Color(0xFFE040FB),
+                                        ],
+                                      )
+                                    : null),
+                          color: isDisabled
+                              ? Colors.grey
+                              : (!isDark ? Colors.purple : null),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Start Fake Call",
+                            style: GoogleFonts.poppins(
+                              fontSize: Get.height * 0.022,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ],
           ),

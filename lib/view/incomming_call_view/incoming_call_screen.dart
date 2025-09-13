@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,6 +28,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
   void initState() {
     super.initState();
 
+    // Initialize ringtone
     _ringtone = FlutterRingtonePlayer();
     _ringtone.play(
       android: AndroidSounds.ringtone,
@@ -37,6 +37,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       volume: 1,
     );
 
+    // Vibrate every second
     _vibrationTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
       if (await Vibration.hasVibrator() ?? false) {
         Vibration.vibrate(duration: 500);
@@ -54,12 +55,12 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
-
     double height = Get.height;
     double width = Get.width;
 
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: Obx(() {
           if (controller.isCalling.value) {
             // ======== In-Call Screen ========
@@ -68,6 +69,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
 
             return Stack(
               children: [
+                // Background
                 Container(
                   width: width,
                   height: height,
@@ -78,6 +80,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                     ),
                   ),
                 ),
+                // Dark overlay
                 Container(
                   width: width,
                   height: height,
@@ -140,6 +143,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
             // ======== Incoming Call Screen ========
             return Stack(
               children: [
+                // Background
                 Container(
                   width: width,
                   height: height,
@@ -150,6 +154,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                     ),
                   ),
                 ),
+                // Dark overlay
                 Container(
                   width: width,
                   height: height,
@@ -182,73 +187,77 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                       ),
                     ),
                     const Spacer(),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: width * 0.1,
-                        vertical: height * 0.03,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Decline
-                          GestureDetector(
-                            onTap: () {
-                              _ringtone.stop();
-                              _vibrationTimer?.cancel();
-                              Get.back();
-                            },
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  radius: height * 0.055,
-                                  backgroundColor: Colors.red,
-                                  child: Icon(
-                                    Icons.call_end,
-                                    color: Colors.white,
-                                    size: height * 0.04,
+                    // Accept / Decline buttons
+                    SafeArea(
+                      bottom: true,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.1,
+                          vertical: height * 0.03,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Decline
+                            GestureDetector(
+                              onTap: () {
+                                _ringtone.stop();
+                                _vibrationTimer?.cancel();
+                                Get.back();
+                              },
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: height * 0.055,
+                                    backgroundColor: Colors.red,
+                                    child: Icon(
+                                      Icons.call_end,
+                                      color: Colors.white,
+                                      size: height * 0.04,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: height * 0.015),
-                                Text(
-                                  "Decline",
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: height * 0.022,
+                                  SizedBox(height: height * 0.015),
+                                  Text(
+                                    "Decline",
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: height * 0.022,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          // Accept
-                          GestureDetector(
-                            onTap: () {
-                              _ringtone.stop();
-                              _vibrationTimer?.cancel();
-                              controller.startCallTimer();
-                            },
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  radius: height * 0.055,
-                                  backgroundColor: Colors.green,
-                                  child: Icon(
-                                    Icons.call,
-                                    color: Colors.white,
-                                    size: height * 0.04,
+                            // Accept
+                            GestureDetector(
+                              onTap: () {
+                                _ringtone.stop();
+                                _vibrationTimer?.cancel();
+                                controller.startCallTimer();
+                              },
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: height * 0.055,
+                                    backgroundColor: Colors.green,
+                                    child: Icon(
+                                      Icons.call,
+                                      color: Colors.white,
+                                      size: height * 0.04,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: height * 0.015),
-                                Text(
-                                  "Accept",
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: height * 0.022,
+                                  SizedBox(height: height * 0.015),
+                                  Text(
+                                    "Accept",
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: height * 0.022,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

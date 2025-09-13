@@ -35,7 +35,7 @@ class AddFriendsView extends StatelessWidget {
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
             icon: Icon(
-              Icons.arrow_back,
+              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
               color: isDark ? Colors.white : Colors.black,
             ),
             onPressed: () => Get.back(),
