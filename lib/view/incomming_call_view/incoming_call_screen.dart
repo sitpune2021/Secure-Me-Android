@@ -23,7 +23,6 @@ class IncomingCallScreen extends StatefulWidget {
 
 class _IncomingCallScreenState extends State<IncomingCallScreen> {
   late final FlutterRingtonePlayer _ringtone;
-
   Timer? _vibrationTimer;
 
   @override
@@ -31,7 +30,6 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
     super.initState();
 
     _ringtone = FlutterRingtonePlayer();
-    // Play ringtone continuously
     _ringtone.play(
       android: AndroidSounds.ringtone,
       ios: IosSounds.glass,
@@ -39,7 +37,6 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       volume: 1,
     );
 
-    // Vibrate periodically
     _vibrationTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
       if (await Vibration.hasVibrator() ?? false) {
         Vibration.vibrate(duration: 500);
@@ -58,6 +55,9 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
   Widget build(BuildContext context) {
     final controller = widget.controller;
 
+    double height = Get.height;
+    double width = Get.width;
+
     return Scaffold(
       body: SafeArea(
         child: Obx(() {
@@ -69,6 +69,8 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
             return Stack(
               children: [
                 Container(
+                  width: width,
+                  height: height,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: NetworkImage("https://i.pravatar.cc/600?img=4"),
@@ -76,52 +78,56 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                     ),
                   ),
                 ),
-                Container(color: Colors.black.withOpacity(0.6)),
+                Container(
+                  width: width,
+                  height: height,
+                  color: Colors.black.withOpacity(0.6),
+                ),
                 Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CircleAvatar(
-                        radius: 75,
+                        radius: height * 0.12,
                         backgroundImage: const NetworkImage(
                           "https://i.pravatar.cc/300?img=4",
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: height * 0.03),
                       Text(
                         widget.callerName,
                         style: GoogleFonts.poppins(
-                          fontSize: 32,
+                          fontSize: height * 0.035,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: height * 0.01),
                       Text(
                         "Connected",
                         style: GoogleFonts.poppins(
-                          fontSize: 20,
+                          fontSize: height * 0.025,
                           color: Colors.greenAccent,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: height * 0.01),
                       Text(
                         "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
                         style: GoogleFonts.poppins(
-                          fontSize: 22,
+                          fontSize: height * 0.03,
                           color: Colors.white70,
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      SizedBox(height: height * 0.05),
                       GestureDetector(
                         onTap: () => controller.stopCallTimer(),
                         child: CircleAvatar(
-                          radius: 40,
+                          radius: height * 0.055,
                           backgroundColor: Colors.red,
-                          child: const Icon(
+                          child: Icon(
                             Icons.call_end,
                             color: Colors.white,
-                            size: 32,
+                            size: height * 0.04,
                           ),
                         ),
                       ),
@@ -135,6 +141,8 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
             return Stack(
               children: [
                 Container(
+                  width: width,
+                  height: height,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: NetworkImage("https://i.pravatar.cc/600?img=4"),
@@ -142,38 +150,42 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                     ),
                   ),
                 ),
-                Container(color: Colors.black.withOpacity(0.6)),
+                Container(
+                  width: width,
+                  height: height,
+                  color: Colors.black.withOpacity(0.6),
+                ),
                 Column(
                   children: [
                     const Spacer(),
                     CircleAvatar(
-                      radius: 75,
+                      radius: height * 0.12,
                       backgroundImage: const NetworkImage(
                         "https://i.pravatar.cc/300?img=4",
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: height * 0.03),
                     Text(
                       widget.callerName,
                       style: GoogleFonts.poppins(
-                        fontSize: 32,
+                        fontSize: height * 0.035,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: height * 0.015),
                     Text(
                       "Incoming Call",
                       style: GoogleFonts.poppins(
-                        fontSize: 20,
+                        fontSize: height * 0.025,
                         color: Colors.white70,
                       ),
                     ),
                     const Spacer(),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 30,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.1,
+                        vertical: height * 0.03,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -188,20 +200,20 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                             child: Column(
                               children: [
                                 CircleAvatar(
-                                  radius: 40,
+                                  radius: height * 0.055,
                                   backgroundColor: Colors.red,
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.call_end,
                                     color: Colors.white,
-                                    size: 32,
+                                    size: height * 0.04,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: height * 0.015),
                                 Text(
                                   "Decline",
                                   style: GoogleFonts.poppins(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: height * 0.022,
                                   ),
                                 ),
                               ],
@@ -217,20 +229,20 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                             child: Column(
                               children: [
                                 CircleAvatar(
-                                  radius: 40,
+                                  radius: height * 0.055,
                                   backgroundColor: Colors.green,
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.call,
                                     color: Colors.white,
-                                    size: 32,
+                                    size: height * 0.04,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: height * 0.015),
                                 Text(
                                   "Accept",
                                   style: GoogleFonts.poppins(
                                     color: Colors.white,
-                                    fontSize: 14,
+                                    fontSize: height * 0.022,
                                   ),
                                 ),
                               ],
