@@ -8,62 +8,75 @@ class ThemeController extends GetxController {
   final _storage = GetStorage();
   final _key = 'isDarkMode';
 
-  var isDarkMode = false.obs;
-  var userOverride = false.obs; // 👈 track if user manually toggled
-
-  ThemeData get theme => isDarkMode.value ? AppTheme.dark : AppTheme.light;
+  var isDarkMode = false.obs; // current theme
+  var userOverride = false.obs; // true if user toggled manually
 
   @override
   void onInit() {
     super.onInit();
 
-    // ✅ Check saved preference
     if (_storage.hasData(_key)) {
+      // User manually set theme previously
       isDarkMode.value = _storage.read(_key);
       userOverride.value = true;
+      _applyTheme(isDarkMode.value);
     } else {
-      // ✅ Otherwise follow system
-      final brightness =
-          WidgetsBinding.instance.platformDispatcher.platformBrightness;
-      isDarkMode.value = brightness == Brightness.dark;
+      // Follow system theme by default
+      userOverride.value = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final brightness =
+            WidgetsBinding.instance.platformDispatcher.platformBrightness;
+        isDarkMode.value = brightness == Brightness.dark;
+        _applyTheme(isDarkMode.value);
+      });
     }
 
-    Get.changeTheme(theme);
-    _setSystemUI(isDarkMode.value);
-
-    // ✅ Listen for system theme changes
+    // Listen for system theme changes
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
         () {
           if (!userOverride.value) {
             final brightness =
                 WidgetsBinding.instance.platformDispatcher.platformBrightness;
-            final systemDark = brightness == Brightness.dark;
-
-            isDarkMode.value = systemDark;
-            Get.changeTheme(theme);
-            _setSystemUI(systemDark);
+            isDarkMode.value = brightness == Brightness.dark;
+            _applyTheme(isDarkMode.value);
           }
         };
   }
 
+  ThemeData get theme => isDarkMode.value ? AppTheme.dark : AppTheme.light;
+
   void toggleTheme(bool value) {
-    userOverride.value = true; // 👈 mark that user manually changed
+    userOverride.value = true;
     isDarkMode.value = value;
-    Get.changeTheme(theme);
-    _setSystemUI(value);
     _storage.write(_key, value);
+    _applyTheme(value);
   }
 
-  void _setSystemUI(bool isDark) {
+  void resetToSystem() {
+    userOverride.value = false;
+    _storage.remove(_key);
+    final brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    isDarkMode.value = brightness == Brightness.dark;
+    _applyTheme(isDarkMode.value);
+  }
+
+  void _applyTheme(bool dark) {
+    Get.changeThemeMode(
+      userOverride.value
+          ? (dark ? ThemeMode.dark : ThemeMode.light)
+          : ThemeMode.system,
+    );
+
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-        systemNavigationBarColor: isDark
+        statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: dark ? Brightness.dark : Brightness.light,
+        systemNavigationBarColor: dark
             ? AppTheme.dark.scaffoldBackgroundColor
             : AppTheme.light.scaffoldBackgroundColor,
-        systemNavigationBarIconBrightness: isDark
+        systemNavigationBarIconBrightness: dark
             ? Brightness.light
             : Brightness.dark,
       ),
