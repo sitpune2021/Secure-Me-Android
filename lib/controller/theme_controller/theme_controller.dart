@@ -23,9 +23,12 @@ class ThemeController extends GetxController {
     } else {
       // Follow system theme by default
       userOverride.value = false;
+
+      // Ensure proper system theme detection on iOS
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final brightness =
-            WidgetsBinding.instance.platformDispatcher.platformBrightness;
+        final brightness = MediaQueryData.fromWindow(
+          WidgetsBinding.instance.window,
+        ).platformBrightness;
         isDarkMode.value = brightness == Brightness.dark;
         _applyTheme(isDarkMode.value);
       });
@@ -35,8 +38,9 @@ class ThemeController extends GetxController {
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
         () {
           if (!userOverride.value) {
-            final brightness =
-                WidgetsBinding.instance.platformDispatcher.platformBrightness;
+            final brightness = MediaQueryData.fromWindow(
+              WidgetsBinding.instance.window,
+            ).platformBrightness;
             isDarkMode.value = brightness == Brightness.dark;
             _applyTheme(isDarkMode.value);
           }
@@ -55,18 +59,18 @@ class ThemeController extends GetxController {
   void resetToSystem() {
     userOverride.value = false;
     _storage.remove(_key);
-    final brightness =
-        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final brightness = MediaQueryData.fromWindow(
+      WidgetsBinding.instance.window,
+    ).platformBrightness;
     isDarkMode.value = brightness == Brightness.dark;
     _applyTheme(isDarkMode.value);
   }
 
   void _applyTheme(bool dark) {
-    Get.changeThemeMode(
-      userOverride.value
-          ? (dark ? ThemeMode.dark : ThemeMode.light)
-          : ThemeMode.system,
-    );
+    final mode = userOverride.value
+        ? (dark ? ThemeMode.dark : ThemeMode.light)
+        : ThemeMode.system;
+    Get.changeThemeMode(mode);
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
