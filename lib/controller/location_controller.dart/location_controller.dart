@@ -32,54 +32,54 @@ class LocationController extends GetxController {
 
   /// Show bottom sheet with WhatsApp & SMS options
   void showShareOptions() {
-    if (currentPosition.value == null) {
-      Get.snackbar("Wait", "Location not available yet.");
-      return;
-    }
+  final theme = themeController.theme; // get current theme
 
-    final pos = currentPosition.value!;
-    final mapUrl =
-        "https://www.google.com/maps/search/?api=1&query=${pos.latitude},${pos.longitude}";
-
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(
-                RemixIcons.whatsapp_line,
-                color: Colors.green,
-              ),
-              title: const Text("Share via WhatsApp"),
-              onTap: () {
-                Get.back();
-                shareViaWhatsApp(
-                  "+917219410523",
-                  "Here is my live location: $mapUrl",
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.sms, color: Colors.blue),
-              title: const Text("Share via SMS"),
-              onTap: () {
-                Get.back();
-                shareViaSMS(
-                  "+917219410523",
-                  "Here is my live location: $mapUrl",
-                );
-              },
-            ),
-          ],
+  Get.bottomSheet(
+    Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.bottomSheetTheme.backgroundColor ?? theme.colorScheme.surface,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
       ),
-    );
-  }
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "Share your location via",
+            style: TextStyle(
+              color: theme.colorScheme.onSurface,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ListTile(
+            leading: Icon(Icons.whatsapp, color: theme.colorScheme.primary),
+            title: Text("WhatsApp", style: TextStyle(color: theme.colorScheme.onSurface)),
+            onTap: () {
+              // share via WhatsApp
+              Get.back();
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.message, color: theme.colorScheme.primary),
+            title: Text("Message", style: TextStyle(color: theme.colorScheme.onSurface)),
+            onTap: () {
+              // share via Message
+              Get.back();
+            },
+          ),
+        ],
+      ),
+    ),
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent, // so rounded corners show
+  );
+}
+
 
   /// Share via WhatsApp
   Future<void> shareViaWhatsApp(String phone, String message) async {
