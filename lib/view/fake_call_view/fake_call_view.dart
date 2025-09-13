@@ -2,132 +2,169 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/fake_call_controller/fake_call_controller.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 
 class FakeCallView extends StatelessWidget {
   FakeCallView({super.key});
 
   final FakeCallController controller = Get.put(FakeCallController());
+  final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Obx(() {
+      final isDark = themeController.isDarkMode.value;
 
-    return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0B0213) : Colors.white,
-      appBar: AppBar(
+      return Scaffold(
         backgroundColor: isDark ? const Color(0xFF0B0213) : Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDark ? Colors.white : Colors.black,
-            size: Get.height * 0.03,
+        appBar: AppBar(
+          backgroundColor: isDark ? const Color(0xFF0B0213) : Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: isDark ? Colors.white : Colors.black,
+              size: Get.height * 0.03,
+            ),
+            onPressed: () => Get.back(),
           ),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          "Fake Call",
-          style: GoogleFonts.poppins(
-            fontSize: Get.height * 0.022,
-            fontWeight: FontWeight.w600,
-            color: isDark ? Colors.white : Colors.black,
+          title: Text(
+            "Fake Call",
+            style: GoogleFonts.poppins(
+              fontSize: Get.height * 0.022,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black,
+            ),
           ),
         ),
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: Get.width * 0.05,
-          vertical: Get.height * 0.02,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Divider(
-              color: isDark ? Colors.white24 : Colors.grey.shade300,
-              thickness: 1,
-            ),
-            SizedBox(height: Get.height * 0.02),
-
-            /// Call Delay
-            Text(
-              "Set Call Delay",
-              style: GoogleFonts.poppins(
-                fontSize: Get.height * 0.02,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : Colors.black,
+        body: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: Get.width * 0.05,
+            vertical: Get.height * 0.02,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Divider(
+                color: isDark ? Colors.white24 : Colors.grey.shade300,
+                thickness: 1,
               ),
-            ),
-            SizedBox(height: Get.height * 0.015),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildDelayButton("5 Sec", isDark),
-                _buildDelayButton("30 Sec", isDark),
-                _buildDelayButton("1 Min", isDark),
-              ],
-            ),
+              SizedBox(height: Get.height * 0.02),
 
-            SizedBox(height: Get.height * 0.03),
-
-            /// Caller Selection
-            Text(
-              "Choose Caller",
-              style: GoogleFonts.poppins(
-                fontSize: Get.height * 0.02,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : Colors.black,
-              ),
-            ),
-            SizedBox(height: Get.height * 0.015),
-            _buildCallerItem("assets/images/mom.png", "Mom", isDark),
-            _buildCallerItem("assets/images/police.png", "Police", isDark),
-            _buildCallerItem("assets/images/boss.png", "Boss", isDark),
-
-            const Spacer(),
-
-            /// Start Fake Call Button
-            SizedBox(
-              width: double.infinity,
-              height: Get.height * 0.07,
-              child: ElevatedButton(
-                onPressed: () async {
-                  controller.startCustomFakeCall();
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  backgroundColor: Colors.transparent, // transparent
-                  shadowColor: Colors.transparent,
+              /// Call Delay
+              Text(
+                "Set Call Delay",
+                style: GoogleFonts.poppins(
+                  fontSize: Get.height * 0.02,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    gradient: isDark
-                        ? const LinearGradient(
-                            colors: [Color(0xFF9C27B0), Color(0xFFE040FB)],
-                          )
-                        : null,
-                    color: !isDark ? Colors.purple : null,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+              ),
+              SizedBox(height: Get.height * 0.015),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildDelayButton("5 Sec", isDark),
+                  _buildDelayButton("30 Sec", isDark),
+                  _buildDelayButton("1 Min", isDark),
+                ],
+              ),
+
+              SizedBox(height: Get.height * 0.03),
+
+              /// Caller Selection
+              Text(
+                "Choose Caller",
+                style: GoogleFonts.poppins(
+                  fontSize: Get.height * 0.02,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+              ),
+              SizedBox(height: Get.height * 0.015),
+              _buildCallerItem("assets/images/mom.png", "Mom", isDark),
+              _buildCallerItem("assets/images/police.png", "Police", isDark),
+              _buildCallerItem("assets/images/boss.png", "Boss", isDark),
+
+              const Spacer(),
+
+              /// Countdown Text
+              Obx(() {
+                if (controller.countdownText.value.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: EdgeInsets.only(bottom: Get.height * 0.015),
                   child: Center(
                     child: Text(
-                      "Start Fake Call",
+                      controller.countdownText.value,
                       style: GoogleFonts.poppins(
-                        fontSize: Get.height * 0.022,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        fontSize: Get.height * 0.018,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.white70 : Colors.black87,
                       ),
                     ),
                   ),
-                ),
+                );
+              }),
+
+              /// Start Fake Call Button
+              SizedBox(
+                width: double.infinity,
+                height: Get.height * 0.07,
+                child: Obx(() {
+                  bool isDisabled = controller.countdownText.value.isNotEmpty;
+                  return ElevatedButton(
+                    onPressed: isDisabled
+                        ? null
+                        : () async {
+                            controller.startCustomFakeCall();
+                          },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      disabledBackgroundColor: Colors.grey,
+                    ),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: isDisabled
+                            ? null
+                            : (isDark
+                                  ? const LinearGradient(
+                                      colors: [
+                                        Color(0xFF9C27B0),
+                                        Color(0xFFE040FB),
+                                      ],
+                                    )
+                                  : null),
+                        color: isDisabled
+                            ? Colors.grey
+                            : (!isDark ? Colors.purple : null),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Start Fake Call",
+                          style: GoogleFonts.poppins(
+                            fontSize: Get.height * 0.022,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildDelayButton(String text, bool isDark) {
