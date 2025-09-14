@@ -31,55 +31,59 @@ class LocationController extends GetxController {
   }
 
   /// Show bottom sheet with WhatsApp & SMS options
-  void showShareOptions() {
-  final theme = themeController.theme; // get current theme
-
-  Get.bottomSheet(
-    Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.bottomSheetTheme.backgroundColor ?? theme.colorScheme.surface,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+  void showShareOptions(ThemeData theme) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.bottomSheetTheme.backgroundColor ??
+              theme.colorScheme.surface,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Share your location via",
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: Icon(RemixIcons.whatsapp_fill, color: theme.colorScheme.primary),
+              title: Text(
+                "WhatsApp",
+                style: TextStyle(color: theme.colorScheme.onSurface),
+              ),
+              onTap: () {
+                // share via WhatsApp
+                Get.back();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.message, color: theme.colorScheme.primary),
+              title: Text(
+                "Message",
+                style: TextStyle(color: theme.colorScheme.onSurface),
+              ),
+              onTap: () {
+                // share via Message
+                Get.back();
+              },
+            ),
+          ],
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            "Share your location via",
-            style: TextStyle(
-              color: theme.colorScheme.onSurface,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ListTile(
-            leading: Icon(Icons.whatsapp, color: theme.colorScheme.primary),
-            title: Text("WhatsApp", style: TextStyle(color: theme.colorScheme.onSurface)),
-            onTap: () {
-              // share via WhatsApp
-              Get.back();
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.message, color: theme.colorScheme.primary),
-            title: Text("Message", style: TextStyle(color: theme.colorScheme.onSurface)),
-            onTap: () {
-              // share via Message
-              Get.back();
-            },
-          ),
-        ],
-      ),
-    ),
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent, // so rounded corners show
-  );
-}
-
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // so rounded corners show
+    );
+  }
 
   /// Share via WhatsApp
   Future<void> shareViaWhatsApp(String phone, String message) async {
@@ -145,8 +149,7 @@ class LocationController extends GetxController {
       currentPosition.value = LatLng(pos.latitude, pos.longitude);
     } catch (e) {
       try {
-        Position pos =
-            await Geolocator.getLastKnownPosition() ??
+        Position pos = await Geolocator.getLastKnownPosition() ??
             await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high,
             );
@@ -157,26 +160,25 @@ class LocationController extends GetxController {
     }
 
     // Listen to location updates
-    _positionSub =
-        Geolocator.getPositionStream(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.bestForNavigation,
-            distanceFilter: 5,
-          ),
-        ).listen(
-          (Position p) async {
-            final newLatLng = LatLng(p.latitude, p.longitude);
-            currentPosition.value = newLatLng;
+    _positionSub = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: 5,
+      ),
+    ).listen(
+      (Position p) async {
+        final newLatLng = LatLng(p.latitude, p.longitude);
+        currentPosition.value = newLatLng;
 
-            if (mapController.isCompleted) {
-              final controller = await mapController.future;
-              controller.animateCamera(CameraUpdate.newLatLng(newLatLng));
-            }
-          },
-          onError: (err) {
-            debugPrint('Position stream error: $err');
-          },
-        );
+        if (mapController.isCompleted) {
+          final controller = await mapController.future;
+          controller.animateCamera(CameraUpdate.newLatLng(newLatLng));
+        }
+      },
+      onError: (err) {
+        debugPrint('Position stream error: $err');
+      },
+    );
 
     isFetching.value = false;
   }
