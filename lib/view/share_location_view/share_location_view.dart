@@ -78,7 +78,7 @@ class ShareLocationView extends StatelessWidget {
         floatingActionButton: FloatingActionButton.extended(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: theme.colorScheme.onPrimary,
-          onPressed: () => controller.showShareOptions(),
+          onPressed: () => controller.showShareOptions(theme),
           icon: Icon(Icons.share, color: theme.colorScheme.onPrimary),
           label: Text(
             "Share Live Location",
