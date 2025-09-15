@@ -8,82 +8,63 @@ class ThemeController extends GetxController {
   final _storage = GetStorage();
   final _key = 'isDarkMode';
 
-  var isDarkMode = false.obs; // current theme
-  var userOverride = false.obs; // true if user toggled manually
+  var isDarkMode = false.obs; // reflects active theme
+  var userOverride = false.obs; // true if manually toggled
 
   @override
   void onInit() {
     super.onInit();
 
     if (_storage.hasData(_key)) {
-      // User manually set theme previously
-      isDarkMode.value = _storage.read(_key);
+      isDarkMode.value = _storage.read(_key) as bool;
       userOverride.value = true;
-      _applyTheme(isDarkMode.value);
+      Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
     } else {
-      // Follow system theme by default
       userOverride.value = false;
-
-      // Ensure proper system theme detection on iOS
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final brightness = MediaQueryData.fromWindow(
-          WidgetsBinding.instance.window,
-        ).platformBrightness;
-        isDarkMode.value = brightness == Brightness.dark;
-        _applyTheme(isDarkMode.value);
-      });
+      _applySystemTheme();
     }
 
-    // Listen for system theme changes
-    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
-        () {
-          if (!userOverride.value) {
-            final brightness = MediaQueryData.fromWindow(
-              WidgetsBinding.instance.window,
-            ).platformBrightness;
-            isDarkMode.value = brightness == Brightness.dark;
-            _applyTheme(isDarkMode.value);
-          }
-        };
+    // React to system brightness change
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
+      if (!userOverride.value) {
+        _applySystemTheme();
+      }
+    };
+
+    // Listen to isDarkMode changes and update status bar
+    ever(isDarkMode, (_) {
+      _updateStatusBar();
+    });
+
+    _updateStatusBar(); // initial set
   }
 
-  ThemeData get theme => isDarkMode.value ? AppTheme.dark : AppTheme.light;
+  void _applySystemTheme() {
+    final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    isDarkMode.value = (brightness == Brightness.dark);
+    Get.changeThemeMode(ThemeMode.system);
+  }
 
   void toggleTheme(bool value) {
     userOverride.value = true;
     isDarkMode.value = value;
     _storage.write(_key, value);
-    _applyTheme(value);
+    Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
   }
 
   void resetToSystem() {
     userOverride.value = false;
     _storage.remove(_key);
-    final brightness = MediaQueryData.fromWindow(
-      WidgetsBinding.instance.window,
-    ).platformBrightness;
-    isDarkMode.value = brightness == Brightness.dark;
-    _applyTheme(isDarkMode.value);
+    _applySystemTheme();
   }
 
-  void _applyTheme(bool dark) {
-    final mode = userOverride.value
-        ? (dark ? ThemeMode.dark : ThemeMode.light)
-        : ThemeMode.system;
-    Get.changeThemeMode(mode);
+  ThemeData get theme => isDarkMode.value ? AppTheme.dark : AppTheme.light;
 
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
-        statusBarBrightness: dark ? Brightness.dark : Brightness.light,
-        systemNavigationBarColor: dark
-            ? AppTheme.dark.scaffoldBackgroundColor
-            : AppTheme.light.scaffoldBackgroundColor,
-        systemNavigationBarIconBrightness: dark
-            ? Brightness.light
-            : Brightness.dark,
-      ),
-    );
-  }
+ void _updateStatusBar() {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent, // transparent always
+    statusBarIconBrightness: isDarkMode.value ? Brightness.dark : Brightness.dark, // Android
+    statusBarBrightness: isDarkMode.value ? Brightness.dark : Brightness.dark, // iOS
+  ));
+}
 }

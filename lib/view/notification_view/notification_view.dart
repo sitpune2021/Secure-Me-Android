@@ -1,15 +1,47 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 
-class NotificationView extends StatefulWidget {
-  const NotificationView({super.key});
+class NotificationView extends StatelessWidget {
+  NotificationView({super.key});
 
-  @override
-  State<NotificationView> createState() => _NotificationViewState();
-}
+  final ThemeController themeController = Get.find<ThemeController>();
 
-class _NotificationViewState extends State<NotificationView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('Notification')));
+    return Obx(() {
+      final isDark = themeController.isDarkMode.value;
+      return Scaffold(
+        backgroundColor: isDark ? Colors.black : Colors.white,
+        appBar: AppBar(
+          backgroundColor: isDark ? Colors.black : Colors.white,
+          leading: IconButton(
+            icon: Icon(
+             Platform.isAndroid? Icons.arrow_back:Icons.arrow_back_ios,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            onPressed: () => Get.back(),
+          ),
+          title: Text(
+            'Notification',
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
+          iconTheme: IconThemeData(
+            color: isDark ? Colors.white : Colors.black,
+          ),
+          elevation: 0,
+        ),
+        body: Center(
+          child: Text(
+            'Notification',
+            style: TextStyle(color: isDark ? Colors.white : Colors.black),
+          ),
+        ),
+      );
+    });
   }
 }

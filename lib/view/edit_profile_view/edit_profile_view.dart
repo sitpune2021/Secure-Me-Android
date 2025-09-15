@@ -208,51 +208,67 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   Widget _buildProfileField(
-    String label,
-    TextEditingController controller,
-    String hint,
-    String? Function(String?) validator,
-    bool isDark, {
-    TextInputType keyboardType = TextInputType.text,
-    List<TextInputFormatter>? inputFormatters,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: isDark ? AppColors.darkText : AppColors.lightText,
-            fontSize: 14,
-          ),
+  String label,
+  TextEditingController controller,
+  String hint,
+  String? Function(String?) validator,
+  bool isDark, {
+  TextInputType keyboardType = TextInputType.text,
+  List<TextInputFormatter>? inputFormatters,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Label
+      Text(
+        label,
+        style: GoogleFonts.poppins(
+          color: isDark ? AppColors.darkText : AppColors.lightText,
+          fontSize: 14,
         ),
-        SizedBox(height: Get.height * 0.008),
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          validator: validator,
-          decoration: InputDecoration(
-            isDense: true,
-            border: InputBorder.none,
-            hintText: hint,
-            hintStyle: GoogleFonts.poppins(
-              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+      ),
+      SizedBox(height: Get.height * 0.008),
+
+      // TextField
+      TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        validator: validator,
+        style: GoogleFonts.poppins(
+          color: isDark ? AppColors.darkText : AppColors.lightText,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+        decoration: InputDecoration(
+          isDense: true,
+          filled: false, // 🔹 prevent Material filled rounded effect
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
           ),
-          style: GoogleFonts.poppins(
-            color: isDark ? AppColors.darkText : AppColors.lightText,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+            ),
           ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkRadialGlow : AppColors.lightPrimary,
+              width: 2,
+            ),
+          ),
+          hintText: hint,
+          hintStyle: GoogleFonts.poppins(
+            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+          ),
+          contentPadding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
         ),
-        SizedBox(height: Get.height * 0.01),
-        Container(
-          height: 1,
-          color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
-        ),
-      ],
-    );
-  }
+      ),
+
+      SizedBox(height: Get.height * 0.01),
+    ],
+  );
+}
 }

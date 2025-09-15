@@ -208,6 +208,12 @@ class _AddContactViewState extends State<AddContactView> {
         labelStyle: GoogleFonts.poppins(
           color: isDark ? AppColors.darkHint : AppColors.lightHint,
         ),
+        filled: false, // <-- make sure filled is false
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+          ),
+        ),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(
             color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
@@ -216,6 +222,7 @@ class _AddContactViewState extends State<AddContactView> {
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(
             color: isDark ? AppColors.darkRadialGlow : AppColors.lightPrimary,
+            width: 2,
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/setting_controller/setting_controller.dart';
@@ -53,6 +54,16 @@ class _SettingsViewState extends State<SettingsView> {
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
+              surfaceTintColor: Colors.transparent,
+              systemOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Colors.transparent, // transparent always
+                statusBarIconBrightness: isDark
+                    ? Brightness.light
+                    : Brightness.dark, // Android
+                statusBarBrightness: isDark
+                    ? Brightness.dark
+                    : Brightness.light, // iOS
+              ),
               title: Text(
                 'Setting',
                 style: GoogleFonts.poppins(
@@ -62,7 +73,6 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
               ),
               centerTitle: Platform.isAndroid ? false : true,
-              surfaceTintColor: Colors.transparent,
               leading: Platform.isIOS
                   ? IconButton(
                       icon: Icon(
@@ -75,6 +85,7 @@ class _SettingsViewState extends State<SettingsView> {
                     )
                   : null,
             ),
+
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: Get.width * .035),
               child: Column(

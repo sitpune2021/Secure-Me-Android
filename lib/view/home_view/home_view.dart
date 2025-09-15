@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/home_controller/home_controller.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart'; // 👈 import ThemeController
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/view/community_view/community_view.dart';
 import 'package:secure_me/view/track_me_view/track_me_view.dart';
@@ -10,26 +11,27 @@ import 'package:secure_me/view/profile_view/profile_view.dart';
 
 class HomeView extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
+  final ThemeController themeController = Get.find<ThemeController>(); // 👈 use ThemeController
 
   HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
     double height = Get.height;
     double width = Get.width;
 
-    return Obx(
-      () => Scaffold(
+    return Obx(() {
+      final isDark = themeController.isDarkMode.value; // 👈 reactive binding
+      final theme = isDark ? ThemeData.dark() : ThemeData.light();
+
+      return Scaffold(
         backgroundColor: isDark ? Colors.black : Colors.white,
         body: _buildBody(controller.currentIndex.value, theme, isDark),
         bottomNavigationBar: _buildBottomNav(isDark, height, width),
         floatingActionButton: buildSosButton(isDark, height, width),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildBody(int index, ThemeData theme, bool isDark) {
@@ -378,8 +380,8 @@ class HomeView extends StatelessWidget {
         MediaQuery.of(Get.context!).viewPadding.bottom + height * 0.01;
 
     return Positioned(
-      bottom: bottomPadding, // place above home indicator
-      left: (width / 2) - (width * 0.08), // center horizontally
+      bottom: bottomPadding,
+      left: (width / 2) - (width * 0.08),
       child: GestureDetector(
         onTap: () => Get.toNamed(AppRoutes.sosActivate),
         child: Container(
@@ -450,7 +452,7 @@ class HomeView extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: width * 0.15), // space for SOS button
+              SizedBox(width: width * 0.15),
               IconButton(
                 onPressed: () => controller.changeTab(2),
                 icon: Icon(
@@ -491,14 +493,14 @@ class CurvedNavBarPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     double centerX = size.width / 2;
-    double notchRadius = width * 0.08; // match SOS radius
+    double notchRadius = width * 0.08;
 
     Path path = Path()..moveTo(0, 0);
     path.lineTo(centerX - notchRadius - 10, 0);
 
     path.quadraticBezierTo(
       centerX,
-      -notchRadius, // deeper curve
+      -notchRadius,
       centerX + notchRadius + 10,
       0,
     );
