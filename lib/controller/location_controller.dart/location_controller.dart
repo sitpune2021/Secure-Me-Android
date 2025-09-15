@@ -32,6 +32,16 @@ class LocationController extends GetxController {
 
   /// Show bottom sheet with WhatsApp & SMS options
   void showShareOptions(ThemeData theme) {
+    if (currentPosition.value == null) {
+      Get.snackbar("Error", "Location not available");
+      return;
+    }
+
+    final lat = currentPosition.value!.latitude;
+    final lng = currentPosition.value!.longitude;
+    final mapsUrl = "https://www.google.com/maps?q=$lat,$lng";
+    final message = "Here is my live location: $mapsUrl";
+
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.all(16),
@@ -55,50 +65,72 @@ class LocationController extends GetxController {
               ),
             ),
             const SizedBox(height: 16),
+
+            // WhatsApp
             ListTile(
-              leading: Icon(RemixIcons.whatsapp_fill, color: theme.colorScheme.primary),
+              leading: Icon(RemixIcons.whatsapp_fill,
+                  color: theme.colorScheme.primary),
               title: Text(
                 "WhatsApp",
                 style: TextStyle(color: theme.colorScheme.onSurface),
               ),
-              onTap: () {
-                // share via WhatsApp
+              onTap: () async {
                 Get.back();
+                await shareViaWhatsApp("", message);
               },
             ),
+
+            // SMS
             ListTile(
               leading: Icon(Icons.message, color: theme.colorScheme.primary),
               title: Text(
                 "Message",
                 style: TextStyle(color: theme.colorScheme.onSurface),
               ),
-              onTap: () {
-                // share via Message
+              onTap: () async {
                 Get.back();
+                await shareViaSMS("", message);
               },
             ),
           ],
         ),
       ),
       isScrollControlled: true,
-      backgroundColor: Colors.transparent, // so rounded corners show
+      backgroundColor: Colors.transparent,
     );
   }
 
-  /// Share via WhatsApp
+  /// Share via WhatsApp (Android + iOS)
   Future<void> shareViaWhatsApp(String phone, String message) async {
-    final url =
-        "whatsapp://send?phone=$phone&text=${Uri.encodeComponent(message)}";
+    final encodedMessage = Uri.encodeComponent(message);
+
+    final url = phone.isNotEmpty
+        ? (GetPlatform.isIOS
+            ? "https://wa.me/$phone?text=$encodedMessage"
+            : "whatsapp://send?phone=$phone&text=$encodedMessage")
+        : (GetPlatform.isIOS
+            ? "https://wa.me/?text=$encodedMessage"
+            : "whatsapp://send?text=$encodedMessage");
+
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } else {
-      Get.snackbar("Error", "WhatsApp not available");
+      Get.snackbar("Error", "WhatsApp is not installed on this device");
     }
   }
 
-  /// Share via SMS
+  /// Share via SMS (Android + iOS)
   Future<void> shareViaSMS(String phone, String message) async {
-    final uri = Uri.parse("sms:$phone?body=${Uri.encodeComponent(message)}");
+    final encodedMessage = Uri.encodeComponent(message);
+
+    final uri = phone.isNotEmpty
+        ? (GetPlatform.isIOS
+            ? Uri.parse("sms:$phone&body=$encodedMessage")
+            : Uri.parse("sms:$phone?body=$encodedMessage"))
+        : (GetPlatform.isIOS
+            ? Uri.parse("sms:&body=$encodedMessage")
+            : Uri.parse("sms:?body=$encodedMessage"));
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
