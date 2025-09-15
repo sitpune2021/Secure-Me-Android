@@ -8,6 +8,7 @@ import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/routes/app_routes.dart';
 import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/theme/app_theme.dart';
+import 'package:upgrader/upgrader.dart'; // Import upgrader package
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,39 +44,43 @@ class MyApp extends StatelessWidget {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
           statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-          systemNavigationBarColor: isDark
-              ? AppColors.darkBackground
-              : AppColors.lightBackground,
-          systemNavigationBarIconBrightness: isDark
-              ? Brightness.light
-              : Brightness.dark,
+          systemNavigationBarColor:
+              isDark ? AppColors.darkBackground : AppColors.lightBackground,
+          systemNavigationBarIconBrightness:
+              isDark ? Brightness.light : Brightness.dark,
         ),
-        child: GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Secure Me',
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: themeController.userOverride.value
-              ? (isDark ? ThemeMode.dark : ThemeMode.light)
-              : ThemeMode.system, // ✅ Follow system if user hasn't toggled
-
-          initialRoute: AppRoutes.loginView,
-          getPages: AppPages.pages,
-          builder: (context, child) {
-            if (isDark) {
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.darkBackground, AppColors.accent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+        child: UpgradeAlert(
+          upgrader: Upgrader(
+            debugDisplayAlways: false, // Set to true for testing
+            minAppVersion: '99.0.0', // Example minimum version
+            durationUntilAlertAgain: const Duration(days: 2),
+          ),
+          child: GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Secure Me',
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: themeController.userOverride.value
+                ? (isDark ? ThemeMode.dark : ThemeMode.light)
+                : ThemeMode.system, // ✅ Follow system if user hasn't toggled
+            initialRoute: AppRoutes.loginView,
+            getPages: AppPages.pages,
+            builder: (context, child) {
+              if (isDark) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.darkBackground, AppColors.accent],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                   ),
-                ),
-                child: child,
-              );
-            }
-            return child!;
-          },
+                  child: child,
+                );
+              }
+              return child!;
+            },
+          ),
         ),
       );
     });
