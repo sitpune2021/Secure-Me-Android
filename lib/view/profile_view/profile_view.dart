@@ -16,12 +16,20 @@ class ProfileView extends StatelessWidget {
     final double screenWidth = Get.width;
 
     return Obx(() {
+      // Get the correct theme values from controller
       final isDark = themeController.isDarkMode.value;
-      final textColor = isDark ? AppColors.darkText : AppColors.lightText;
-      final subTextColor = isDark ? AppColors.darkHint : AppColors.lightHint;
+      final userOverride = themeController.userOverride.value;
+      
+      // Determine effective theme (user preference or system)
+      final effectiveDark = userOverride ? isDark : 
+          WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+      
+      final textColor = effectiveDark ? AppColors.darkText : AppColors.lightText;
+      final subTextColor = effectiveDark ? AppColors.darkHint : AppColors.lightHint;
+      final backgroundColor = effectiveDark ? AppColors.darkBackground : AppColors.lightBackground;
 
       return Scaffold(
-        backgroundColor: themeController.theme.colorScheme.background,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           title: Padding(
             padding: const EdgeInsets.only(left: 15),
@@ -34,9 +42,7 @@ class ProfileView extends StatelessWidget {
               ),
             ),
           ),
-          backgroundColor: isDark
-              ? AppColors.darkBackground
-              : AppColors.lightBackground,
+          backgroundColor: backgroundColor,
           elevation: 0,
           centerTitle: Platform.isAndroid ? false : true,
           iconTheme: IconThemeData(color: textColor),
@@ -55,14 +61,14 @@ class ProfileView extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
-                          colors: isDark
+                          colors: effectiveDark
                               ? [
                                   AppColors.glowPurpleTopLeft,
                                   AppColors.darkPrimary,
                                 ]
                               : [Colors.grey.shade300, Colors.grey.shade200],
                         ),
-                        boxShadow: isDark
+                        boxShadow: effectiveDark
                             ? [
                                 BoxShadow(
                                   color: AppColors.glowPurpleTopLeft
@@ -146,27 +152,51 @@ class ProfileView extends StatelessWidget {
                 ),
                 _buildMenuItem("Help", () {}, screenWidth, textColor),
 
-                /// Dark Mode Switch
-                Obx(() {
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      "Dark Mode",
-                      style: GoogleFonts.poppins(
-                        fontSize: screenWidth < 380 ? 14 : 16,
-                        color: textColor,
-                        fontWeight: FontWeight.w500,
+                /// Dark Mode Switch with System Option
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        "Dark Mode",
+                        style: GoogleFonts.poppins(
+                          fontSize: screenWidth < 380 ? 14 : 16,
+                          color: textColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      trailing: Switch(
+                        value: themeController.isDarkMode.value,
+                        activeColor: effectiveDark
+                            ? AppColors.glowPurpleTopLeft
+                            : AppColors.lightPrimary,
+                        onChanged: (value) {
+                          themeController.toggleTheme(value);
+                        },
                       ),
                     ),
-                    trailing: Switch(
-                      value: themeController.isDarkMode.value,
-                      activeColor: isDark
-                          ? AppColors.glowPurpleTopLeft
-                          : AppColors.lightPrimary,
-                      onChanged: themeController.toggleTheme,
-                    ),
-                  );
-                }),
+                    
+                    // System Theme Option
+                    if (themeController.userOverride.value)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            themeController.resetToSystem();
+                          },
+                          child: Text(
+                            "Use system theme",
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: AppColors.lightPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
 
                 Divider(color: subTextColor.withOpacity(0.3)),
 
