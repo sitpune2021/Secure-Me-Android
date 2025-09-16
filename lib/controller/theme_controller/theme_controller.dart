@@ -8,13 +8,14 @@ class ThemeController extends GetxController {
   final _storage = GetStorage();
   final _key = 'isDarkMode';
 
-  var isDarkMode = false.obs; // reflects active theme
+  var isDarkMode = false.obs; // current theme mode
   var userOverride = false.obs; // true if manually toggled
 
   @override
   void onInit() {
     super.onInit();
 
+    // Load stored preference if available
     if (_storage.hasData(_key)) {
       isDarkMode.value = _storage.read(_key) as bool;
       userOverride.value = true;
@@ -24,27 +25,28 @@ class ThemeController extends GetxController {
       _applySystemTheme();
     }
 
-    // React to system brightness change
+    // Listen for system brightness changes
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
       if (!userOverride.value) {
         _applySystemTheme();
       }
     };
 
-    // Listen to isDarkMode changes and update status bar
-    ever(isDarkMode, (_) {
-      _updateStatusBar();
-    });
+    // Update status bar when theme changes
+    ever(isDarkMode, (_) => _updateStatusBar());
 
-    _updateStatusBar(); // initial set
+    // Initial status bar setup
+    _updateStatusBar();
   }
 
+  // Apply system theme
   void _applySystemTheme() {
     final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
     isDarkMode.value = (brightness == Brightness.dark);
     Get.changeThemeMode(ThemeMode.system);
   }
 
+  // Toggle theme manually
   void toggleTheme(bool value) {
     userOverride.value = true;
     isDarkMode.value = value;
@@ -52,19 +54,22 @@ class ThemeController extends GetxController {
     Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
   }
 
+  // Reset to system theme
   void resetToSystem() {
     userOverride.value = false;
     _storage.remove(_key);
     _applySystemTheme();
   }
 
+  // Get current ThemeData
   ThemeData get theme => isDarkMode.value ? AppTheme.dark : AppTheme.light;
 
- void _updateStatusBar() {
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent, // transparent always
-    statusBarIconBrightness: isDarkMode.value ? Brightness.dark : Brightness.dark, // Android
-    statusBarBrightness: isDarkMode.value ? Brightness.dark : Brightness.dark, // iOS
-  ));
-}
+  // Update status bar colors and brightness
+  void _updateStatusBar() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: isDarkMode.value ? Brightness.light : Brightness.dark,
+      statusBarBrightness: isDarkMode.value ? Brightness.dark : Brightness.light,
+    ));
+  }
 }
