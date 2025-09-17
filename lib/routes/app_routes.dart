@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:secure_me/routes/app_pages.dart';
@@ -18,6 +17,7 @@ import 'package:secure_me/view/register_view.dart/register_view.dart';
 import 'package:secure_me/view/setting_view/setting_view.dart';
 import 'package:secure_me/view/share_location_view/share_location_view.dart';
 import 'package:secure_me/view/sos_active_view/sos_active_view.dart';
+import 'package:secure_me/view/theme_view/theme_view.dart';
 
 class AppPages {
   static final pages = [
@@ -40,6 +40,7 @@ class AppPages {
     GetPage(name: AppRoutes.sosActivate, page: () => SosActivatedView()),
     GetPage(name: AppRoutes.registerView, page: () => RegisterView()),
     GetPage(name: AppRoutes.shareLiveLocation, page: () => ShareLocationView()),
+    GetPage(name: AppRoutes.theme, page: ()=>ThemeModeView())
     // GetPage(name: AppRoutes.help, page: () => const HelpView()),
     // GetPage(name: AppRoutes.appInfo, page: () => const AppInfoView()),
     // GetPage(name: AppRoutes.feedback, page: () => const FeedbackView()),

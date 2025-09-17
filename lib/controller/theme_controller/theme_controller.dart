@@ -4,6 +4,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:secure_me/theme/app_theme.dart';
 
+enum ThemeOption { light, dark, system }
+
 class ThemeController extends GetxController {
   final _storage = GetStorage();
   final _key = 'isDarkMode';
@@ -15,7 +17,6 @@ class ThemeController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Load stored preference if available
     if (_storage.hasData(_key)) {
       isDarkMode.value = _storage.read(_key) as bool;
       userOverride.value = true;
@@ -25,51 +26,67 @@ class ThemeController extends GetxController {
       _applySystemTheme();
     }
 
-    // Listen for system brightness changes
     WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
       if (!userOverride.value) {
         _applySystemTheme();
       }
     };
 
-    // Update status bar when theme changes
     ever(isDarkMode, (_) => _updateStatusBar());
-
-    // Initial status bar setup
     _updateStatusBar();
   }
 
-  // Apply system theme
   void _applySystemTheme() {
-    final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     isDarkMode.value = (brightness == Brightness.dark);
     Get.changeThemeMode(ThemeMode.system);
   }
 
-  // Toggle theme manually
-  void toggleTheme(bool value) {
+  /// Explicit Theme Setters
+  void setThemeMode(bool dark) {
     userOverride.value = true;
-    isDarkMode.value = value;
-    _storage.write(_key, value);
-    Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+    isDarkMode.value = dark;
+    _storage.write(_key, dark);
+    Get.changeThemeMode(dark ? ThemeMode.dark : ThemeMode.light);
   }
 
-  // Reset to system theme
+  void setSystemTheme() {
+    resetToSystem();
+  }
+
   void resetToSystem() {
     userOverride.value = false;
     _storage.remove(_key);
     _applySystemTheme();
   }
 
-  // Get current ThemeData
-  ThemeData get theme => isDarkMode.value ? AppTheme.dark : AppTheme.light;
+  ThemeOption get currentOption {
+    if (!userOverride.value) return ThemeOption.system;
+    return isDarkMode.value ? ThemeOption.dark : ThemeOption.light;
+  }
 
-  // Update status bar colors and brightness
+  /// ✅ NEW: handles system + user modes
+  bool get effectiveDarkMode {
+    if (!userOverride.value) {
+      final brightness =
+          WidgetsBinding.instance.platformDispatcher.platformBrightness;
+      return brightness == Brightness.dark;
+    }
+    return isDarkMode.value;
+  }
+
+  /// ✅ Updated to use effectiveDarkMode
+  ThemeData get theme => effectiveDarkMode ? AppTheme.dark : AppTheme.light;
+
+  /// ✅ Updated to use effectiveDarkMode
   void _updateStatusBar() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: isDarkMode.value ? Brightness.light : Brightness.dark,
-      statusBarBrightness: isDarkMode.value ? Brightness.dark : Brightness.light,
+      statusBarIconBrightness:
+          effectiveDarkMode ? Brightness.light : Brightness.dark,
+      statusBarBrightness:
+          effectiveDarkMode ? Brightness.dark : Brightness.light,
     ));
   }
 }

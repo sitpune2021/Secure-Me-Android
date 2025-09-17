@@ -373,46 +373,37 @@ class HomeView extends StatelessWidget {
       ),
     );
   }
-
-  // SOS Button
-  Widget buildSosButton(bool isDark, double height, double width) {
-    double bottomPadding =
-        MediaQuery.of(Get.context!).viewPadding.bottom + height * 0.01;
-
-    return Positioned(
-      bottom: bottomPadding,
-      left: (width / 2) - (width * 0.08),
-      child: GestureDetector(
-        onTap: () => Get.toNamed(AppRoutes.sosActivate),
-        child: Container(
-          width: width * 0.16,
-          height: width * 0.16,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.redAccent,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.redAccent.withOpacity(0.4),
-                blurRadius: 12,
-                spreadRadius: 2,
-              ),
-            ],
+// SOS Button
+Widget buildSosButton(bool isDark, double height, double width) {
+  return GestureDetector(
+    onTap: () => Get.toNamed(AppRoutes.sosActivate),
+    child: Container(
+      width: width * 0.18,
+      height: height * 0.18,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.redAccent,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.redAccent.withOpacity(0.4),
+            blurRadius: 12,
+            spreadRadius: 2,
           ),
-          child: Center(
-            child: Text(
-              "SOS",
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: width * 0.045,
-              ),
-            ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          "SOS",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: width * 0.05,
           ),
         ),
       ),
-    );
-  }
-
+    ),
+  );
+}
   // Bottom Navigation
   Widget _buildBottomNav(bool isDark, double height, double width) {
     double bottomPadding =
