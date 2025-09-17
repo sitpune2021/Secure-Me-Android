@@ -1,32 +1,65 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'dart:io';
 
 class PermissionController extends GetxController {
   final isConnected = false.obs;
+  final isPermissionGranted = false.obs; // <- important observable
 
-  /// Request all runtime permissions (native OS dialogs)
+  /// Request/check all runtime permissions we care about and set the observable.
   Future<void> requestAllPermissions() async {
-    if (GetPlatform.isAndroid) {
-      await Permission.location.request();
-      await Permission.locationWhenInUse.request();
-      await Permission.locationAlways.request();
-      await Permission.phone.request();
-      await Permission.systemAlertWindow.request();
-    } else if (GetPlatform.isIOS) {
-      await Permission.locationWhenInUse.request();
-      await Permission.locationAlways.request();
-      await Permission.camera.request();
-      await Permission.microphone.request();
-      await Permission.photos.request();
-      await Permission.contacts.request();
-      await Permission.bluetooth.request();
-    }
+    try {
+      // Build list of permissions we want to ask
+      final permissions = <Permission>[
+        Permission.location,
+        Permission.locationWhenInUse,
+        // Permission.locationAlways sometimes not needed on all apps,
+        // add if your app truly requires it.
+        Permission.phone,
+        // don't request systemAlertWindow (not supported by permission_handler for runtime)
+      ];
 
-    await checkInternet();
+      // On iOS, add extra permissions
+      if (GetPlatform.isIOS) {
+        permissions.addAll([
+          Permission.camera,
+          Permission.microphone,
+          Permission.photos,
+          Permission.contacts,
+          Permission.bluetooth,
+        ]);
+      }
+
+      // Request them (this returns a map of statuses)
+      final statuses = await permissions.request();
+
+      // Determine granted = at least location granted (or any other required permission)
+      final locationGranted = (await Permission.location.status).isGranted ||
+          (await Permission.locationWhenInUse.status).isGranted;
+
+      // You can choose your own criteria for "granted".
+      isPermissionGranted.value = locationGranted;
+
+      // If permanently denied, inform user (do not force open settings)
+      final permanentlyDenied = statuses.values.any((s) => s.isPermanentlyDenied);
+      if (!isPermissionGranted.value && permanentlyDenied) {
+        // show a message once (UI layer can show dialog/snackbar)
+        // We avoid calling openAppSettings() automatically here.
+        // UI can call openAppSettings() if user clicks "Open settings".
+      }
+
+      // Update internet connectivity too
+      await checkInternet();
+    } catch (e, st) {
+      // if anything odd happens, set false and print for debugging
+      isPermissionGranted.value = false;
+      // debug print
+      if (kDebugMode) {
+        print('requestAllPermissions error: $e\n$st');
+      }
+    }
   }
 
   /// Check if device has real internet connection
@@ -38,15 +71,11 @@ class PermissionController extends GetxController {
   void listenForInternet() {
     Connectivity().onConnectivityChanged.listen((_) async {
       isConnected.value = await InternetConnectionChecker().hasConnection;
-
+      // if no internet and location denied, optionally prompt
       if (!isConnected.value) {
-        if (await Permission.location.isDenied) {
-          Get.snackbar(
-            'Permission Denied',
-            'Please allow location in settings',
-            snackPosition: SnackPosition.BOTTOM,
-          );
-          openAppSettings();
+        final locDenied = await Permission.location.isDenied;
+        if (locDenied) {
+          // UI decide what to show; controller keeps state only
         }
       }
     });

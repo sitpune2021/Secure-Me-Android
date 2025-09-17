@@ -19,4 +19,5 @@ class AppRoutes {
   static const fakecall = '/fakecall';
   static const sosActivate = '/sos';
   static const shareLiveLocation = '/shareLiveLocation';
+  static const theme='/theme';
 }

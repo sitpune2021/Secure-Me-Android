@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
@@ -31,6 +30,7 @@ class ProfileView extends StatelessWidget {
       return Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
           title: Padding(
             padding: const EdgeInsets.only(left: 15),
             child: Text(
@@ -153,50 +153,38 @@ class ProfileView extends StatelessWidget {
                 _buildMenuItem("Help", () {}, screenWidth, textColor),
 
                 /// Dark Mode Switch with System Option
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        "Dark Mode",
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth < 380 ? 14 : 16,
-                          color: textColor,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      trailing: Switch(
-                        value: themeController.isDarkMode.value,
-                        activeColor: effectiveDark
-                            ? AppColors.glowPurpleTopLeft
-                            : AppColors.lightPrimary,
-                        onChanged: (value) {
-                          themeController.toggleTheme(value);
-                        },
-                      ),
-                    ),
+              
+                /// 
+                /// 
+                _theme("Theme Mode", (){
+                  Get.toNamed(AppRoutes.theme);
+                }, screenWidth, textColor),
+                // Column(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     ListTile(
+                //       contentPadding: EdgeInsets.zero,
+                //       title: Text(
+                //         "Dark Mode",
+                //         style: GoogleFonts.poppins(
+                //           fontSize: screenWidth < 380 ? 14 : 16,
+                //           color: textColor,
+                //           fontWeight: FontWeight.w500,
+                //         ),
+                //       ),
+                //       trailing: Switch(
+                //         value: themeController.isDarkMode.value,
+                //         activeColor: effectiveDark
+                //             ? AppColors.glowPurpleTopLeft
+                //             : AppColors.lightPrimary,
+                //         onChanged: (value) {
+                //           themeController.toggleTheme(value);
+                //         },
+                //       ),
+                //     ),
                     
-                    // System Theme Option
-                    if (themeController.userOverride.value)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            themeController.resetToSystem();
-                          },
-                          child: Text(
-                            "Use system theme",
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: AppColors.lightPrimary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+                //   ],
+                // ),
 
                 Divider(color: subTextColor.withOpacity(0.3)),
 
@@ -251,4 +239,25 @@ class ProfileView extends StatelessWidget {
       onTap: onTap,
     );
   }
+}
+
+Widget _theme(
+   String title,
+    VoidCallback onTap,
+    double screenWidth,
+    Color textColor,
+){
+  return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontSize: screenWidth < 380 ? 14 : 16,
+          color: textColor,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      trailing: Icon(Icons.chevron_right, color: textColor.withOpacity(0.6)),
+      onTap: onTap,
+    );
 }

@@ -27,7 +27,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
-      permissionController.requestAllPermissions();
+      //permissionController.requestAllPermissions();
     });
     super.initState();
   }
