@@ -25,14 +25,14 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.sit.secure_me"
-    compileSdk = 34       // Flutter defaults to 34; you can keep flutter.compileSdkVersion
+    compileSdk = 36       // Flutter defaults to 34; you can keep flutter.compileSdkVersion
 
     ndkVersion = flutter.ndkVersion
 
     defaultConfig {
         applicationId = "com.sit.secure_me"
-        minSdk = 21       // Minimum required for Firebase
-        targetSdk = 34
+        minSdk = flutter.minSdkVersion       // Minimum required for Firebase
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true  // Recommended for Firebase
