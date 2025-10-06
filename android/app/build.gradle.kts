@@ -1,13 +1,22 @@
+// Import Java utilities for keystore handling
 import java.util.Properties
 import java.io.FileInputStream
 
 plugins {
+    // Core Android app plugin
     id("com.android.application")
+
+    // 🔥 Firebase plugin (Google Services)
+    id("com.google.gms.google-services")
+
+    // Kotlin Android plugin
     id("org.jetbrains.kotlin.android")
+
+    // Flutter Gradle plugin (needed for Flutter integration)
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Load keystore properties
+// 🧩 Load keystore properties (for release signing)
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
@@ -16,26 +25,30 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.sit.secure_me"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34       // Flutter defaults to 34; you can keep flutter.compileSdkVersion
+
     ndkVersion = flutter.ndkVersion
 
     defaultConfig {
         applicationId = "com.sit.secure_me"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 21       // Minimum required for Firebase
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true  // Recommended for Firebase
     }
 
+    // ✅ Compatibility
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
+    // ✅ Signing configuration
     signingConfigs {
         create("release") {
             if (keystoreProperties.isNotEmpty()) {
@@ -47,15 +60,26 @@ android {
         }
     }
 
+    // ✅ Build Types
     buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release")
+        getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
+        }
+
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true            // Shrinks & optimizes release APK
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
 
+// ✅ Required for Flutter integration
 flutter {
     source = "../.."
 }
