@@ -48,206 +48,227 @@ class _LoginViewState extends State<LoginView> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Get.width * 0.05,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: Get.height * 0.025),
-
-                          // Title
-                          Text(
-                            "Login Account",
-                            style: GoogleFonts.poppins(
-                              fontSize: Get.width * 0.07,
-                              color: themeController
-                                  .theme
-                                  .colorScheme
-                                  .onBackground,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: Get.height * 0.005),
-
-                          Text(
-                            "Welcome back",
-                            style: GoogleFonts.poppins(
-                              fontSize: Get.width * 0.045,
-                              color: themeController
-                                  .theme
-                                  .colorScheme
-                                  .onBackground
-                                  .withOpacity(0.7),
-                            ),
-                          ),
-
-                          SizedBox(height: Get.height * 0.05),
-
-                          // Login Image
-                          Center(
+                    child: Stack(
+                      children: [
+                        // ---------------- BACKGROUND IMAGE ----------------
+                        Positioned.fill(
+                          child: Opacity(
+                            opacity: isDark
+                                ? 0.22
+                                : 0.55, // darker in dark mode, lighter in light mode
                             child: Image.asset(
-                              'assets/images/login.png',
-                              height: Get.height * 0.3,
-                              width: Get.width * 0.4,
+                              isDark
+                                  ? "assets/images/bg_dark.png" // the purple neon girl
+                                  : "assets/images/bg_light.png", // the bright soft girl
+                              fit: BoxFit.cover,
                             ),
                           ),
+                        ),
 
-                          SizedBox(height: Get.height * 0.02),
-
-                          // Mobile Number Label
-                          Text(
-                            "Mobile Number",
-                            style: GoogleFonts.poppins(
-                              fontSize: Get.width * 0.04,
-                              fontWeight: FontWeight.bold,
-                              color: themeController
-                                  .theme
-                                  .colorScheme
-                                  .onBackground,
-                            ),
+                        // ---------------- MAIN CONTENT ----------------
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: Get.width * 0.05,
                           ),
-                          SizedBox(height: Get.height * 0.01),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: Get.height * 0.025),
 
-                          // Mobile TextField
-                          TextField(
-                            controller: mobileController,
-                            keyboardType: TextInputType.phone,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(10),
-                            ],
-                            decoration: InputDecoration(
-                              hintText: "Enter Mobile Number",
-                              hintStyle: GoogleFonts.poppins(
-                                color: AppTheme.loginHintTextColor(isDark),
-                              ),
-                              filled: true,
-                              fillColor: AppTheme.loginTextFieldBg(isDark),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: AppTheme.loginTextFieldBg(isDark),
+                              // Title
+                              Text(
+                                "Login Account",
+                                style: GoogleFonts.poppins(
+                                  fontSize: Get.width * 0.07,
+                                  color: themeController
+                                      .theme
+                                      .colorScheme
+                                      .onBackground,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                            style: GoogleFonts.poppins(
-                              color: AppTheme.loginTextColor(isDark),
-                            ),
-                            onChanged: (val) {
-                              controller.mobileNumber.value = val;
-                              if (val.length == 10)
-                                FocusScope.of(context).unfocus();
-                            },
-                          ),
+                              SizedBox(height: Get.height * 0.005),
 
-                          SizedBox(height: Get.height * 0.02),
+                              Text(
+                                "Welcome back",
+                                style: GoogleFonts.poppins(
+                                  fontSize: Get.width * 0.045,
+                                  color: themeController
+                                      .theme
+                                      .colorScheme
+                                      .onBackground
+                                      .withOpacity(0.7),
+                                ),
+                              ),
 
-                          // Keep me logged in checkbox
-                          Obx(
-                            () => Row(
-                              children: [
-                                Checkbox(
-                                  value: controller.keepLoggedIn.value,
-                                  onChanged: controller.toggleKeepLoggedIn,
-                                  fillColor: MaterialStateProperty.resolveWith(
-                                    (states) => isDark
-                                        ? AppColors.darkRadialGlow
-                                        : AppColors.lightPrimary,
+                              SizedBox(height: Get.height * 0.1),
+
+                              // Image (unchanged)
+                              Center(
+                                child: Image.asset(
+                                  'assets/images/login.png',
+                                  height: Get.height * 0.3,
+                                  width: Get.width * 0.4,
+                                ),
+                              ),
+                              SizedBox(height: Get.height * 0.02),
+
+                              // Mobile Number Label
+                              Text(
+                                "Mobile Number",
+                                style: GoogleFonts.poppins(
+                                  fontSize: Get.width * 0.04,
+                                  fontWeight: FontWeight.bold,
+                                  color: themeController
+                                      .theme
+                                      .colorScheme
+                                      .onBackground,
+                                ),
+                              ),
+                              SizedBox(height: Get.height * 0.01),
+
+                              // Mobile TextField
+                              TextField(
+                                controller: mobileController,
+                                keyboardType: TextInputType.phone,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(10),
+                                ],
+                                decoration: InputDecoration(
+                                  hintText: "Enter Mobile Number",
+                                  hintStyle: GoogleFonts.poppins(
+                                    color: AppTheme.loginHintTextColor(isDark),
                                   ),
-                                  checkColor: isDark
-                                      ? AppColors.darkHint
-                                      : AppColors.lightHint,
-                                ),
-                                Text(
-                                  "Keep me logged in",
-                                  style: GoogleFonts.poppins(
-                                    color: themeController
-                                        .theme
-                                        .colorScheme
-                                        .onBackground,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          SizedBox(height: Get.height * 0.05),
-
-                          // Login Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: Get.height * 0.07,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.loginButtonBackground(
-                                  isDark,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onPressed: () {
-                                if (mobileController.text.length != 10) {
-                                  Get.snackbar(
-                                    "Error",
-                                    "Please enter a valid 10-digit mobile number",
-                                    backgroundColor: AppColors.snackBarBg(
-                                      isDark,
+                                  filled: true,
+                                  fillColor: AppTheme.loginTextFieldBg(isDark),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: AppTheme.loginTextFieldBg(isDark),
                                     ),
-                                    colorText: AppColors.snackBarText(isDark),
-                                    snackPosition: SnackPosition.BOTTOM,
-                                  );
-                                } else {
-                                  controller.login();
-                                }
-                              },
-                              child: Text(
-                                "Log In",
+                                  ),
+                                ),
                                 style: GoogleFonts.poppins(
-                                  fontSize: Get.width * 0.05,
                                   color: AppTheme.loginTextColor(isDark),
                                 ),
+                                onChanged: (val) {
+                                  controller.mobileNumber.value = val;
+                                  if (val.length == 10)
+                                    FocusScope.of(context).unfocus();
+                                },
                               ),
-                            ),
-                          ),
 
-                          SizedBox(height: Get.height * 0.03),
+                              SizedBox(height: Get.height * 0.02),
 
-                          // OR separator
-                          Center(
-                            child: Text(
-                              'OR',
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                color: AppTheme.loginHintTextColor(isDark),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: Get.height * 0.01),
-
-                          // Create Account Button
-                          Center(
-                            child: TextButton(
-                              onPressed: () {
-                                Get.toNamed(AppRoutes.registerView);
-                              },
-                              child: Text(
-                                'Create Account',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  color: AppTheme.loginTextColor(isDark),
+                              // Keep me logged in checkbox
+                              Obx(
+                                () => Row(
+                                  children: [
+                                    Checkbox(
+                                      value: controller.keepLoggedIn.value,
+                                      onChanged: controller.toggleKeepLoggedIn,
+                                      fillColor:
+                                          MaterialStateProperty.resolveWith(
+                                            (states) => isDark
+                                                ? AppColors.darkRadialGlow
+                                                : AppColors.lightPrimary,
+                                          ),
+                                      checkColor: isDark
+                                          ? AppColors.darkHint
+                                          : AppColors.lightHint,
+                                    ),
+                                    Text(
+                                      "Keep me logged in",
+                                      style: GoogleFonts.poppins(
+                                        color: themeController
+                                            .theme
+                                            .colorScheme
+                                            .onBackground,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ),
 
-                          const Spacer(),
-                        ],
-                      ),
+                              SizedBox(height: Get.height * 0.05),
+
+                              // Login Button
+                              SizedBox(
+                                width: double.infinity,
+                                height: Get.height * 0.07,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        AppTheme.loginButtonBackground(isDark),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (mobileController.text.length != 10) {
+                                      Get.snackbar(
+                                        "Error",
+                                        "Please enter a valid 10-digit mobile number",
+                                        backgroundColor: AppColors.snackBarBg(
+                                          isDark,
+                                        ),
+                                        colorText: AppColors.snackBarText(
+                                          isDark,
+                                        ),
+                                        snackPosition: SnackPosition.BOTTOM,
+                                      );
+                                    } else {
+                                      controller.login();
+                                    }
+                                  },
+                                  child: Text(
+                                    "Log In",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: Get.width * 0.05,
+                                      color: AppTheme.loginTextColor(isDark),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(height: Get.height * 0.03),
+
+                              // OR separator
+                              Center(
+                                child: Text(
+                                  'OR',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: AppTheme.loginHintTextColor(isDark),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(height: Get.height * 0.01),
+
+                              // Create Account Button
+                              Center(
+                                child: TextButton(
+                                  onPressed: () {
+                                    Get.toNamed(AppRoutes.registerView);
+                                  },
+                                  child: Text(
+                                    'Create Account',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      color: AppTheme.loginTextColor(isDark),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              const Spacer(),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
