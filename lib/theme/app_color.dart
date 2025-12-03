@@ -126,4 +126,17 @@ class AppColors {
 
   static Color snackBarText(bool isDark) =>
       isDark ? AppColors.darkText : AppColors.lightText;
+
+  static Color loginIconCircle(bool isDark) =>
+      isDark ? const Color(0xFFB573FF) : const Color(0xFF8A2BE2);
+
+  static Color loginIconSymbol(bool isDark) =>
+      isDark ? Colors.white : Colors.white;
+  // Login Title ("Login Account")
+  static Color loginTitleColor(bool isDark) =>
+      isDark ? const Color(0xFFE96AAE) : const Color(0xFF000000);
+
+  // Welcome Text ("Welcome back")
+  static Color welcomeTextColor(bool isDark) =>
+      isDark ? const Color(0xFFE4A7CC) : const Color(0xFF6E6E6E);
 }

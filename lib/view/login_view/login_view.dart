@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/login_controller/login_controller.dart';
 import 'package:secure_me/controller/permission_controller/permission_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
@@ -73,45 +74,55 @@ class _LoginViewState extends State<LoginView> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: Get.height * 0.025),
+                              SizedBox(height: Get.height * 0.022),
 
                               // Title
-                              Text(
-                                "Login Account",
-                                style: GoogleFonts.poppins(
-                                  fontSize: Get.width * 0.07,
-                                  color: themeController
-                                      .theme
-                                      .colorScheme
-                                      .onBackground,
-                                  fontWeight: FontWeight.bold,
+                              Center(
+                                child: Text(
+                                  "Login Account",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: isDark
+                                        ? 34
+                                        : 32, // Login Account (bold)
+
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.loginTitleColor(isDark),
+                                  ),
                                 ),
                               ),
                               SizedBox(height: Get.height * 0.005),
 
-                              Text(
-                                "Welcome back",
-                                style: GoogleFonts.poppins(
-                                  fontSize: Get.width * 0.045,
-                                  color: themeController
-                                      .theme
-                                      .colorScheme
-                                      .onBackground
-                                      .withOpacity(0.7),
+                              Center(
+                                child: Text(
+                                  "Welcome back",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: isDark ? 21 : 20, // Welcome back
+                                    // Login Account (bold)
+                                    color: AppColors.welcomeTextColor(isDark),
+                                  ),
                                 ),
                               ),
 
-                              SizedBox(height: Get.height * 0.1),
+                              SizedBox(height: Get.height * 0.15),
 
                               // Image (unchanged)
                               Center(
-                                child: Image.asset(
-                                  'assets/images/login.png',
-                                  height: Get.height * 0.3,
-                                  width: Get.width * 0.4,
+                                child: Container(
+                                  width: Get.width * .28,
+                                  height: Get.width * .28,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.loginIconCircle(isDark),
+                                  ),
+                                  child: Icon(
+                                    RemixIcons.user_3_line,
+                                    size: Get.width * .18,
+                                    color: AppColors.loginIconSymbol(isDark),
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: Get.height * 0.02),
+
+                              SizedBox(height: Get.height * 0.06),
 
                               // Mobile Number Label
                               Text(
