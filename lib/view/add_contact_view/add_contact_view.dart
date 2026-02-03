@@ -123,10 +123,12 @@ class _AddContactViewState extends State<AddContactView> {
                         LengthLimitingTextInputFormatter(10),
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return "Phone number is required";
-                        if (!RegExp(r'^[0-9]{10}$').hasMatch(value))
+                        }
+                        if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
                           return "Enter a valid 10-digit phone number";
+                        }
                         return null;
                       },
                       isDark: isDark,

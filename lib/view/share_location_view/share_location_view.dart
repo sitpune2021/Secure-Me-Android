@@ -18,7 +18,7 @@ class ShareLocationView extends StatelessWidget {
       final theme = themeController.theme;
 
       return Scaffold(
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
           backgroundColor: theme.colorScheme.surface,
           elevation: 0,

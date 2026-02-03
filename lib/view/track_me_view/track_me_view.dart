@@ -30,7 +30,7 @@ class TrackMeView extends StatelessWidget {
           elevation: 0,
           iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         ),
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

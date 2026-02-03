@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/controller/register_controller/register_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
 
 class RegisterView extends StatefulWidget {
@@ -21,6 +21,8 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final RegisterController registerController = Get.put(RegisterController());
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class _RegisterViewState extends State<RegisterView> {
       final theme = themeController.theme;
 
       return Scaffold(
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
           leading: IconButton(
             onPressed: () => Get.back(),
@@ -40,13 +42,13 @@ class _RegisterViewState extends State<RegisterView> {
           title: Text(
             "Create Account",
             style: GoogleFonts.poppins(
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),
-          backgroundColor: theme.colorScheme.background,
+          backgroundColor: theme.colorScheme.surface,
           elevation: 0,
-          iconTheme: IconThemeData(color: theme.colorScheme.onBackground),
+          iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(Get.width * 0.05),
@@ -116,7 +118,7 @@ class _RegisterViewState extends State<RegisterView> {
                         padding: const EdgeInsets.all(8),
                         child: Icon(
                           Icons.edit,
-                          color: theme.colorScheme.onBackground,
+                          color: theme.colorScheme.onSurface,
                           size: 18,
                         ),
                       ),
@@ -130,8 +132,9 @@ class _RegisterViewState extends State<RegisterView> {
                 _buildProfileField("Name", _nameController, "Abc", isDark, (
                   value,
                 ) {
-                  if (value == null || value.trim().isEmpty)
+                  if (value == null || value.trim().isEmpty) {
                     return "Name is required";
+                  }
                   return null;
                 }),
                 SizedBox(height: Get.height * 0.03),
@@ -143,10 +146,12 @@ class _RegisterViewState extends State<RegisterView> {
                   "1111111111",
                   isDark,
                   (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return "Phone number is required";
-                    if (!RegExp(r'^[0-9]{10}$').hasMatch(value))
+                    }
+                    if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
                       return "Enter a valid 10-digit phone number";
+                    }
                     return null;
                   },
                   keyboardType: TextInputType.phone,
@@ -157,61 +162,94 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
                 SizedBox(height: Get.height * 0.03),
 
-                // Email Field
                 _buildProfileField(
                   "Email",
                   _emailController,
                   "abc@email.com",
                   isDark,
                   (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return "Email is required";
+                    }
                     if (!RegExp(
                       r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$',
-                    ).hasMatch(value))
+                    ).hasMatch(value)) {
                       return "Enter a valid email";
+                    }
                     return null;
                   },
                   keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: Get.height * 0.03),
+
+                // Password Field
+                _buildProfileField(
+                  "Password",
+                  _passwordController,
+                  "********",
+                  isDark,
+                  (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Password is required";
+                    }
+                    if (value.length < 6) {
+                      return "Password must be at least 6 characters";
+                    }
+                    return null;
+                  },
+                  obscureText: true,
                 ),
                 SizedBox(height: Get.height * 0.06),
 
                 // Register Button
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        vertical: Get.height * 0.02,
+                  child: Obx(
+                    () => ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: Get.height * 0.02,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        backgroundColor: isDark
+                            ? AppColors.glowPurpleTopLeft
+                            : AppColors.lightPrimary,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      backgroundColor: isDark
-                          ? AppColors.glowPurpleTopLeft
-                          : AppColors.lightPrimary,
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Get.snackbar(
-                          "Register",
-                          "Account created successfully",
-                          backgroundColor: AppColors.snackBarBg(isDark),
-                          colorText: AppColors.snackBarText(isDark),
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                        Get.toNamed(AppRoutes.loginView);
-                      }
-                    },
-                    child: Text(
-                      "Register",
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? AppColors.darkText
-                            : AppColors.lightText,
-                      ),
+                      onPressed: registerController.isLoading.value
+                          ? null
+                          : () {
+                              if (_formKey.currentState!.validate()) {
+                                registerController.registerUser(
+                                  name: _nameController.text.trim(),
+                                  email: _emailController.text.trim(),
+                                  phone: _phoneController.text.trim(),
+                                  password: _passwordController.text.trim(),
+                                );
+                              }
+                            },
+                      child: registerController.isLoading.value
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: isDark
+                                    ? AppColors.darkText
+                                    : AppColors.lightText,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              "Register",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? AppColors.darkText
+                                    : AppColors.lightText,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -231,6 +269,7 @@ class _RegisterViewState extends State<RegisterView> {
     String? Function(String?) validator, {
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
+    bool obscureText = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,6 +288,7 @@ class _RegisterViewState extends State<RegisterView> {
           controller: controller,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
+          obscureText: obscureText,
           validator: validator,
           decoration: InputDecoration(
             isDense: true,

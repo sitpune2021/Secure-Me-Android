@@ -132,7 +132,7 @@ class LocationView extends StatelessWidget {
                             () => Switch(
                               value: autoCallLocation.value,
                               onChanged: (val) => autoCallLocation.value = val,
-                              activeColor: isDark
+                              activeThumbColor: isDark
                                   ? AppColors.glowPurple
                                   : AppColors.lightPrimary,
                             ),

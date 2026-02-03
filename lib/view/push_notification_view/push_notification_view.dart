@@ -173,7 +173,7 @@ class PushNotificationView extends StatelessWidget {
         Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: isDark ? AppColors.glowPurple : AppColors.lightPrimary,
+          activeThumbColor: isDark ? AppColors.glowPurple : AppColors.lightPrimary,
         ),
       ],
     );

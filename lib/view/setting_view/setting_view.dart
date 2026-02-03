@@ -9,7 +9,7 @@ import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
 
 class SettingsView extends StatefulWidget {
-  SettingsView({super.key});
+  const SettingsView({super.key});
 
   @override
   State<SettingsView> createState() => _SettingsViewState();
@@ -28,7 +28,7 @@ class _SettingsViewState extends State<SettingsView> {
       return Stack(
         children: [
           // 🌗 Theme-aware background
-          Container(color: theme.colorScheme.background),
+          Container(color: theme.colorScheme.surface),
 
           // 🌟 Glow only in Dark Theme
           if (isDark)
@@ -136,7 +136,7 @@ class _SettingsViewState extends State<SettingsView> {
                       ),
                       value: controller.autoCallOnSos.value,
                       onChanged: controller.toggleAutoCall,
-                      activeColor: isDark
+                      activeThumbColor: isDark
                           ? AppColors.glowPurple
                           : AppColors.lightPrimary,
                     ),

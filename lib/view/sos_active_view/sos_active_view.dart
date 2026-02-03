@@ -15,7 +15,7 @@ class SosActivatedView extends StatelessWidget {
       final theme = themeController.theme;
 
       return Scaffold(
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.all(Get.width * 0.08),
@@ -36,8 +36,8 @@ class SosActivatedView extends StatelessWidget {
                         fontSize: Get.width * 0.05,
                         fontWeight: FontWeight.w500,
                         color: isDark
-                            ? theme.colorScheme.onBackground
-                            : theme.colorScheme.onBackground,
+                            ? theme.colorScheme.onSurface
+                            : theme.colorScheme.onSurface,
                       ),
                     ),
                   ],

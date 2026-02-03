@@ -21,6 +21,8 @@ class _LoginViewState extends State<LoginView> {
   final LoginController controller = Get.put(LoginController());
   final ThemeController themeController = Get.find<ThemeController>();
   final TextEditingController mobileController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final PermissionController permissionController = Get.put(
     PermissionController(),
   );
@@ -39,7 +41,7 @@ class _LoginViewState extends State<LoginView> {
       final isDark = themeController.isDarkMode.value;
 
       return Scaffold(
-        backgroundColor: themeController.theme.colorScheme.background,
+        backgroundColor: themeController.theme.colorScheme.surface,
         resizeToAvoidBottomInset: true,
         body: SafeArea(
           child: LayoutBuilder(
@@ -124,50 +126,297 @@ class _LoginViewState extends State<LoginView> {
 
                               SizedBox(height: Get.height * 0.06),
 
-                              // Mobile Number Label
-                              Text(
-                                "Mobile Number",
-                                style: GoogleFonts.poppins(
-                                  fontSize: Get.width * 0.04,
-                                  fontWeight: FontWeight.bold,
-                                  color: themeController
-                                      .theme
-                                      .colorScheme
-                                      .onBackground,
+                              // Tabs
+                              Obx(
+                                () => Container(
+                                  width: double.infinity,
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? const Color(0xFF2C2C2C)
+                                        : const Color(0xFFF2F4F5),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  padding: const EdgeInsets.all(4),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () =>
+                                              controller.isEmailLogin.value =
+                                                  true,
+                                          borderRadius: BorderRadius.circular(
+                                            25,
+                                          ),
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                              milliseconds: 300,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  controller.isEmailLogin.value
+                                                  ? (isDark
+                                                        ? const Color(
+                                                            0xFF424242,
+                                                          )
+                                                        : Colors.white)
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                              boxShadow:
+                                                  controller.isEmailLogin.value
+                                                  ? [
+                                                      BoxShadow(
+                                                        color: Colors.black
+                                                            .withOpacity(0.05),
+                                                        blurRadius: 4,
+                                                        spreadRadius: 1,
+                                                      ),
+                                                    ]
+                                                  : [],
+                                            ),
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            child: Text(
+                                              "Email",
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14,
+                                                color:
+                                                    controller
+                                                        .isEmailLogin
+                                                        .value
+                                                    ? (isDark
+                                                          ? Colors.white
+                                                          : const Color(
+                                                              0xFF6C757D,
+                                                            ))
+                                                    : (isDark
+                                                          ? Colors.white54
+                                                          : const Color(
+                                                              0xFFAAB8C2,
+                                                            )),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () =>
+                                              controller.isEmailLogin.value =
+                                                  false,
+                                          borderRadius: BorderRadius.circular(
+                                            25,
+                                          ),
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                              milliseconds: 300,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  !controller.isEmailLogin.value
+                                                  ? (isDark
+                                                        ? const Color(
+                                                            0xFF424242,
+                                                          )
+                                                        : Colors.white)
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                              boxShadow:
+                                                  !controller.isEmailLogin.value
+                                                  ? [
+                                                      BoxShadow(
+                                                        color: Colors.black
+                                                            .withOpacity(0.05),
+                                                        blurRadius: 4,
+                                                        spreadRadius: 1,
+                                                      ),
+                                                    ]
+                                                  : [],
+                                            ),
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            child: Text(
+                                              "Mobile",
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14,
+                                                color:
+                                                    !controller
+                                                        .isEmailLogin
+                                                        .value
+                                                    ? (isDark
+                                                          ? Colors.white
+                                                          : const Color(
+                                                              0xFF6C757D,
+                                                            ))
+                                                    : (isDark
+                                                          ? Colors.white54
+                                                          : const Color(
+                                                              0xFFAAB8C2,
+                                                            )),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: Get.height * 0.01),
 
-                              // Mobile TextField
-                              TextField(
-                                controller: mobileController,
-                                keyboardType: TextInputType.phone,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(10),
-                                ],
-                                decoration: InputDecoration(
-                                  hintText: "Enter Mobile Number",
-                                  hintStyle: GoogleFonts.poppins(
-                                    color: AppTheme.loginHintTextColor(isDark),
-                                  ),
-                                  filled: true,
-                                  fillColor: AppTheme.loginTextFieldBg(isDark),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: AppTheme.loginTextFieldBg(isDark),
-                                    ),
-                                  ),
+                              // Form Fields
+                              Obx(
+                                () => Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (controller.isEmailLogin.value) ...[
+                                      // EMAIL LOGIN
+                                      Text(
+                                        "Email",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: Get.width * 0.04,
+                                          fontWeight: FontWeight.bold,
+                                          color: themeController
+                                              .theme
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
+                                      ),
+                                      SizedBox(height: Get.height * 0.01),
+                                      TextField(
+                                        controller: emailController,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        decoration: InputDecoration(
+                                          hintText: "Enter Email",
+                                          hintStyle: GoogleFonts.poppins(
+                                            color: AppTheme.loginHintTextColor(
+                                              isDark,
+                                            ),
+                                          ),
+                                          filled: true,
+                                          fillColor: AppTheme.loginTextFieldBg(
+                                            isDark,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                        ),
+                                        style: GoogleFonts.poppins(
+                                          color: AppTheme.loginTextColor(
+                                            isDark,
+                                          ),
+                                        ),
+                                        onChanged: (val) =>
+                                            controller.email.value = val,
+                                      ),
+                                      SizedBox(height: Get.height * 0.02),
+                                      Text(
+                                        "Password",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: Get.width * 0.04,
+                                          fontWeight: FontWeight.bold,
+                                          color: themeController
+                                              .theme
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
+                                      ),
+                                      SizedBox(height: Get.height * 0.01),
+                                      TextField(
+                                        controller: passwordController,
+                                        obscureText: true,
+                                        decoration: InputDecoration(
+                                          hintText: "Enter Password",
+                                          hintStyle: GoogleFonts.poppins(
+                                            color: AppTheme.loginHintTextColor(
+                                              isDark,
+                                            ),
+                                          ),
+                                          filled: true,
+                                          fillColor: AppTheme.loginTextFieldBg(
+                                            isDark,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                        ),
+                                        style: GoogleFonts.poppins(
+                                          color: AppTheme.loginTextColor(
+                                            isDark,
+                                          ),
+                                        ),
+                                        onChanged: (val) =>
+                                            controller.password.value = val,
+                                      ),
+                                    ] else ...[
+                                      // PHONE LOGIN
+                                      Text(
+                                        "Mobile Number",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: Get.width * 0.04,
+                                          fontWeight: FontWeight.bold,
+                                          color: themeController
+                                              .theme
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
+                                      ),
+                                      SizedBox(height: Get.height * 0.01),
+                                      TextField(
+                                        controller: mobileController,
+                                        keyboardType: TextInputType.phone,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                          LengthLimitingTextInputFormatter(10),
+                                        ],
+                                        decoration: InputDecoration(
+                                          hintText: "Enter Mobile Number",
+                                          hintStyle: GoogleFonts.poppins(
+                                            color: AppTheme.loginHintTextColor(
+                                              isDark,
+                                            ),
+                                          ),
+                                          filled: true,
+                                          fillColor: AppTheme.loginTextFieldBg(
+                                            isDark,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                        ),
+                                        style: GoogleFonts.poppins(
+                                          color: AppTheme.loginTextColor(
+                                            isDark,
+                                          ),
+                                        ),
+                                        onChanged: (val) {
+                                          controller.mobileNumber.value = val;
+                                          if (val.length == 10) {
+                                            FocusScope.of(context).unfocus();
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ],
                                 ),
-                                style: GoogleFonts.poppins(
-                                  color: AppTheme.loginTextColor(isDark),
-                                ),
-                                onChanged: (val) {
-                                  controller.mobileNumber.value = val;
-                                  if (val.length == 10)
-                                    FocusScope.of(context).unfocus();
-                                },
                               ),
 
                               SizedBox(height: Get.height * 0.02),
@@ -180,7 +429,7 @@ class _LoginViewState extends State<LoginView> {
                                       value: controller.keepLoggedIn.value,
                                       onChanged: controller.toggleKeepLoggedIn,
                                       fillColor:
-                                          MaterialStateProperty.resolveWith(
+                                          WidgetStateProperty.resolveWith(
                                             (states) => isDark
                                                 ? AppColors.darkRadialGlow
                                                 : AppColors.lightPrimary,
@@ -195,7 +444,7 @@ class _LoginViewState extends State<LoginView> {
                                         color: themeController
                                             .theme
                                             .colorScheme
-                                            .onBackground,
+                                            .onSurface,
                                       ),
                                     ),
                                   ],
@@ -208,37 +457,45 @@ class _LoginViewState extends State<LoginView> {
                               SizedBox(
                                 width: double.infinity,
                                 height: Get.height * 0.07,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        AppTheme.loginButtonBackground(isDark),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                child: Obx(
+                                  () => ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          AppTheme.loginButtonBackground(
+                                            isDark,
+                                          ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
                                     ),
-                                  ),
-                                  onPressed: () {
-                                    if (mobileController.text.length != 10) {
-                                      Get.snackbar(
-                                        "Error",
-                                        "Please enter a valid 10-digit mobile number",
-                                        backgroundColor: AppColors.snackBarBg(
-                                          isDark,
-                                        ),
-                                        colorText: AppColors.snackBarText(
-                                          isDark,
-                                        ),
-                                        snackPosition: SnackPosition.BOTTOM,
-                                      );
-                                    } else {
-                                      controller.login();
-                                    }
-                                  },
-                                  child: Text(
-                                    "Log In",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: Get.width * 0.05,
-                                      color: AppTheme.loginTextColor(isDark),
-                                    ),
+                                    onPressed: controller.isLoading.value
+                                        ? null
+                                        : () {
+                                            controller.login();
+                                          },
+                                    child: controller.isLoading.value
+                                        ? SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                    AppTheme.loginTextColor(
+                                                      isDark,
+                                                    ),
+                                                  ),
+                                            ),
+                                          )
+                                        : Text(
+                                            "Log In",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: Get.width * 0.05,
+                                              color: AppTheme.loginTextColor(
+                                                isDark,
+                                              ),
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ),

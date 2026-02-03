@@ -130,8 +130,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                   _emailController,
                   "abc@email.com",
                   (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return "Email is required";
+                    }
                     if (!RegExp(
                       r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$',
                     ).hasMatch(value)) {
