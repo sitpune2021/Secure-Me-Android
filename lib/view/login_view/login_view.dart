@@ -271,150 +271,166 @@ class _LoginViewState extends State<LoginView> {
                                 ),
                               ),
 
-                              // Form Fields
+                              // Form Fields with IndexedStack for stability
+                              SizedBox(height: Get.height * 0.03),
                               Obx(
-                                () => Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                () => IndexedStack(
+                                  index: controller.isEmailLogin.value ? 0 : 1,
+                                  sizing: StackFit.loose,
                                   children: [
-                                    if (controller.isEmailLogin.value) ...[
-                                      // EMAIL LOGIN
-                                      Text(
-                                        "Email",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: Get.width * 0.04,
-                                          fontWeight: FontWeight.bold,
-                                          color: themeController
-                                              .theme
-                                              .colorScheme
-                                              .onSurface,
+                                    // EMAIL LOGIN FORM
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Email",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: Get.width * 0.04,
+                                            fontWeight: FontWeight.bold,
+                                            color: themeController
+                                                .theme
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(height: Get.height * 0.01),
-                                      TextField(
-                                        controller: emailController,
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                        decoration: InputDecoration(
-                                          hintText: "Enter Email",
-                                          hintStyle: GoogleFonts.poppins(
-                                            color: AppTheme.loginHintTextColor(
+                                        SizedBox(height: Get.height * 0.01),
+                                        TextField(
+                                          controller: emailController,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          decoration: InputDecoration(
+                                            hintText: "Enter Email",
+                                            hintStyle: GoogleFonts.poppins(
+                                              color:
+                                                  AppTheme.loginHintTextColor(
+                                                    isDark,
+                                                  ),
+                                            ),
+                                            filled: true,
+                                            fillColor:
+                                                AppTheme.loginTextFieldBg(
+                                                  isDark,
+                                                ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              borderSide: BorderSide.none,
+                                            ),
+                                          ),
+                                          style: GoogleFonts.poppins(
+                                            color: AppTheme.loginTextColor(
                                               isDark,
                                             ),
                                           ),
-                                          filled: true,
-                                          fillColor: AppTheme.loginTextFieldBg(
-                                            isDark,
+                                          onChanged: (val) =>
+                                              controller.email.value = val,
+                                        ),
+                                        SizedBox(height: Get.height * 0.02),
+                                        Text(
+                                          "Password",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: Get.width * 0.04,
+                                            fontWeight: FontWeight.bold,
+                                            color: themeController
+                                                .theme
+                                                .colorScheme
+                                                .onSurface,
                                           ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
+                                        ),
+                                        SizedBox(height: Get.height * 0.01),
+                                        TextField(
+                                          controller: passwordController,
+                                          obscureText: true,
+                                          decoration: InputDecoration(
+                                            hintText: "Enter Password",
+                                            hintStyle: GoogleFonts.poppins(
+                                              color:
+                                                  AppTheme.loginHintTextColor(
+                                                    isDark,
+                                                  ),
                                             ),
-                                            borderSide: BorderSide.none,
+                                            filled: true,
+                                            fillColor:
+                                                AppTheme.loginTextFieldBg(
+                                                  isDark,
+                                                ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              borderSide: BorderSide.none,
+                                            ),
                                           ),
-                                        ),
-                                        style: GoogleFonts.poppins(
-                                          color: AppTheme.loginTextColor(
-                                            isDark,
-                                          ),
-                                        ),
-                                        onChanged: (val) =>
-                                            controller.email.value = val,
-                                      ),
-                                      SizedBox(height: Get.height * 0.02),
-                                      Text(
-                                        "Password",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: Get.width * 0.04,
-                                          fontWeight: FontWeight.bold,
-                                          color: themeController
-                                              .theme
-                                              .colorScheme
-                                              .onSurface,
-                                        ),
-                                      ),
-                                      SizedBox(height: Get.height * 0.01),
-                                      TextField(
-                                        controller: passwordController,
-                                        obscureText: true,
-                                        decoration: InputDecoration(
-                                          hintText: "Enter Password",
-                                          hintStyle: GoogleFonts.poppins(
-                                            color: AppTheme.loginHintTextColor(
+                                          style: GoogleFonts.poppins(
+                                            color: AppTheme.loginTextColor(
                                               isDark,
                                             ),
                                           ),
-                                          filled: true,
-                                          fillColor: AppTheme.loginTextFieldBg(
-                                            isDark,
+                                          onChanged: (val) =>
+                                              controller.password.value = val,
+                                        ),
+                                      ],
+                                    ),
+                                    // MOBILE LOGIN FORM
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Mobile Number",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: Get.width * 0.04,
+                                            fontWeight: FontWeight.bold,
+                                            color: themeController
+                                                .theme
+                                                .colorScheme
+                                                .onSurface,
                                           ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
+                                        ),
+                                        SizedBox(height: Get.height * 0.01),
+                                        TextField(
+                                          controller: mobileController,
+                                          keyboardType: TextInputType.phone,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                            LengthLimitingTextInputFormatter(
                                               10,
                                             ),
-                                            borderSide: BorderSide.none,
+                                          ],
+                                          decoration: InputDecoration(
+                                            hintText: "Enter Mobile Number",
+                                            hintStyle: GoogleFonts.poppins(
+                                              color:
+                                                  AppTheme.loginHintTextColor(
+                                                    isDark,
+                                                  ),
+                                            ),
+                                            filled: true,
+                                            fillColor:
+                                                AppTheme.loginTextFieldBg(
+                                                  isDark,
+                                                ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              borderSide: BorderSide.none,
+                                            ),
                                           ),
-                                        ),
-                                        style: GoogleFonts.poppins(
-                                          color: AppTheme.loginTextColor(
-                                            isDark,
-                                          ),
-                                        ),
-                                        onChanged: (val) =>
-                                            controller.password.value = val,
-                                      ),
-                                    ] else ...[
-                                      // PHONE LOGIN
-                                      Text(
-                                        "Mobile Number",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: Get.width * 0.04,
-                                          fontWeight: FontWeight.bold,
-                                          color: themeController
-                                              .theme
-                                              .colorScheme
-                                              .onSurface,
-                                        ),
-                                      ),
-                                      SizedBox(height: Get.height * 0.01),
-                                      TextField(
-                                        controller: mobileController,
-                                        keyboardType: TextInputType.phone,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter
-                                              .digitsOnly,
-                                          LengthLimitingTextInputFormatter(10),
-                                        ],
-                                        decoration: InputDecoration(
-                                          hintText: "Enter Mobile Number",
-                                          hintStyle: GoogleFonts.poppins(
-                                            color: AppTheme.loginHintTextColor(
+                                          style: GoogleFonts.poppins(
+                                            color: AppTheme.loginTextColor(
                                               isDark,
                                             ),
                                           ),
-                                          filled: true,
-                                          fillColor: AppTheme.loginTextFieldBg(
-                                            isDark,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                            borderSide: BorderSide.none,
-                                          ),
+                                          onChanged: (val) {
+                                            controller.mobileNumber.value = val;
+                                            if (val.length == 10) {
+                                              FocusScope.of(context).unfocus();
+                                            }
+                                          },
                                         ),
-                                        style: GoogleFonts.poppins(
-                                          color: AppTheme.loginTextColor(
-                                            isDark,
-                                          ),
-                                        ),
-                                        onChanged: (val) {
-                                          controller.mobileNumber.value = val;
-                                          if (val.length == 10) {
-                                            FocusScope.of(context).unfocus();
-                                          }
-                                        },
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
