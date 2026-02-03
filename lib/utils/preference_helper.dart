@@ -51,7 +51,9 @@ class PreferenceHelper {
   // Get user name
   static Future<String?> getUserName() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyUserName);
+    final name = prefs.getString(_keyUserName);
+    print('📖 User name retrieved from SharedPreferences: $name');
+    return name;
   }
 
   // Save user email
@@ -77,7 +79,9 @@ class PreferenceHelper {
   // Get user phone
   static Future<String?> getUserPhone() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyUserPhone);
+    final phone = prefs.getString(_keyUserPhone);
+    print('📖 User phone retrieved from SharedPreferences: $phone');
+    return phone;
   }
 
   // Save login status
@@ -91,6 +95,11 @@ class PreferenceHelper {
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyIsLoggedIn) ?? false;
+  }
+
+  // Alias for getLoginStatus (for consistency)
+  static Future<bool> getLoginStatus() async {
+    return isLoggedIn();
   }
 
   // Clear all user data (logout)
@@ -114,11 +123,30 @@ class PreferenceHelper {
     String? email,
     String? phone,
   }) async {
+    print('💾 saveUserData called with:');
+    print('  - Token: ${token.substring(0, 10)}...');
+    print('  - User ID: $userId');
+    print('  - Name: $name');
+    print('  - Email: $email');
+    print('  - Phone: $phone');
+
     await saveToken(token);
     await saveUserId(userId);
-    if (name != null) await saveUserName(name);
-    if (email != null) await saveUserEmail(email);
-    if (phone != null) await saveUserPhone(phone);
+    if (name != null && name.isNotEmpty) {
+      await saveUserName(name);
+    } else {
+      print('⚠️ Name is null or empty, not saving');
+    }
+    if (email != null && email.isNotEmpty) {
+      await saveUserEmail(email);
+    } else {
+      print('⚠️ Email is null or empty, not saving');
+    }
+    if (phone != null && phone.isNotEmpty) {
+      await saveUserPhone(phone);
+    } else {
+      print('⚠️ Phone is null or empty, not saving');
+    }
     await saveLoginStatus(true);
     await _createSession();
     print('✅ All user data saved successfully');

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/utils/preference_helper.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -20,6 +22,59 @@ class _EditProfileViewState extends State<EditProfileView> {
   final TextEditingController _emailController = TextEditingController();
 
   final ThemeController themeController = Get.find<ThemeController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    log(
+      '🔍 EditProfileView: Loading user data from SharedPreferences...',
+      name: 'EditProfileView',
+    );
+    final name = await PreferenceHelper.getUserName();
+    final email = await PreferenceHelper.getUserEmail();
+    final phone = await PreferenceHelper.getUserPhone();
+
+    log(
+      '🔍 EditProfileView: Retrieved - Name: $name, Email: $email, Phone: $phone',
+      name: 'EditProfileView',
+    );
+
+    setState(() {
+      if (name != null && name.isNotEmpty) {
+        _nameController.text = name;
+        log(
+          '✅ EditProfileView: Name field populated: $name',
+          name: 'EditProfileView',
+        );
+      }
+      if (email != null && email.isNotEmpty) {
+        _emailController.text = email;
+        log(
+          '✅ EditProfileView: Email field populated: $email',
+          name: 'EditProfileView',
+        );
+      }
+      if (phone != null && phone.isNotEmpty) {
+        _phoneController.text = phone;
+        log(
+          '✅ EditProfileView: Phone field populated: $phone',
+          name: 'EditProfileView',
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,10 +231,31 @@ class _EditProfileViewState extends State<EditProfileView> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
+                          log(
+                            '💾 EditProfileView: Saving updated profile data...',
+                            name: 'EditProfileView',
+                          );
+
+                          // Save updated data to SharedPreferences
+                          await PreferenceHelper.saveUserName(
+                            _nameController.text.trim(),
+                          );
+                          await PreferenceHelper.saveUserEmail(
+                            _emailController.text.trim(),
+                          );
+                          await PreferenceHelper.saveUserPhone(
+                            _phoneController.text.trim(),
+                          );
+
+                          log(
+                            '✅ EditProfileView: Profile data saved successfully',
+                            name: 'EditProfileView',
+                          );
+
                           Get.snackbar(
-                            "Edit",
+                            "Success",
                             "Profile updated successfully",
                             backgroundColor: isDark
                                 ? AppColors.darkPrimary
@@ -187,6 +263,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                             colorText: Colors.white,
                             snackPosition: SnackPosition.BOTTOM,
                           );
+
+                          // Navigate back after a short delay
+                          Future.delayed(const Duration(milliseconds: 500), () {
+                            Get.back();
+                          });
                         }
                       },
                       child: Text(
@@ -209,67 +290,69 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   Widget _buildProfileField(
-  String label,
-  TextEditingController controller,
-  String hint,
-  String? Function(String?) validator,
-  bool isDark, {
-  TextInputType keyboardType = TextInputType.text,
-  List<TextInputFormatter>? inputFormatters,
-}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Label
-      Text(
-        label,
-        style: GoogleFonts.poppins(
-          color: isDark ? AppColors.darkText : AppColors.lightText,
-          fontSize: 14,
+    String label,
+    TextEditingController controller,
+    String hint,
+    String? Function(String?) validator,
+    bool isDark, {
+    TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Label
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            color: isDark ? AppColors.darkText : AppColors.lightText,
+            fontSize: 14,
+          ),
         ),
-      ),
-      SizedBox(height: Get.height * 0.008),
+        SizedBox(height: Get.height * 0.008),
 
-      // TextField
-      TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        inputFormatters: inputFormatters,
-        validator: validator,
-        style: GoogleFonts.poppins(
-          color: isDark ? AppColors.darkText : AppColors.lightText,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+        // TextField
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+          validator: validator,
+          style: GoogleFonts.poppins(
+            color: isDark ? AppColors.darkText : AppColors.lightText,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+          decoration: InputDecoration(
+            isDense: true,
+            filled: false, // 🔹 prevent Material filled rounded effect
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+              ),
+            ),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+              ),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: isDark
+                    ? AppColors.darkRadialGlow
+                    : AppColors.lightPrimary,
+                width: 2,
+              ),
+            ),
+            hintText: hint,
+            hintStyle: GoogleFonts.poppins(
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+            ),
+            contentPadding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
+          ),
         ),
-        decoration: InputDecoration(
-          isDense: true,
-          filled: false, // 🔹 prevent Material filled rounded effect
-          border: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
-            ),
-          ),
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
-            ),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: isDark ? AppColors.darkRadialGlow : AppColors.lightPrimary,
-              width: 2,
-            ),
-          ),
-          hintText: hint,
-          hintStyle: GoogleFonts.poppins(
-            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-          ),
-          contentPadding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
-        ),
-      ),
 
-      SizedBox(height: Get.height * 0.01),
-    ],
-  );
-}
+        SizedBox(height: Get.height * 0.01),
+      ],
+    );
+  }
 }

@@ -62,31 +62,89 @@ class LoginController extends GetxController {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
+        print('🔍 Response is 200 OK');
+        print('🔍 Checking data[status]...');
+
         if (data['status'] == true) {
           print('✅ Login successful for: ${email.value}');
 
-          // Store token and user data
+          print('🔍 Checking user data in response...');
+          print('🔍 Full data object: $data');
+          print('🔍 Data keys: ${data.keys}');
+          print('🔍 Data type: ${data.runtimeType}');
+
+          // Try to find token in different locations
+          String? token;
+          Map<String, dynamic>? user;
+
           if (data['token'] != null) {
-            await PreferenceHelper.saveToken(data['token']);
+            token = data['token'];
+            print('✅ Found token at data["token"]');
+          } else if (data['data'] != null && data['data']['token'] != null) {
+            token = data['data']['token'];
+            print('✅ Found token at data["data"]["token"]');
+          } else if (data['access_token'] != null) {
+            token = data['access_token'];
+            print('✅ Found token at data["access_token"]');
           }
 
+          // Try to find user in different locations
           if (data['user'] != null) {
-            final user = data['user'];
-            if (user['id'] != null) {
-              await PreferenceHelper.saveUserId(user['id'].toString());
-            }
-            if (user['name'] != null) {
-              await PreferenceHelper.saveUserName(user['name']);
-            }
-            if (user['email'] != null) {
-              await PreferenceHelper.saveUserEmail(user['email']);
-            }
-            if (user['phone_no'] != null) {
-              await PreferenceHelper.saveUserPhone(user['phone_no']);
-            }
+            user = data['user'];
+            print('✅ Found user at data["user"]');
+          } else if (data['data'] != null && data['data']['user'] != null) {
+            user = data['data']['user'];
+            print('✅ Found user at data["data"]["user"]');
+          } else if (data['data'] != null) {
+            user = data['data'];
+            print('✅ Using data["data"] as user object');
           }
 
-          await PreferenceHelper.saveLoginStatus(true);
+          print('🔍 Token found: ${token != null}');
+          print('🔍 User found: ${user != null}');
+
+          if (user != null && token != null) {
+            print('🔍 User object: $user');
+            print('🔍 User keys: ${user.keys}');
+            print('🔍 User ID: ${user['id']}');
+            print('🔍 User name: ${user['name']}');
+            print('🔍 User email: ${user['email']}');
+            print('🔍 User phone: ${user['phone_no'] ?? user['phone']}');
+
+            // Use centralized saveUserData method which creates session automatically
+            await PreferenceHelper.saveUserData(
+              token: token,
+              userId: user['id']?.toString() ?? '',
+              name: user['name'],
+              email: user['email'],
+              phone: user['phone_no'] ?? user['phone'],
+            );
+
+            print('✅ All user data and session saved successfully');
+          } else {
+            print('⚠️ Missing user object or token in API response!');
+            print('⚠️ Has user key: ${data.containsKey('user')}');
+            print('⚠️ Has token key: ${data.containsKey('token')}');
+            print('⚠️ User value: ${data['user']}');
+            print('⚠️ Token value: ${data['token']}');
+            print('⚠️ Full response for debugging: $data');
+
+            // Fallback: save token only if available
+            if (token != null) {
+              await PreferenceHelper.saveToken(token);
+              await PreferenceHelper.saveLoginStatus(true);
+              print('✅ Token saved from fallback');
+            } else {
+              print('❌ Cannot proceed without token!');
+              Get.snackbar(
+                "Error",
+                "Login response is missing required data. Please contact support.",
+                backgroundColor: Colors.red,
+                colorText: Colors.white,
+              );
+              return;
+            }
+          }
 
           Get.snackbar(
             "Success",

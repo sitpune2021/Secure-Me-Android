@@ -25,15 +25,23 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> _loadUserData() async {
+    print('🔍 ProfileView: Loading user data from SharedPreferences...');
     final name = await PreferenceHelper.getUserName();
     final phone = await PreferenceHelper.getUserPhone();
+    print('🔍 ProfileView: Retrieved name: $name, phone: $phone');
 
     setState(() {
       if (name != null && name.isNotEmpty) {
         userName = name;
+        print('✅ ProfileView: User name set to: $userName');
+      } else {
+        print('⚠️ ProfileView: No user name found, using default: $userName');
       }
       if (phone != null && phone.isNotEmpty) {
         userPhone = phone;
+        print('✅ ProfileView: User phone set to: $userPhone');
+      } else {
+        print('⚠️ ProfileView: No user phone found, using default: $userPhone');
       }
     });
   }

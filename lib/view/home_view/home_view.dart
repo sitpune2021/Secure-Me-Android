@@ -21,20 +21,43 @@ class _HomeViewState extends State<HomeView> {
   final HomeController controller = Get.put(HomeController());
   final ThemeController themeController = Get.find<ThemeController>();
   String userName = "User";
+  String greeting = "Good Morning";
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _updateGreeting();
   }
 
   Future<void> _loadUserData() async {
+    print('🔍 HomeView: Loading user data from SharedPreferences...');
     final name = await PreferenceHelper.getUserName();
+    print('🔍 HomeView: Retrieved name: $name');
     if (name != null && name.isNotEmpty) {
       setState(() {
         userName = name;
       });
+      print('✅ HomeView: User name set to: $userName');
+    } else {
+      print('⚠️ HomeView: No user name found, using default: $userName');
     }
+  }
+
+  void _updateGreeting() {
+    final hour = DateTime.now().hour;
+    setState(() {
+      if (hour >= 0 && hour < 12) {
+        greeting = "Good Morning ☀️";
+      } else if (hour >= 12 && hour < 17) {
+        greeting = "Good Afternoon 🌤️";
+      } else if (hour >= 17 && hour < 21) {
+        greeting = "Good Evening 🌆";
+      } else {
+        greeting = "Good Night 🌙";
+      }
+    });
+    print('👋 Greeting set to: $greeting (Hour: $hour)');
   }
 
   @override
@@ -140,7 +163,7 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
                     Text(
-                      "Good Morning !",
+                      greeting,
                       style: GoogleFonts.poppins(
                         fontSize: width * 0.035,
                         color: isDark ? Colors.white70 : Colors.black54,

@@ -62,28 +62,58 @@ class OtpController extends GetxController {
         if (data['status'] == true) {
           print('✅ OTP verified successfully for: ${phoneNumber.value}');
 
-          // Store token and user data
+          print('🔍 Checking user data in OTP response...');
+          print('🔍 Full data object: $data');
+          print('🔍 Data keys: ${data.keys}');
+
+          // Try to find token in different locations
+          String? token;
+          Map<String, dynamic>? user;
+
           if (data['token'] != null) {
-            await PreferenceHelper.saveToken(data['token']);
+            token = data['token'];
+            print('✅ Found token at data["token"]');
+          } else if (data['data'] != null && data['data']['token'] != null) {
+            token = data['data']['token'];
+            print('✅ Found token at data["data"]["token"]');
           }
 
+          // Try to find user in different locations
           if (data['user'] != null) {
-            final user = data['user'];
-            if (user['id'] != null) {
-              await PreferenceHelper.saveUserId(user['id'].toString());
-            }
-            if (user['name'] != null) {
-              await PreferenceHelper.saveUserName(user['name']);
-            }
-            if (user['email'] != null) {
-              await PreferenceHelper.saveUserEmail(user['email']);
-            }
-            if (user['phone_no'] != null) {
-              await PreferenceHelper.saveUserPhone(user['phone_no']);
-            }
+            user = data['user'];
+            print('✅ Found user at data["user"]');
+          } else if (data['data'] != null && data['data']['user'] != null) {
+            user = data['data']['user'];
+            print('✅ Found user at data["data"]["user"]');
           }
 
-          await PreferenceHelper.saveLoginStatus(true);
+          print('🔍 Token found: ${token != null}');
+          print('🔍 User found: ${user != null}');
+
+          if (user != null && token != null) {
+            print('🔍 User object: $user');
+            print('🔍 User keys: ${user.keys}');
+
+            // Use centralized saveUserData method which creates session automatically
+            await PreferenceHelper.saveUserData(
+              token: token,
+              userId: user['id']?.toString() ?? '',
+              name: user['name'],
+              email: user['email'],
+              phone: user['phone_no'] ?? user['phone'],
+            );
+
+            print('✅ All user data and session saved successfully');
+          } else {
+            print('⚠️ Missing user object or token in OTP API response!');
+
+            // Fallback: save token only if available
+            if (token != null) {
+              await PreferenceHelper.saveToken(token);
+              await PreferenceHelper.saveLoginStatus(true);
+              print('✅ Token saved from fallback');
+            }
+          }
 
           Get.snackbar(
             "Success",
