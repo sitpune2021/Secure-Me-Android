@@ -19,24 +19,24 @@ class AddFriendsView extends StatelessWidget {
       final isDark = themeController.isDarkMode.value;
 
       return Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0D0B1A) : Colors.white,
+        backgroundColor: AppColors.background(isDark),
         appBar: AppBar(
-          backgroundColor: isDark ? const Color(0xFF0D0B1A) : Colors.white,
+          backgroundColor: AppColors.background(isDark),
           elevation: 0,
           title: Text(
             'Add Friends',
             style: GoogleFonts.poppins(
               fontSize: Get.width * 0.055,
               fontWeight: FontWeight.w600,
-              color: isDark ? Colors.pinkAccent : Colors.black,
+              color: isDark ? AppColors.pinkAccent : AppColors.pureBlack,
             ),
           ),
           centerTitle: Platform.isAndroid ? false : true,
-          surfaceTintColor: Colors.transparent,
+          surfaceTintColor: AppColors.transparent,
           leading: IconButton(
             icon: Icon(
               Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
-              color: isDark ? Colors.white : Colors.black,
+              color: AppColors.text(isDark),
             ),
             onPressed: () => Get.back(),
           ),
@@ -49,8 +49,8 @@ class AddFriendsView extends StatelessWidget {
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: isDark
-                          ? Colors.purpleAccent
-                          : Colors.grey.shade500,
+                          ? AppColors.purpleAccent
+                          : AppColors.greyShade500,
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(10),
@@ -58,7 +58,7 @@ class AddFriendsView extends StatelessWidget {
                   padding: const EdgeInsets.all(6),
                   child: Icon(
                     Icons.add,
-                    color: isDark ? Colors.white : Colors.black,
+                    color: AppColors.text(isDark),
                     size: 26,
                   ),
                 ),
@@ -134,9 +134,7 @@ class AddFriendsView extends StatelessWidget {
                       return Center(
                         child: Text(
                           "No friends found",
-                          style: TextStyle(
-                            color: isDark ? Colors.grey.shade400 : Colors.grey,
-                          ),
+                          style: TextStyle(color: AppColors.greyText(isDark)),
                         ),
                       );
                     }
@@ -147,14 +145,12 @@ class AddFriendsView extends StatelessWidget {
                         return Container(
                           margin: EdgeInsets.only(bottom: Get.height * 0.015),
                           decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF1E1C2A)
-                                : Colors.grey.shade100,
+                            color: AppColors.card(isDark),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isDark
-                                  ? Colors.purpleAccent
-                                  : Colors.grey.shade500,
+                                  ? AppColors.purpleAccent
+                                  : AppColors.greyShade500,
                               width: 1,
                             ),
                           ),
@@ -172,7 +168,7 @@ class AddFriendsView extends StatelessWidget {
                               style: GoogleFonts.poppins(
                                 fontSize: Get.width * 0.045,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white : Colors.black,
+                                color: AppColors.text(isDark),
                               ),
                             ),
                             subtitle: Text(
@@ -180,8 +176,8 @@ class AddFriendsView extends StatelessWidget {
                               style: GoogleFonts.poppins(
                                 fontSize: Get.width * 0.035,
                                 color: isDark
-                                    ? Colors.grey.shade400
-                                    : Colors.grey,
+                                    ? AppColors.greyShade400
+                                    : AppColors.grey,
                               ),
                             ),
                             onTap: () {

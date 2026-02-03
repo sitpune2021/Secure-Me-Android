@@ -124,7 +124,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           gradient: RadialGradient(
                             colors: [
                               AppColors.darkRadialGlow.withOpacity(0.6),
-                              Colors.transparent,
+                              AppColors.transparent,
                             ],
                             stops: const [0.1, 1],
                             radius: 0.7,
@@ -135,7 +135,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                       padding: const EdgeInsets.all(2),
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: AppColors.pureWhite,
                       ),
                       child: const CircleAvatar(
                         radius: 65,
@@ -222,8 +222,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                     ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
+                        backgroundColor: AppColors.transparent,
+                        shadowColor: AppColors.transparent,
                         padding: EdgeInsets.symmetric(
                           vertical: Get.height * 0.02,
                         ),
@@ -260,7 +260,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             backgroundColor: isDark
                                 ? AppColors.darkPrimary
                                 : AppColors.lightPrimary,
-                            colorText: Colors.white,
+                            colorText: AppColors.pureWhite,
                             snackPosition: SnackPosition.BOTTOM,
                           );
 
@@ -275,7 +275,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: AppColors.pureWhite,
                         ),
                       ),
                     ),
@@ -345,7 +345,7 @@ class _EditProfileViewState extends State<EditProfileView> {
             ),
             hintText: hint,
             hintStyle: GoogleFonts.poppins(
-              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+              color: isDark ? AppColors.greyShade400 : AppColors.greyShade600,
             ),
             contentPadding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
           ),

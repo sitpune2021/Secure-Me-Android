@@ -162,15 +162,16 @@ class _LoginViewState extends State<LoginView> {
                                                         ? const Color(
                                                             0xFF424242,
                                                           )
-                                                        : Colors.white)
-                                                  : Colors.transparent,
+                                                        : AppColors.pureWhite)
+                                                  : AppColors.transparent,
                                               borderRadius:
                                                   BorderRadius.circular(25),
                                               boxShadow:
                                                   controller.isEmailLogin.value
                                                   ? [
                                                       BoxShadow(
-                                                        color: Colors.black
+                                                        color: AppColors
+                                                            .pureBlack
                                                             .withOpacity(0.05),
                                                         blurRadius: 4,
                                                         spreadRadius: 1,
@@ -192,12 +193,12 @@ class _LoginViewState extends State<LoginView> {
                                                         .isEmailLogin
                                                         .value
                                                     ? (isDark
-                                                          ? Colors.white
+                                                          ? AppColors.pureWhite
                                                           : const Color(
                                                               0xFF6C757D,
                                                             ))
                                                     : (isDark
-                                                          ? Colors.white54
+                                                          ? AppColors.white54
                                                           : const Color(
                                                               0xFFAAB8C2,
                                                             )),
@@ -225,15 +226,16 @@ class _LoginViewState extends State<LoginView> {
                                                         ? const Color(
                                                             0xFF424242,
                                                           )
-                                                        : Colors.white)
-                                                  : Colors.transparent,
+                                                        : AppColors.pureWhite)
+                                                  : AppColors.transparent,
                                               borderRadius:
                                                   BorderRadius.circular(25),
                                               boxShadow:
                                                   !controller.isEmailLogin.value
                                                   ? [
                                                       BoxShadow(
-                                                        color: Colors.black
+                                                        color: AppColors
+                                                            .pureBlack
                                                             .withOpacity(0.05),
                                                         blurRadius: 4,
                                                         spreadRadius: 1,
@@ -255,12 +257,12 @@ class _LoginViewState extends State<LoginView> {
                                                         .isEmailLogin
                                                         .value
                                                     ? (isDark
-                                                          ? Colors.white
+                                                          ? AppColors.pureWhite
                                                           : const Color(
                                                               0xFF6C757D,
                                                             ))
                                                     : (isDark
-                                                          ? Colors.white54
+                                                          ? AppColors.white54
                                                           : const Color(
                                                               0xFFAAB8C2,
                                                             )),

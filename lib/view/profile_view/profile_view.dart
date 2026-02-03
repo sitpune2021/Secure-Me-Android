@@ -75,7 +75,7 @@ class _ProfileViewState extends State<ProfileView> {
       return Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
+          surfaceTintColor: AppColors.transparent,
           title: Padding(
             padding: const EdgeInsets.only(left: 15),
             child: Text(
@@ -111,7 +111,10 @@ class _ProfileViewState extends State<ProfileView> {
                                   AppColors.glowPurpleTopLeft,
                                   AppColors.darkPrimary,
                                 ]
-                              : [Colors.grey.shade300, Colors.grey.shade200],
+                              : [
+                                  AppColors.greyShade300,
+                                  AppColors.greyShade200,
+                                ],
                         ),
                         boxShadow: effectiveDark
                             ? [
@@ -140,7 +143,7 @@ class _ProfileViewState extends State<ProfileView> {
                                     AppColors.glowPurpleTopLeft,
                                     AppColors.darkPrimary,
                                   ]
-                                : [Colors.purple, Colors.pink],
+                                : [AppColors.purple, AppColors.pink],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -148,7 +151,7 @@ class _ProfileViewState extends State<ProfileView> {
                         child: Icon(
                           Icons.person,
                           size: screenWidth < 380 ? 30 : 38,
-                          color: Colors.white,
+                          color: AppColors.pureWhite,
                         ),
                       ),
                     ),

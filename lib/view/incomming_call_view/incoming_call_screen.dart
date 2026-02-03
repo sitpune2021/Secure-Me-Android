@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:vibration/vibration.dart';
 import 'package:secure_me/controller/fake_call_controller/fake_call_controller.dart';
+import 'package:secure_me/theme/app_color.dart';
 
 class IncomingCallScreen extends StatefulWidget {
   final String callerName;
@@ -84,7 +85,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                 Container(
                   width: width,
                   height: height,
-                  color: Colors.black.withOpacity(0.6),
+                  color: AppColors.pureBlack.withOpacity(0.6),
                 ),
                 Center(
                   child: Column(
@@ -102,7 +103,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: height * 0.035,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: AppColors.pureWhite,
                         ),
                       ),
                       SizedBox(height: height * 0.01),
@@ -110,7 +111,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                         "Connected",
                         style: GoogleFonts.poppins(
                           fontSize: height * 0.025,
-                          color: Colors.greenAccent,
+                          color: AppColors.greenAccent,
                         ),
                       ),
                       SizedBox(height: height * 0.01),
@@ -118,7 +119,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                         "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
                         style: GoogleFonts.poppins(
                           fontSize: height * 0.03,
-                          color: Colors.white70,
+                          color: AppColors.white70,
                         ),
                       ),
                       SizedBox(height: height * 0.05),
@@ -126,10 +127,10 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                         onTap: () => controller.stopCallTimer(),
                         child: CircleAvatar(
                           radius: height * 0.055,
-                          backgroundColor: Colors.red,
+                          backgroundColor: AppColors.red,
                           child: Icon(
                             Icons.call_end,
-                            color: Colors.white,
+                            color: AppColors.pureWhite,
                             size: height * 0.04,
                           ),
                         ),
@@ -158,7 +159,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                 Container(
                   width: width,
                   height: height,
-                  color: Colors.black.withOpacity(0.6),
+                  color: AppColors.pureBlack.withOpacity(0.6),
                 ),
                 Column(
                   children: [
@@ -175,7 +176,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: height * 0.035,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: AppColors.pureWhite,
                       ),
                     ),
                     SizedBox(height: height * 0.015),
@@ -183,7 +184,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                       "Incoming Call",
                       style: GoogleFonts.poppins(
                         fontSize: height * 0.025,
-                        color: Colors.white70,
+                        color: AppColors.white70,
                       ),
                     ),
                     const Spacer(),
@@ -209,10 +210,10 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: height * 0.055,
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColors.red,
                                     child: Icon(
                                       Icons.call_end,
-                                      color: Colors.white,
+                                      color: AppColors.pureWhite,
                                       size: height * 0.04,
                                     ),
                                   ),
@@ -220,7 +221,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                                   Text(
                                     "Decline",
                                     style: GoogleFonts.poppins(
-                                      color: Colors.white,
+                                      color: AppColors.pureWhite,
                                       fontSize: height * 0.022,
                                     ),
                                   ),
@@ -238,10 +239,10 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: height * 0.055,
-                                    backgroundColor: Colors.green,
+                                    backgroundColor: AppColors.green,
                                     child: Icon(
                                       Icons.call,
-                                      color: Colors.white,
+                                      color: AppColors.pureWhite,
                                       size: height * 0.04,
                                     ),
                                   ),
@@ -249,7 +250,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                                   Text(
                                     "Accept",
                                     style: GoogleFonts.poppins(
-                                      color: Colors.white,
+                                      color: AppColors.pureWhite,
                                       fontSize: height * 0.022,
                                     ),
                                   ),

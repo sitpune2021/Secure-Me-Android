@@ -17,10 +17,10 @@ class ContactListView extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         title: Text(
           "Contact List",
@@ -33,7 +33,7 @@ class ContactListView extends StatelessWidget {
           ),
         ),
         centerTitle: Platform.isAndroid ? false : true,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: AppColors.transparent,
         leading: Platform.isIOS
             ? IconButton(
                 icon: Icon(
@@ -66,7 +66,7 @@ class ContactListView extends StatelessWidget {
                 boxShadow: isDark
                     ? [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: AppColors.pureBlack.withOpacity(0.2),
                           blurRadius: 12,
                           spreadRadius: 1,
                         ),
@@ -109,13 +109,13 @@ class ContactListView extends StatelessWidget {
                 ? RadialGradient(
                     colors: [
                       AppColors.darkRadialGlow.withOpacity(0.7),
-                      Colors.transparent,
+                      AppColors.transparent,
                     ],
                     radius: 1,
                     center: Alignment.topRight,
                   )
                 : const RadialGradient(
-                    colors: [Colors.transparent, Colors.transparent],
+                    colors: [AppColors.transparent, AppColors.transparent],
                     radius: 1,
                     center: Alignment.topRight,
                   ),

@@ -145,6 +145,11 @@ class AppColors {
   static Color loginTextFieldBg(bool isDark) =>
       isDark ? darkSearchBg : lightSearchBg;
 
+  // Common Colors
+  static const Color red = Colors.red;
+  static const Color green = Colors.green;
+  static const Color greenAccent = Colors.greenAccent;
+
   // Register Screen
   static Color registerAvatarGlow(bool isDark) =>
       isDark ? darkRadialGlow : transparent;
@@ -229,6 +234,8 @@ class AppColors {
         return greyShade400;
       case 500:
         return greyShade500;
+      case 600:
+        return greyShade600;
       default:
         return grey;
     }

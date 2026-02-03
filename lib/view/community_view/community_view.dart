@@ -12,17 +12,20 @@ class CommunityView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(CommunityController());
-    final themeController = Get.find<ThemeController>(); // 👈 get ThemeController
+    final themeController =
+        Get.find<ThemeController>(); // 👈 get ThemeController
 
     return Obx(() {
       final isDark = themeController.isDarkMode.value; // 👈 reactive theme
 
       return Scaffold(
-        backgroundColor:
-            isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         appBar: AppBar(
-          backgroundColor:
-              isDark ? AppColors.darkBackground : AppColors.lightBackground,
+          backgroundColor: isDark
+              ? AppColors.darkBackground
+              : AppColors.lightBackground,
           elevation: 0,
           title: Text(
             "Community",
@@ -33,7 +36,7 @@ class CommunityView extends StatelessWidget {
             ),
           ),
           centerTitle: Platform.isAndroid ? false : true,
-          surfaceTintColor: Colors.transparent,
+          surfaceTintColor: AppColors.transparent,
         ),
         body: SafeArea(
           child: Stack(
@@ -52,7 +55,7 @@ class CommunityView extends StatelessWidget {
                       gradient: RadialGradient(
                         colors: [
                           AppColors.accent.withOpacity(0.4),
-                          Colors.transparent,
+                          AppColors.transparent,
                         ],
                         radius: 0.6,
                       ),
@@ -81,26 +84,35 @@ class CommunityView extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final community = controller.communities[index];
                             return Container(
-                              margin: EdgeInsets.only(bottom: Get.height * 0.02),
+                              margin: EdgeInsets.only(
+                                bottom: Get.height * 0.02,
+                              ),
                               padding: EdgeInsets.symmetric(
                                 horizontal: Get.width * 0.05,
                                 vertical: Get.height * 0.02,
                               ),
                               decoration: BoxDecoration(
-                                color: (isDark
-                                        ? AppColors.darkCard
-                                        : AppColors.lightCard)
-                                    .withOpacity(0.9),
+                                color:
+                                    (isDark
+                                            ? AppColors.darkCard
+                                            : AppColors.lightCard)
+                                        .withOpacity(0.9),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: (isDark ? AppColors.accent : Colors.grey)
-                                      .withOpacity(0.7),
+                                  color:
+                                      (isDark
+                                              ? AppColors.accent
+                                              : AppColors.grey)
+                                          .withOpacity(0.7),
                                   width: 1,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: (isDark ? AppColors.accent : Colors.grey)
-                                        .withOpacity(0.3),
+                                    color:
+                                        (isDark
+                                                ? AppColors.accent
+                                                : AppColors.grey)
+                                            .withOpacity(0.3),
                                     blurRadius: 25,
                                     spreadRadius: -5,
                                     offset: const Offset(0, 10),
@@ -119,7 +131,8 @@ class CommunityView extends StatelessWidget {
                                   ),
                                   SizedBox(width: Get.width * 0.03),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         community.name,

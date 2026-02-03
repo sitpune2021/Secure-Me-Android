@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
+import 'package:secure_me/theme/app_color.dart';
 
 class NotificationView extends StatelessWidget {
   NotificationView({super.key});
@@ -14,31 +15,27 @@ class NotificationView extends StatelessWidget {
     return Obx(() {
       final isDark = themeController.isDarkMode.value;
       return Scaffold(
-        backgroundColor: isDark ? Colors.black : Colors.white,
+        backgroundColor: AppColors.background(isDark),
         appBar: AppBar(
-          backgroundColor: isDark ? Colors.black : Colors.white,
+          backgroundColor: AppColors.background(isDark),
           leading: IconButton(
             icon: Icon(
-             Platform.isAndroid? Icons.arrow_back:Icons.arrow_back_ios,
-              color: isDark ? Colors.white : Colors.black,
+              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
+              color: AppColors.text(isDark),
             ),
             onPressed: () => Get.back(),
           ),
           title: Text(
             'Notification',
-            style: TextStyle(
-              color: isDark ? Colors.white : Colors.black,
-            ),
+            style: TextStyle(color: AppColors.text(isDark)),
           ),
-          iconTheme: IconThemeData(
-            color: isDark ? Colors.white : Colors.black,
-          ),
+          iconTheme: IconThemeData(color: AppColors.text(isDark)),
           elevation: 0,
         ),
         body: Center(
           child: Text(
             'Notification',
-            style: TextStyle(color: isDark ? Colors.white : Colors.black),
+            style: TextStyle(color: AppColors.text(isDark)),
           ),
         ),
       );

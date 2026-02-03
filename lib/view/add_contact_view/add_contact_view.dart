@@ -45,7 +45,7 @@ class _AddContactViewState extends State<AddContactView> {
             ),
           ),
           centerTitle: Platform.isAndroid ? false : true,
-          surfaceTintColor: Colors.transparent,
+          surfaceTintColor: AppColors.transparent,
           leading: Platform.isIOS
               ? IconButton(
                   icon: Icon(
@@ -65,7 +65,7 @@ class _AddContactViewState extends State<AddContactView> {
                     backgroundColor: isDark
                         ? AppColors.darkPrimary
                         : AppColors.lightPrimary,
-                    colorText: Colors.white,
+                    colorText: AppColors.pureWhite,
                     snackPosition: SnackPosition.BOTTOM,
                   );
                 }
@@ -144,8 +144,8 @@ class _AddContactViewState extends State<AddContactView> {
                         ),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
+                            backgroundColor: AppColors.transparent,
+                            shadowColor: AppColors.transparent,
                             padding: const EdgeInsets.symmetric(
                               vertical: 16,
                               horizontal: 20,
@@ -162,7 +162,7 @@ class _AddContactViewState extends State<AddContactView> {
                                 backgroundColor: isDark
                                     ? AppColors.darkPrimary
                                     : AppColors.lightPrimary,
-                                colorText: Colors.white,
+                                colorText: AppColors.pureWhite,
                                 snackPosition: SnackPosition.BOTTOM,
                               );
                             }
@@ -172,7 +172,7 @@ class _AddContactViewState extends State<AddContactView> {
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: AppColors.pureWhite,
                             ),
                           ),
                         ),
