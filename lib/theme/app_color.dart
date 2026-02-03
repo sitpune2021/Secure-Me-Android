@@ -100,6 +100,38 @@ class AppColors {
   static const Color greyTextDark = Color(0xFFBDBDBD);
   static const Color accent = Color(0xFF9C27B0);
 
+  // ---------------- COMMON COLORS ----------------
+
+  // Transparent
+  static const Color transparent = Colors.transparent;
+
+  // Pure colors
+  static const Color pureWhite = Colors.white;
+  static const Color pureBlack = Colors.black;
+
+  // Grey shades
+  static const Color grey = Colors.grey;
+  static const Color greyShade100 = Color(0xFFF5F5F5);
+  static const Color greyShade200 = Color(0xFFEEEEEE);
+  static const Color greyShade300 = Color(0xFFE0E0E0);
+  static const Color greyShade400 = Color(0xFFBDBDBD);
+  static const Color greyShade500 = Color(0xFF9E9E9E);
+  static const Color greyShade600 = Color(0xFF757575);
+
+  // Accent colors
+  static const Color purpleAccent = Colors.purpleAccent;
+  static const Color pinkAccent = Colors.pinkAccent;
+  static const Color purple = Colors.purple;
+  static const Color pink = Colors.pink;
+
+  // Semi-transparent whites
+  static const Color white54 = Colors.white54;
+  static const Color white70 = Colors.white70;
+
+  // Semi-transparent blacks
+  static const Color black54 = Colors.black54;
+  static const Color black87 = Colors.black87;
+
   // ---------------- SCREEN-SPECIFIC COLOR HELPERS ----------------
 
   // Login Screen
@@ -115,7 +147,7 @@ class AppColors {
 
   // Register Screen
   static Color registerAvatarGlow(bool isDark) =>
-      isDark ? darkRadialGlow : Colors.transparent;
+      isDark ? darkRadialGlow : transparent;
 
   static Gradient registerAvatarGlowGradient(bool isDark) =>
       isDark ? darkGlowGradient : lightGlowGradient;
@@ -130,13 +162,75 @@ class AppColors {
   static Color loginIconCircle(bool isDark) =>
       isDark ? const Color(0xFFB573FF) : const Color(0xFF8A2BE2);
 
-  static Color loginIconSymbol(bool isDark) =>
-      isDark ? Colors.white : Colors.white;
+  static Color loginIconSymbol(bool isDark) => isDark ? pureWhite : pureWhite;
+
   // Login Title ("Login Account")
   static Color loginTitleColor(bool isDark) =>
-      isDark ? const Color(0xFFE96AAE) : const Color(0xFF000000);
+      isDark ? const Color(0xFFE96AAE) : pureBlack;
 
   // Welcome Text ("Welcome back")
   static Color welcomeTextColor(bool isDark) =>
       isDark ? const Color(0xFFE4A7CC) : const Color(0xFF6E6E6E);
+
+  // ---------------- THEME-AWARE HELPERS ----------------
+
+  // Background colors
+  static Color background(bool isDark) =>
+      isDark ? darkBackground : lightBackground;
+
+  // Card colors
+  static Color card(bool isDark) => isDark ? darkCard : lightCard;
+
+  // Text colors
+  static Color text(bool isDark) => isDark ? darkText : lightText;
+
+  // Hint colors
+  static Color hint(bool isDark) => isDark ? darkHint : lightHint;
+
+  // Divider colors
+  static Color divider(bool isDark) => isDark ? darkDivider : lightDivider;
+
+  // Primary colors
+  static Color primary(bool isDark) => isDark ? darkPrimary : lightPrimary;
+
+  // Secondary colors
+  static Color secondary(bool isDark) =>
+      isDark ? darkSecondary : lightSecondary;
+
+  // Border colors
+  static Color border(bool isDark) => isDark ? darkBorder : lightBorder;
+
+  // Search background
+  static Color searchBg(bool isDark) => isDark ? darkSearchBg : lightSearchBg;
+
+  // Add button background
+  static Color addButtonBg(bool isDark) =>
+      isDark ? darkAddButtonBg : lightAddButtonBg;
+
+  // Accent color (theme-aware)
+  static Color accentColor(bool isDark) => isDark ? purpleAccent : accent;
+
+  // Grey text
+  static Color greyText(bool isDark) => isDark ? greyTextDark : greyTextLight;
+
+  // Grey shade (theme-aware)
+  static Color greyShade(bool isDark, int shade) {
+    if (isDark) {
+      return greyShade400;
+    }
+    switch (shade) {
+      case 100:
+        return greyShade100;
+      case 200:
+        return greyShade200;
+      case 300:
+        return greyShade300;
+      case 400:
+        return greyShade400;
+      case 500:
+        return greyShade500;
+      default:
+        return grey;
+    }
+  }
 }

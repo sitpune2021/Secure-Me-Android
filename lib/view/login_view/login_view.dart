@@ -27,6 +27,9 @@ class _LoginViewState extends State<LoginView> {
     PermissionController(),
   );
 
+  // Password visibility toggle
+  bool obscurePassword = true;
+
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
@@ -341,7 +344,7 @@ class _LoginViewState extends State<LoginView> {
                                         SizedBox(height: Get.height * 0.01),
                                         TextField(
                                           controller: passwordController,
-                                          obscureText: true,
+                                          obscureText: obscurePassword,
                                           decoration: InputDecoration(
                                             hintText: "Enter Password",
                                             hintStyle: GoogleFonts.poppins(
@@ -359,6 +362,22 @@ class _LoginViewState extends State<LoginView> {
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                               borderSide: BorderSide.none,
+                                            ),
+                                            suffixIcon: IconButton(
+                                              icon: Icon(
+                                                obscurePassword
+                                                    ? Remix.eye_off_line
+                                                    : Remix.eye_line,
+                                                color: AppTheme.loginTextColor(
+                                                  isDark,
+                                                ).withOpacity(0.6),
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  obscurePassword =
+                                                      !obscurePassword;
+                                                });
+                                              },
                                             ),
                                           ),
                                           style: GoogleFonts.poppins(

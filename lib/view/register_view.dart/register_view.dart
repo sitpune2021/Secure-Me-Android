@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/register_controller/register_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
@@ -23,6 +24,9 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final RegisterController registerController = Get.put(RegisterController());
+
+  // Password visibility toggle
+  bool obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +201,20 @@ class _RegisterViewState extends State<RegisterView> {
                     }
                     return null;
                   },
-                  obscureText: true,
+                  obscureText: obscurePassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscurePassword ? Remix.eye_off_line : Remix.eye_line,
+                      color: (isDark ? AppColors.darkText : AppColors.lightText)
+                          .withOpacity(0.6),
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscurePassword = !obscurePassword;
+                      });
+                    },
+                  ),
                 ),
                 SizedBox(height: Get.height * 0.06),
 
@@ -270,6 +287,7 @@ class _RegisterViewState extends State<RegisterView> {
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
     bool obscureText = false,
+    Widget? suffixIcon,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,6 +318,7 @@ class _RegisterViewState extends State<RegisterView> {
                   : AppColors.lightHint.withOpacity(0.7),
             ),
             contentPadding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
+            suffixIcon: suffixIcon,
           ),
           style: GoogleFonts.poppins(
             color: isDark ? AppColors.darkText : AppColors.lightText,
