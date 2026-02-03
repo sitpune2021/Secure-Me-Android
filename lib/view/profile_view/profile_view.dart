@@ -5,9 +5,38 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/utils/preference_helper.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  String userName = "User";
+  String userPhone = "+91 XXXXXXXXXX";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final name = await PreferenceHelper.getUserName();
+    final phone = await PreferenceHelper.getUserPhone();
+
+    setState(() {
+      if (name != null && name.isNotEmpty) {
+        userName = name;
+      }
+      if (phone != null && phone.isNotEmpty) {
+        userPhone = phone;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +47,22 @@ class ProfileView extends StatelessWidget {
       // Get the correct theme values from controller
       final isDark = themeController.isDarkMode.value;
       final userOverride = themeController.userOverride.value;
-      
+
       // Determine effective theme (user preference or system)
-      final effectiveDark = userOverride ? isDark : 
-          WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
-      
-      final textColor = effectiveDark ? AppColors.darkText : AppColors.lightText;
-      final subTextColor = effectiveDark ? AppColors.darkHint : AppColors.lightHint;
-      final backgroundColor = effectiveDark ? AppColors.darkBackground : AppColors.lightBackground;
+      final effectiveDark = userOverride
+          ? isDark
+          : WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                Brightness.dark;
+
+      final textColor = effectiveDark
+          ? AppColors.darkText
+          : AppColors.lightText;
+      final subTextColor = effectiveDark
+          ? AppColors.darkHint
+          : AppColors.lightHint;
+      final backgroundColor = effectiveDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground;
 
       return Scaffold(
         backgroundColor: backgroundColor,
@@ -84,10 +121,26 @@ class ProfileView extends StatelessWidget {
                               ]
                             : [],
                       ),
-                      child: CircleAvatar(
-                        radius: screenWidth < 380 ? 28 : 35,
-                        backgroundImage: const AssetImage(
-                          "assets/images/user.jpg",
+                      child: Container(
+                        width: screenWidth < 380 ? 56 : 70,
+                        height: screenWidth < 380 ? 56 : 70,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: effectiveDark
+                                ? [
+                                    AppColors.glowPurpleTopLeft,
+                                    AppColors.darkPrimary,
+                                  ]
+                                : [Colors.purple, Colors.pink],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.person,
+                          size: screenWidth < 380 ? 30 : 38,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -96,7 +149,7 @@ class ProfileView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Rupa Jenny",
+                          userName,
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth < 380 ? 16 : 18,
                             fontWeight: FontWeight.w600,
@@ -105,7 +158,7 @@ class ProfileView extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "+91 9670302800",
+                          userPhone,
                           style: GoogleFonts.poppins(
                             fontSize: screenWidth < 380 ? 12 : 14,
                             color: subTextColor,
@@ -153,12 +206,18 @@ class ProfileView extends StatelessWidget {
                 _buildMenuItem("Help", () {}, screenWidth, textColor),
 
                 /// Dark Mode Switch with System Option
-              
-                /// 
-                /// 
-                _theme("Theme Mode", (){
-                  Get.toNamed(AppRoutes.theme);
-                }, screenWidth, textColor),
+
+                ///
+                ///
+                _theme(
+                  "Theme Mode",
+                  () {
+                    Get.toNamed(AppRoutes.theme);
+                  },
+                  screenWidth,
+                  textColor,
+                ),
+
                 // Column(
                 //   crossAxisAlignment: CrossAxisAlignment.start,
                 //   children: [
@@ -182,10 +241,9 @@ class ProfileView extends StatelessWidget {
                 //         },
                 //       ),
                 //     ),
-                    
+
                 //   ],
                 // ),
-
                 Divider(color: subTextColor.withOpacity(0.3)),
 
                 /// More Section
@@ -209,7 +267,10 @@ class ProfileView extends StatelessWidget {
                       color: textColor,
                     ),
                   ),
-                  onTap: () => Get.offAllNamed(AppRoutes.loginView),
+                  onTap: () async {
+                    await PreferenceHelper.clearUserData();
+                    Get.offAllNamed(AppRoutes.loginView);
+                  },
                 ),
               ],
             ),
@@ -242,22 +303,22 @@ class ProfileView extends StatelessWidget {
 }
 
 Widget _theme(
-   String title,
-    VoidCallback onTap,
-    double screenWidth,
-    Color textColor,
-){
+  String title,
+  VoidCallback onTap,
+  double screenWidth,
+  Color textColor,
+) {
   return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(
-        title,
-        style: GoogleFonts.poppins(
-          fontSize: screenWidth < 380 ? 14 : 16,
-          color: textColor,
-          fontWeight: FontWeight.w500,
-        ),
+    contentPadding: EdgeInsets.zero,
+    title: Text(
+      title,
+      style: GoogleFonts.poppins(
+        fontSize: screenWidth < 380 ? 14 : 16,
+        color: textColor,
+        fontWeight: FontWeight.w500,
       ),
-      trailing: Icon(Icons.chevron_right, color: textColor.withOpacity(0.6)),
-      onTap: onTap,
-    );
+    ),
+    trailing: Icon(Icons.chevron_right, color: textColor.withOpacity(0.6)),
+    onTap: onTap,
+  );
 }

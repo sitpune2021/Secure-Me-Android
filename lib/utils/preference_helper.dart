@@ -7,6 +7,9 @@ class PreferenceHelper {
   static const String _keyUserEmail = 'user_email';
   static const String _keyUserPhone = 'user_phone';
   static const String _keyIsLoggedIn = 'is_logged_in';
+  static const String _keySessionId = 'session_id';
+  static const String _keyLastLoginTime = 'last_login_time';
+  static const String _keySessionStartTime = 'session_start_time';
 
   // Save token
   static Future<void> saveToken(String token) async {
@@ -99,6 +102,7 @@ class PreferenceHelper {
     await prefs.remove(_keyUserEmail);
     await prefs.remove(_keyUserPhone);
     await prefs.setBool(_keyIsLoggedIn, false);
+    await clearSession();
     print('🗑️ All user data cleared from SharedPreferences');
   }
 
@@ -116,6 +120,94 @@ class PreferenceHelper {
     if (email != null) await saveUserEmail(email);
     if (phone != null) await saveUserPhone(phone);
     await saveLoginStatus(true);
+    await _createSession();
     print('✅ All user data saved successfully');
+  }
+
+  // Session Management Methods
+
+  // Create a new session
+  static Future<void> _createSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessionId = DateTime.now().millisecondsSinceEpoch.toString();
+    final currentTime = DateTime.now().toIso8601String();
+
+    await prefs.setString(_keySessionId, sessionId);
+    await prefs.setString(_keyLastLoginTime, currentTime);
+    await prefs.setString(_keySessionStartTime, currentTime);
+
+    print('🔐 New session created: $sessionId at $currentTime');
+  }
+
+  // Get session ID
+  static Future<String?> getSessionId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keySessionId);
+  }
+
+  // Get last login time
+  static Future<String?> getLastLoginTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyLastLoginTime);
+  }
+
+  // Get session start time
+  static Future<String?> getSessionStartTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keySessionStartTime);
+  }
+
+  // Update last login time
+  static Future<void> updateLastLoginTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentTime = DateTime.now().toIso8601String();
+    await prefs.setString(_keyLastLoginTime, currentTime);
+    print('🕐 Last login time updated: $currentTime');
+  }
+
+  // Check if session is valid (within 30 days)
+  static Future<bool> isSessionValid() async {
+    final lastLoginTime = await getLastLoginTime();
+    if (lastLoginTime == null) return false;
+
+    try {
+      final lastLogin = DateTime.parse(lastLoginTime);
+      final now = DateTime.now();
+      final difference = now.difference(lastLogin).inDays;
+
+      final isValid = difference <= 30;
+      print(
+        '🔍 Session validation: ${isValid ? "Valid" : "Expired"} (${difference} days old)',
+      );
+      return isValid;
+    } catch (e) {
+      print('❌ Error parsing session time: $e');
+      return false;
+    }
+  }
+
+  // Get session duration in minutes
+  static Future<int> getSessionDuration() async {
+    final sessionStartTime = await getSessionStartTime();
+    if (sessionStartTime == null) return 0;
+
+    try {
+      final startTime = DateTime.parse(sessionStartTime);
+      final now = DateTime.now();
+      final duration = now.difference(startTime).inMinutes;
+      return duration;
+    } catch (e) {
+      print('❌ Error calculating session duration: $e');
+      return 0;
+    }
+  }
+
+  // Clear session data
+  static Future<void> clearSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keySessionId);
+    await prefs.remove(_keyLastLoginTime);
+    await prefs.remove(_keySessionStartTime);
+    print('🗑️ Session data cleared');
   }
 }

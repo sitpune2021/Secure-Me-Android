@@ -3,17 +3,39 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/home_controller/home_controller.dart';
-import 'package:secure_me/controller/theme_controller/theme_controller.dart'; // 👈 import ThemeController
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/utils/preference_helper.dart';
 import 'package:secure_me/view/community_view/community_view.dart';
 import 'package:secure_me/view/track_me_view/track_me_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
 
-class HomeView extends StatelessWidget {
-  final HomeController controller = Get.put(HomeController());
-  final ThemeController themeController = Get.find<ThemeController>(); // 👈 use ThemeController
+class HomeView extends StatefulWidget {
+  const HomeView({super.key});
 
-  HomeView({super.key});
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  final HomeController controller = Get.put(HomeController());
+  final ThemeController themeController = Get.find<ThemeController>();
+  String userName = "User";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final name = await PreferenceHelper.getUserName();
+    if (name != null && name.isNotEmpty) {
+      setState(() {
+        userName = name;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +109,22 @@ class HomeView extends StatelessWidget {
                           shape: BoxShape.circle,
                           color: Colors.transparent,
                         ),
-                  child: CircleAvatar(
-                    radius: width * 0.07,
-                    backgroundImage: const AssetImage("assets/images/user.jpg"),
+                  child: Container(
+                    width: width * 0.14,
+                    height: width * 0.14,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Colors.purple, Colors.pink],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.person,
+                      size: width * 0.08,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 SizedBox(width: width * 0.03),
@@ -97,7 +132,7 @@ class HomeView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Hello ! Rupa,",
+                      "Hello, $userName!",
                       style: GoogleFonts.poppins(
                         fontSize: width * 0.045,
                         fontWeight: FontWeight.bold,
@@ -373,37 +408,39 @@ class HomeView extends StatelessWidget {
       ),
     );
   }
-// SOS Button
-Widget buildSosButton(bool isDark, double height, double width) {
-  return GestureDetector(
-    onTap: () => Get.toNamed(AppRoutes.sosActivate),
-    child: Container(
-      width: width * 0.18,
-      height: height * 0.18,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.redAccent,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.redAccent.withOpacity(0.4),
-            blurRadius: 12,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          "SOS",
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: width * 0.05,
+
+  // SOS Button
+  Widget buildSosButton(bool isDark, double height, double width) {
+    return GestureDetector(
+      onTap: () => Get.toNamed(AppRoutes.sosActivate),
+      child: Container(
+        width: width * 0.18,
+        height: height * 0.18,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.redAccent,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.redAccent.withOpacity(0.4),
+              blurRadius: 12,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            "SOS",
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: width * 0.05,
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   // Bottom Navigation
   Widget _buildBottomNav(bool isDark, double height, double width) {
     double bottomPadding =
