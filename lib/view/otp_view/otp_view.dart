@@ -41,11 +41,23 @@ class OtpView extends StatelessWidget {
                   SizedBox(height: Get.height * 0.005),
 
                   Text(
-                    "We sent a code to your Mobile Number",
+                    "We sent a code to your email",
                     style: GoogleFonts.poppins(
                       fontSize: Get.width * 0.045,
                       color: (isDark ? AppColors.darkText : AppColors.lightText)
                           .withOpacity(0.7),
+                    ),
+                  ),
+                  Obx(
+                    () => Text(
+                      controller.email.value,
+                      style: GoogleFonts.poppins(
+                        fontSize: Get.width * 0.045,
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? AppColors.darkRadialGlow
+                            : AppColors.lightPrimary,
+                      ),
                     ),
                   ),
 

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceHelper {
@@ -6,6 +7,7 @@ class PreferenceHelper {
   static const String _keyUserName = 'user_name';
   static const String _keyUserEmail = 'user_email';
   static const String _keyUserPhone = 'user_phone';
+  static const String _keyUserProfileImage = 'user_profile_image';
   static const String _keyIsLoggedIn = 'is_logged_in';
   static const String _keySessionId = 'session_id';
   static const String _keyLastLoginTime = 'last_login_time';
@@ -15,14 +17,17 @@ class PreferenceHelper {
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyToken, token);
-    print('✅ Token saved to SharedPreferences: $token');
+    log('✅ Token saved to SharedPreferences: $token', name: 'PreferenceHelper');
   }
 
   // Get token
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(_keyToken);
-    print('📖 Token retrieved from SharedPreferences: $token');
+    log(
+      '📖 Token retrieved from SharedPreferences: $token',
+      name: 'PreferenceHelper',
+    );
     return token;
   }
 
@@ -30,14 +35,20 @@ class PreferenceHelper {
   static Future<void> saveUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyUserId, userId);
-    print('✅ User ID saved to SharedPreferences: $userId');
+    log(
+      '✅ User ID saved to SharedPreferences: $userId',
+      name: 'PreferenceHelper',
+    );
   }
 
   // Get user ID
   static Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString(_keyUserId);
-    print('📖 User ID retrieved from SharedPreferences: $userId');
+    log(
+      '📖 User ID retrieved from SharedPreferences: $userId',
+      name: 'PreferenceHelper',
+    );
     return userId;
   }
 
@@ -45,14 +56,20 @@ class PreferenceHelper {
   static Future<void> saveUserName(String name) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyUserName, name);
-    print('✅ User name saved to SharedPreferences: $name');
+    log(
+      '✅ User name saved to SharedPreferences: $name',
+      name: 'PreferenceHelper',
+    );
   }
 
   // Get user name
   static Future<String?> getUserName() async {
     final prefs = await SharedPreferences.getInstance();
     final name = prefs.getString(_keyUserName);
-    print('📖 User name retrieved from SharedPreferences: $name');
+    log(
+      '📖 User name retrieved from SharedPreferences: $name',
+      name: 'PreferenceHelper',
+    );
     return name;
   }
 
@@ -60,7 +77,10 @@ class PreferenceHelper {
   static Future<void> saveUserEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyUserEmail, email);
-    print('✅ User email saved to SharedPreferences: $email');
+    log(
+      '✅ User email saved to SharedPreferences: $email',
+      name: 'PreferenceHelper',
+    );
   }
 
   // Get user email
@@ -73,22 +93,51 @@ class PreferenceHelper {
   static Future<void> saveUserPhone(String phone) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyUserPhone, phone);
-    print('✅ User phone saved to SharedPreferences: $phone');
+    log(
+      '✅ User phone saved to SharedPreferences: $phone',
+      name: 'PreferenceHelper',
+    );
   }
 
   // Get user phone
   static Future<String?> getUserPhone() async {
     final prefs = await SharedPreferences.getInstance();
     final phone = prefs.getString(_keyUserPhone);
-    print('📖 User phone retrieved from SharedPreferences: $phone');
+    log(
+      '📖 User phone retrieved from SharedPreferences: $phone',
+      name: 'PreferenceHelper',
+    );
     return phone;
+  }
+
+  // Save profile image
+  static Future<void> saveUserProfileImage(String? image) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (image != null) {
+      await prefs.setString(_keyUserProfileImage, image);
+      log(
+        '✅ Profile image saved to SharedPreferences: $image',
+        name: 'PreferenceHelper',
+      );
+    } else {
+      await prefs.remove(_keyUserProfileImage);
+    }
+  }
+
+  // Get profile image
+  static Future<String?> getUserProfileImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyUserProfileImage);
   }
 
   // Save login status
   static Future<void> saveLoginStatus(bool isLoggedIn) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyIsLoggedIn, isLoggedIn);
-    print('✅ Login status saved to SharedPreferences: $isLoggedIn');
+    log(
+      '✅ Login status saved to SharedPreferences: $isLoggedIn',
+      name: 'PreferenceHelper',
+    );
   }
 
   // Get login status
@@ -110,9 +159,13 @@ class PreferenceHelper {
     await prefs.remove(_keyUserName);
     await prefs.remove(_keyUserEmail);
     await prefs.remove(_keyUserPhone);
+    await prefs.remove(_keyUserProfileImage);
     await prefs.setBool(_keyIsLoggedIn, false);
     await clearSession();
-    print('🗑️ All user data cleared from SharedPreferences');
+    log(
+      '🗑️ All user data cleared from SharedPreferences',
+      name: 'PreferenceHelper',
+    );
   }
 
   // Save all user data at once
@@ -122,34 +175,39 @@ class PreferenceHelper {
     String? name,
     String? email,
     String? phone,
+    String? profileImage,
   }) async {
-    print('💾 saveUserData called with:');
-    print('  - Token: ${token.substring(0, 10)}...');
-    print('  - User ID: $userId');
-    print('  - Name: $name');
-    print('  - Email: $email');
-    print('  - Phone: $phone');
+    log('💾 saveUserData called with:', name: 'PreferenceHelper');
+    log('  - Token: ${token.substring(0, 10)}...', name: 'PreferenceHelper');
+    log('  - User ID: $userId', name: 'PreferenceHelper');
+    log('  - Name: $name', name: 'PreferenceHelper');
+    log('  - Email: $email', name: 'PreferenceHelper');
+    log('  - Phone: $phone', name: 'PreferenceHelper');
+    log('  - Profile Image: $profileImage', name: 'PreferenceHelper');
 
     await saveToken(token);
     await saveUserId(userId);
     if (name != null && name.isNotEmpty) {
       await saveUserName(name);
     } else {
-      print('⚠️ Name is null or empty, not saving');
+      log('⚠️ Name is null or empty, not saving', name: 'PreferenceHelper');
     }
     if (email != null && email.isNotEmpty) {
       await saveUserEmail(email);
     } else {
-      print('⚠️ Email is null or empty, not saving');
+      log('⚠️ Email is null or empty, not saving', name: 'PreferenceHelper');
     }
     if (phone != null && phone.isNotEmpty) {
       await saveUserPhone(phone);
     } else {
-      print('⚠️ Phone is null or empty, not saving');
+      log('⚠️ Phone is null or empty, not saving', name: 'PreferenceHelper');
+    }
+    if (profileImage != null && profileImage.isNotEmpty) {
+      await saveUserProfileImage(profileImage);
     }
     await saveLoginStatus(true);
     await _createSession();
-    print('✅ All user data saved successfully');
+    log('✅ All user data saved successfully', name: 'PreferenceHelper');
   }
 
   // Session Management Methods
@@ -164,7 +222,10 @@ class PreferenceHelper {
     await prefs.setString(_keyLastLoginTime, currentTime);
     await prefs.setString(_keySessionStartTime, currentTime);
 
-    print('🔐 New session created: $sessionId at $currentTime');
+    log(
+      '🔐 New session created: $sessionId at $currentTime',
+      name: 'PreferenceHelper',
+    );
   }
 
   // Get session ID
@@ -190,7 +251,7 @@ class PreferenceHelper {
     final prefs = await SharedPreferences.getInstance();
     final currentTime = DateTime.now().toIso8601String();
     await prefs.setString(_keyLastLoginTime, currentTime);
-    print('🕐 Last login time updated: $currentTime');
+    log('🕐 Last login time updated: $currentTime', name: 'PreferenceHelper');
   }
 
   // Check if session is valid (within 30 days)
@@ -204,12 +265,13 @@ class PreferenceHelper {
       final difference = now.difference(lastLogin).inDays;
 
       final isValid = difference <= 30;
-      print(
+      log(
         '🔍 Session validation: ${isValid ? "Valid" : "Expired"} (${difference} days old)',
+        name: 'PreferenceHelper',
       );
       return isValid;
     } catch (e) {
-      print('❌ Error parsing session time: $e');
+      log('❌ Error parsing session time: $e', name: 'PreferenceHelper');
       return false;
     }
   }
@@ -225,7 +287,7 @@ class PreferenceHelper {
       final duration = now.difference(startTime).inMinutes;
       return duration;
     } catch (e) {
-      print('❌ Error calculating session duration: $e');
+      log('❌ Error calculating session duration: $e', name: 'PreferenceHelper');
       return 0;
     }
   }
@@ -236,6 +298,6 @@ class PreferenceHelper {
     await prefs.remove(_keySessionId);
     await prefs.remove(_keyLastLoginTime);
     await prefs.remove(_keySessionStartTime);
-    print('🗑️ Session data cleared');
+    log('🗑️ Session data cleared', name: 'PreferenceHelper');
   }
 }

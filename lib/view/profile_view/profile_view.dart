@@ -5,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
-import 'package:secure_me/utils/preference_helper.dart';
+
+import 'package:secure_me/const/app_url.dart';
+import 'package:secure_me/controller/profile_controller/profile_controller.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -15,35 +17,13 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-  String userName = "User";
-  String userPhone = "+91 XXXXXXXXXX";
+  final ProfileController profileController = Get.put(ProfileController());
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    print('🔍 ProfileView: Loading user data from SharedPreferences...');
-    final name = await PreferenceHelper.getUserName();
-    final phone = await PreferenceHelper.getUserPhone();
-    print('🔍 ProfileView: Retrieved name: $name, phone: $phone');
-
-    setState(() {
-      if (name != null && name.isNotEmpty) {
-        userName = name;
-        print('✅ ProfileView: User name set to: $userName');
-      } else {
-        print('⚠️ ProfileView: No user name found, using default: $userName');
-      }
-      if (phone != null && phone.isNotEmpty) {
-        userPhone = phone;
-        print('✅ ProfileView: User phone set to: $userPhone');
-      } else {
-        print('⚠️ ProfileView: No user phone found, using default: $userPhone');
-      }
-    });
+    // Fetch latest profile data when entering the view
+    profileController.fetchProfile();
   }
 
   @override
@@ -92,201 +72,367 @@ class _ProfileViewState extends State<ProfileView> {
           centerTitle: Platform.isAndroid ? false : true,
           iconTheme: IconThemeData(color: textColor),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// Profile Header
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: effectiveDark
-                              ? [
-                                  AppColors.glowPurpleTopLeft,
-                                  AppColors.darkPrimary,
-                                ]
-                              : [
-                                  AppColors.greyShade300,
-                                  AppColors.greyShade200,
+        body: Obx(() {
+          if (profileController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Profile Header
+                  Row(
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // 🌟 Premium Multiple Glow Layers (Dark Mode only)
+                          if (effectiveDark) ...[
+                            Container(
+                              width: 95,
+                              height: 95,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    AppColors.glowPurple.withOpacity(0.5),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 85,
+                              height: 85,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.purpleAccent.withOpacity(
+                                      0.4,
+                                    ),
+                                    blurRadius: 20,
+                                    spreadRadius: 2,
+                                  ),
                                 ],
-                        ),
-                        boxShadow: effectiveDark
-                            ? [
-                                BoxShadow(
-                                  color: AppColors.glowPurpleTopLeft
-                                      .withOpacity(0.7),
-                                  blurRadius: 25,
-                                  spreadRadius: 8,
+                              ),
+                            ),
+                          ],
+
+                          // 💍 Neon Ring Border
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: effectiveDark
+                                    ? [
+                                        AppColors.glowPurple,
+                                        AppColors.pinkAccent,
+                                      ]
+                                    : [
+                                        AppColors.lightPrimary,
+                                        AppColors.lightSecondary,
+                                      ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundColor: backgroundColor,
+                              backgroundImage:
+                                  profileController.userData['profile_image'] !=
+                                      null
+                                  ? NetworkImage(
+                                      "${AppUrl.host}/${profileController.userData['profile_image']}",
+                                    )
+                                  : const NetworkImage(
+                                      "https://i.pravatar.cc/150?img=47",
+                                    ),
+                            ),
+                          ),
+
+                          // 📸 Camera Icon
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              height: 28,
+                              width: 28,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primary(effectiveDark),
+                                border: Border.all(
+                                  color: backgroundColor,
+                                  width: 2,
                                 ),
-                                BoxShadow(
-                                  color: AppColors.darkPrimary.withOpacity(0.5),
-                                  blurRadius: 40,
-                                  spreadRadius: 12,
-                                ),
-                              ]
-                            : [],
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              profileController.userData['name'] ?? "User",
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth < 380 ? 18 : 20,
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              profileController.userData['email'] ??
+                                  "email@example.com",
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth < 380 ? 12 : 14,
+                                color: subTextColor.withOpacity(0.8),
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              profileController.userData['phone_no'] ??
+                                  "+91 XXXXXXXXXX",
+                              style: GoogleFonts.poppins(
+                                fontSize: screenWidth < 380 ? 12 : 14,
+                                color: textColor.withOpacity(0.7),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                  Divider(color: subTextColor.withOpacity(0.3)),
+
+                  /// Menu Items
+                  _buildMenuItem(
+                    "Edit Profile",
+                    () => Get.toNamed(AppRoutes.editProfile),
+                    screenWidth,
+                    textColor,
+                  ),
+                  _buildMenuItem(
+                    "Location",
+                    () => Get.toNamed(AppRoutes.location),
+                    screenWidth,
+                    textColor,
+                  ),
+                  _buildMenuItem(
+                    "Friends",
+                    () => Get.toNamed(AppRoutes.friends),
+                    screenWidth,
+                    textColor,
+                  ),
+                  _buildMenuItem(
+                    "Push Notifications",
+                    () => Get.toNamed(AppRoutes.pushnotification),
+                    screenWidth,
+                    textColor,
+                  ),
+                  _buildMenuItem(
+                    "Settings",
+                    () => Get.toNamed(AppRoutes.setting),
+                    screenWidth,
+                    textColor,
+                  ),
+                  _buildMenuItem("Help", () {}, screenWidth, textColor),
+
+                  if (profileController.userData['user_role'] != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Container(
-                        width: screenWidth < 380 ? 56 : 70,
-                        height: screenWidth < 380 ? 56 : 70,
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: effectiveDark
-                                ? [
-                                    AppColors.glowPurpleTopLeft,
-                                    AppColors.darkPrimary,
-                                  ]
-                                : [AppColors.purple, AppColors.pink],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                          color:
+                              (effectiveDark
+                                      ? AppColors.darkCard
+                                      : AppColors.lightCard)
+                                  .withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color:
+                                (effectiveDark
+                                        ? AppColors.darkDivider
+                                        : AppColors.lightDivider)
+                                    .withOpacity(0.5),
                           ),
                         ),
-                        child: Icon(
-                          Icons.person,
-                          size: screenWidth < 380 ? 30 : 38,
-                          color: AppColors.pureWhite,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "User Role",
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: subTextColor,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary(
+                                  effectiveDark,
+                                ).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                profileController.userData['user_role'] ??
+                                    "User",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary(effectiveDark),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(width: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userName,
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth < 380 ? 16 : 18,
-                            fontWeight: FontWeight.w600,
-                            color: textColor,
+
+                  if (profileController.userData['created_at'] != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color:
+                              (effectiveDark
+                                      ? AppColors.darkCard
+                                      : AppColors.lightCard)
+                                  .withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color:
+                                (effectiveDark
+                                        ? AppColors.darkDivider
+                                        : AppColors.lightDivider)
+                                    .withOpacity(0.5),
                           ),
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          userPhone,
-                          style: GoogleFonts.poppins(
-                            fontSize: screenWidth < 380 ? 12 : 14,
-                            color: subTextColor,
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Member Since",
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: subTextColor,
+                              ),
+                            ),
+                            Text(
+                              profileController.userData['created_at']
+                                  .toString()
+                                  .split('T')[0],
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ],
-                ),
 
-                const SizedBox(height: 20),
-                Divider(color: subTextColor.withOpacity(0.3)),
+                  /// Dark Mode Switch with System Option
 
-                /// Menu Items
-                _buildMenuItem(
-                  "Edit Profile",
-                  () => Get.toNamed(AppRoutes.editProfile),
-                  screenWidth,
-                  textColor,
-                ),
-                _buildMenuItem(
-                  "Location",
-                  () => Get.toNamed(AppRoutes.location),
-                  screenWidth,
-                  textColor,
-                ),
-                _buildMenuItem(
-                  "Friends",
-                  () => Get.toNamed(AppRoutes.friends),
-                  screenWidth,
-                  textColor,
-                ),
-                _buildMenuItem(
-                  "Push Notifications",
-                  () => Get.toNamed(AppRoutes.pushnotification),
-                  screenWidth,
-                  textColor,
-                ),
-                _buildMenuItem(
-                  "Settings",
-                  () => Get.toNamed(AppRoutes.setting),
-                  screenWidth,
-                  textColor,
-                ),
-                _buildMenuItem("Help", () {}, screenWidth, textColor),
-
-                /// Dark Mode Switch with System Option
-
-                ///
-                ///
-                _theme(
-                  "Theme Mode",
-                  () {
-                    Get.toNamed(AppRoutes.theme);
-                  },
-                  screenWidth,
-                  textColor,
-                ),
-
-                // Column(
-                //   crossAxisAlignment: CrossAxisAlignment.start,
-                //   children: [
-                //     ListTile(
-                //       contentPadding: EdgeInsets.zero,
-                //       title: Text(
-                //         "Dark Mode",
-                //         style: GoogleFonts.poppins(
-                //           fontSize: screenWidth < 380 ? 14 : 16,
-                //           color: textColor,
-                //           fontWeight: FontWeight.w500,
-                //         ),
-                //       ),
-                //       trailing: Switch(
-                //         value: themeController.isDarkMode.value,
-                //         activeColor: effectiveDark
-                //             ? AppColors.glowPurpleTopLeft
-                //             : AppColors.lightPrimary,
-                //         onChanged: (value) {
-                //           themeController.toggleTheme(value);
-                //         },
-                //       ),
-                //     ),
-
-                //   ],
-                // ),
-                Divider(color: subTextColor.withOpacity(0.3)),
-
-                /// More Section
-                const SizedBox(height: 10),
-                Text(
-                  "More",
-                  style: GoogleFonts.poppins(
-                    color: subTextColor,
-                    fontWeight: FontWeight.w500,
+                  ///
+                  ///
+                  _theme(
+                    "Theme Mode",
+                    () {
+                      Get.toNamed(AppRoutes.theme);
+                    },
+                    screenWidth,
+                    textColor,
                   ),
-                ),
-                const SizedBox(height: 5),
-                _buildMenuItem("About Us", () {}, screenWidth, textColor),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.logout, color: subTextColor),
-                  title: Text(
-                    "Log Out",
+
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     ListTile(
+                  //       contentPadding: EdgeInsets.zero,
+                  //       title: Text(
+                  //         "Dark Mode",
+                  //         style: GoogleFonts.poppins(
+                  //           fontSize: screenWidth < 380 ? 14 : 16,
+                  //           color: textColor,
+                  //           fontWeight: FontWeight.w500,
+                  //         ),
+                  //       ),
+                  //       trailing: Switch(
+                  //         value: themeController.isDarkMode.value,
+                  //         activeColor: effectiveDark
+                  //             ? AppColors.glowPurpleTopLeft
+                  //             : AppColors.lightPrimary,
+                  //         onChanged: (value) {
+                  //           themeController.toggleTheme(value);
+                  //         },
+                  //       ),
+                  //     ),
+
+                  //   ],
+                  // ),
+                  Divider(color: subTextColor.withOpacity(0.3)),
+
+                  /// More Section
+                  const SizedBox(height: 10),
+                  Text(
+                    "More",
                     style: GoogleFonts.poppins(
-                      fontSize: screenWidth < 380 ? 14 : 16,
-                      color: textColor,
+                      color: subTextColor,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  onTap: () async {
-                    await PreferenceHelper.clearUserData();
-                    Get.offAllNamed(AppRoutes.loginView);
-                  },
-                ),
-              ],
+                  const SizedBox(height: 5),
+                  _buildMenuItem("About Us", () {}, screenWidth, textColor),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.logout, color: subTextColor),
+                    title: Text(
+                      "Log Out",
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth < 380 ? 14 : 16,
+                        color: textColor,
+                      ),
+                    ),
+                    onTap: () {
+                      profileController.logout();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        }),
       );
     });
   }

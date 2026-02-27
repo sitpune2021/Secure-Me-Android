@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,19 +15,24 @@ class RegisterController extends GetxController {
   var selectedImage = Rx<File?>(null);
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> pickImage() async {
+  Future<void> pickImage(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 70,
+        source: source,
+        imageQuality: 70, // Compress image for faster upload
       );
+
       if (image != null) {
         selectedImage.value = File(image.path);
-        print("📸 Image selected: ${image.path}");
+        dev.log("✅ Image selected: ${image.path}", name: 'RegisterController');
       }
     } catch (e) {
-      print("❌ Error picking image: $e");
-      Get.snackbar("Error", "Failed to pick image");
+      dev.log("❌ Error picking image: $e", name: 'RegisterController');
+      Get.snackbar(
+        "Error",
+        "Failed to pick image",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -38,6 +44,10 @@ class RegisterController extends GetxController {
   }) async {
     isLoading.value = true;
     try {
+      dev.log(
+        "🚀 Starting Registration for: $email",
+        name: 'RegisterController',
+      );
       // Use MultipartRequest for image upload
       var request = http.MultipartRequest('POST', Uri.parse(AppUrl.register));
 
@@ -46,35 +56,44 @@ class RegisterController extends GetxController {
       request.fields['email'] = email;
       request.fields['phone_no'] = phone;
       request.fields['password'] = password;
-      request.fields['user_role'] = 'bouncer';
+      request.fields['user_role'] = 'Gym_Person';
 
       // Add image if selected
       if (selectedImage.value != null) {
         request.files.add(
-          await http.MultipartFile.fromPath(
-            'profile_image', // Adjust field name according to your API
-            selectedImage.value!.path,
-          ),
+          await http.MultipartFile.fromPath('image', selectedImage.value!.path),
         );
-        print("📸 Attached image to request");
+        dev.log(
+          "📸 Image attached: ${selectedImage.value!.path}",
+          name: 'RegisterController',
+        );
       }
 
       request.headers.addAll({'Accept': 'application/json'});
 
-      print("🚀 Sending Multipart Registration Request...");
-      var streamedResponse = await request.send();
+      dev.log(
+        "📡 Sending Multipart Request to ${AppUrl.register}...",
+        name: 'RegisterController',
+      );
+
+      // Set a timeout for the request
+      var streamedResponse = await request.send().timeout(
+        const Duration(seconds: 30),
+      );
       var response = await http.Response.fromStream(streamedResponse);
 
-      isLoading.value = false;
+      dev.log("📡 Status: ${response.statusCode}", name: 'RegisterController');
+      dev.log("📡 Body: ${response.body}", name: 'RegisterController');
 
-      print("📡 Register Response Status: ${response.statusCode}");
-      print("📡 Register Response Body: ${response.body}");
+      if (response.body.isEmpty) {
+        throw Exception("Server returned an empty response");
+      }
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (data['status'] == true) {
-          print('✅ Registration successful for: $email');
+          dev.log('✅ Registration success full', name: 'RegisterController');
 
           // Extract token and user data fallback logic
           String? token;
@@ -103,6 +122,7 @@ class RegisterController extends GetxController {
               name: user['name'],
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
+              profileImage: user['profile_image'],
             );
           } else if (token != null) {
             await PreferenceHelper.saveToken(token);
@@ -114,6 +134,7 @@ class RegisterController extends GetxController {
             data['message'] ?? "Account created successfully",
             backgroundColor: AppColors.lightPrimary,
             colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
           );
 
           if (token != null) {
@@ -123,29 +144,41 @@ class RegisterController extends GetxController {
           }
         } else {
           Get.snackbar(
-            "Error",
-            data['message'] ?? "Registration failed",
+            "Registration Failed",
+            data['message'] ?? "Please check your details",
             backgroundColor: Colors.red,
             colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
           );
         }
       } else {
+        String errorMessage = "Registration failed";
+        if (data is Map && data.containsKey('message')) {
+          errorMessage = data['message'];
+        } else if (data is Map && data.containsKey('errors')) {
+          // Handle validation errors from Laravel if present
+          errorMessage = data['errors'].toString();
+        }
+
         Get.snackbar(
-          "Error",
-          data['message'] ?? "Registration failed (${response.statusCode})",
+          "Error ${response.statusCode}",
+          errorMessage,
           backgroundColor: Colors.red,
           colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
         );
       }
     } catch (e) {
-      isLoading.value = false;
-      print("❌ Register Error: $e");
+      dev.log("❌ Connection Error: $e", name: 'RegisterController');
       Get.snackbar(
-        "Error",
-        "An unexpected error occurred: $e",
+        "Connection Error",
+        "Could not reach server. Please check your internet.",
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
       );
+    } finally {
+      isLoading.value = false;
     }
   }
 }

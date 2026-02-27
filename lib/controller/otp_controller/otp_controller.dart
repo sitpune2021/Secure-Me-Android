@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -10,16 +11,16 @@ import 'package:secure_me/utils/preference_helper.dart';
 class OtpController extends GetxController {
   var otp = "".obs;
   var isLoading = false.obs;
-  var phoneNumber = "".obs;
+  var email = "".obs;
 
   @override
   void onInit() {
     super.onInit();
     // Get phone number from arguments
     final args = Get.arguments;
-    if (args != null && args['phone_no'] != null) {
-      phoneNumber.value = args['phone_no'];
-      print('📱 Phone number received: ${phoneNumber.value}');
+    if (args != null && args['email'] != null) {
+      email.value = args['email'];
+      dev.log('📱 Email received: ${email.value}', name: 'OtpController');
     }
   }
 
@@ -39,7 +40,7 @@ class OtpController extends GetxController {
     }
 
     isLoading.value = true;
-    print('🔄 Verifying OTP for: ${phoneNumber.value}');
+    dev.log('🔄 Verifying OTP for: ${email.value}', name: 'OtpController');
 
     try {
       final response = await http.post(
@@ -48,23 +49,35 @@ class OtpController extends GetxController {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({"phone_no": phoneNumber.value, "otp": otp.value}),
+        body: jsonEncode({"email": email.value, "otp": otp.value}),
       );
 
       isLoading.value = false;
 
-      print("📡 Verify OTP Response Status: ${response.statusCode}");
-      print("📡 Verify OTP Response Body: ${response.body}");
+      dev.log(
+        "📡 Verify OTP Response Status: ${response.statusCode}",
+        name: 'OtpController',
+      );
+      dev.log(
+        "📡 Verify OTP Response Body: ${response.body}",
+        name: 'OtpController',
+      );
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         if (data['status'] == true) {
-          print('✅ OTP verified successfully for: ${phoneNumber.value}');
+          dev.log(
+            '✅ OTP verified successfully for: ${email.value}',
+            name: 'OtpController',
+          );
 
-          print('🔍 Checking user data in OTP response...');
-          print('🔍 Full data object: $data');
-          print('🔍 Data keys: ${data.keys}');
+          dev.log(
+            '🔍 Checking user data in OTP response...',
+            name: 'OtpController',
+          );
+          dev.log('🔍 Full data object: $data', name: 'OtpController');
+          dev.log('🔍 Data keys: ${data.keys}', name: 'OtpController');
 
           // Try to find token in different locations
           String? token;
@@ -72,27 +85,33 @@ class OtpController extends GetxController {
 
           if (data['token'] != null) {
             token = data['token'];
-            print('✅ Found token at data["token"]');
+            dev.log('✅ Found token at data["token"]', name: 'OtpController');
           } else if (data['data'] != null && data['data']['token'] != null) {
             token = data['data']['token'];
-            print('✅ Found token at data["data"]["token"]');
+            dev.log(
+              '✅ Found token at data["data"]["token"]',
+              name: 'OtpController',
+            );
           }
 
           // Try to find user in different locations
           if (data['user'] != null) {
             user = data['user'];
-            print('✅ Found user at data["user"]');
+            dev.log('✅ Found user at data["user"]', name: 'OtpController');
           } else if (data['data'] != null && data['data']['user'] != null) {
             user = data['data']['user'];
-            print('✅ Found user at data["data"]["user"]');
+            dev.log(
+              '✅ Found user at data["data"]["user"]',
+              name: 'OtpController',
+            );
           }
 
-          print('🔍 Token found: ${token != null}');
-          print('🔍 User found: ${user != null}');
+          dev.log('🔍 Token found: ${token != null}', name: 'OtpController');
+          dev.log('🔍 User found: ${user != null}', name: 'OtpController');
 
           if (user != null && token != null) {
-            print('🔍 User object: $user');
-            print('🔍 User keys: ${user.keys}');
+            dev.log('🔍 User object: $user', name: 'OtpController');
+            dev.log('🔍 User keys: ${user.keys}', name: 'OtpController');
 
             // Use centralized saveUserData method which creates session automatically
             await PreferenceHelper.saveUserData(
@@ -101,17 +120,24 @@ class OtpController extends GetxController {
               name: user['name'],
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
+              profileImage: user['profile_image'],
             );
 
-            print('✅ All user data and session saved successfully');
+            dev.log(
+              '✅ All user data and session saved successfully',
+              name: 'OtpController',
+            );
           } else {
-            print('⚠️ Missing user object or token in OTP API response!');
+            dev.log(
+              '⚠️ Missing user object or token in OTP API response!',
+              name: 'OtpController',
+            );
 
             // Fallback: save token only if available
             if (token != null) {
               await PreferenceHelper.saveToken(token);
               await PreferenceHelper.saveLoginStatus(true);
-              print('✅ Token saved from fallback');
+              dev.log('✅ Token saved from fallback', name: 'OtpController');
             }
           }
 
@@ -122,10 +148,13 @@ class OtpController extends GetxController {
             colorText: Colors.white,
           );
 
-          print('🚀 Navigating to home screen');
+          dev.log('🚀 Navigating to home screen', name: 'OtpController');
           Get.offAllNamed(AppRoutes.homeView);
         } else {
-          print('❌ OTP verification failed: ${data['message']}');
+          dev.log(
+            '❌ OTP verification failed: ${data['message']}',
+            name: 'OtpController',
+          );
           Get.snackbar(
             "Error",
             data['message'] ?? "Invalid OTP",
@@ -134,7 +163,10 @@ class OtpController extends GetxController {
           );
         }
       } else if (response.statusCode == 401) {
-        print('❌ Unauthorized: Invalid or expired OTP');
+        dev.log(
+          '❌ Unauthorized: Invalid or expired OTP',
+          name: 'OtpController',
+        );
         Get.snackbar(
           "Error",
           "Invalid or expired OTP",
@@ -142,7 +174,10 @@ class OtpController extends GetxController {
           colorText: Colors.white,
         );
       } else {
-        print('❌ Verification failed with status: ${response.statusCode}');
+        dev.log(
+          '❌ Verification failed with status: ${response.statusCode}',
+          name: 'OtpController',
+        );
         Get.snackbar(
           "Error",
           data['message'] ??
@@ -153,7 +188,7 @@ class OtpController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      print("❌ Verify OTP Error: $e");
+      dev.log("❌ Verify OTP Error: $e", name: 'OtpController');
       Get.snackbar(
         "Error",
         "Network error. Please check your connection and try again.",
@@ -164,10 +199,10 @@ class OtpController extends GetxController {
   }
 
   Future<void> resendOtp() async {
-    if (phoneNumber.value.isEmpty) {
+    if (email.value.isEmpty) {
       Get.snackbar(
         "Error",
-        "Phone number not found",
+        "Email not found",
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -175,7 +210,7 @@ class OtpController extends GetxController {
     }
 
     isLoading.value = true;
-    print('🔄 Resending OTP to: ${phoneNumber.value}');
+    dev.log('🔄 Resending OTP to: ${email.value}', name: 'OtpController');
 
     try {
       final response = await http.post(
@@ -184,19 +219,28 @@ class OtpController extends GetxController {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({"phone_no": phoneNumber.value}),
+        body: jsonEncode({"email": email.value}),
       );
 
       isLoading.value = false;
 
-      print("📡 Resend OTP Response Status: ${response.statusCode}");
-      print("📡 Resend OTP Response Body: ${response.body}");
+      dev.log(
+        "📡 Resend OTP Response Status: ${response.statusCode}",
+        name: 'OtpController',
+      );
+      dev.log(
+        "📡 Resend OTP Response Body: ${response.body}",
+        name: 'OtpController',
+      );
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         if (data['status'] == true) {
-          print('✅ OTP resent successfully to: ${phoneNumber.value}');
+          dev.log(
+            '✅ OTP resent successfully to: ${email.value}',
+            name: 'OtpController',
+          );
 
           Get.snackbar(
             "Success",
@@ -205,7 +249,10 @@ class OtpController extends GetxController {
             colorText: Colors.white,
           );
         } else {
-          print('❌ Failed to resend OTP: ${data['message']}');
+          dev.log(
+            '❌ Failed to resend OTP: ${data['message']}',
+            name: 'OtpController',
+          );
           Get.snackbar(
             "Error",
             data['message'] ?? "Failed to resend OTP",
@@ -214,7 +261,10 @@ class OtpController extends GetxController {
           );
         }
       } else {
-        print('❌ Resend OTP failed with status: ${response.statusCode}');
+        dev.log(
+          '❌ Resend OTP failed with status: ${response.statusCode}',
+          name: 'OtpController',
+        );
         Get.snackbar(
           "Error",
           data['message'] ??
@@ -225,7 +275,7 @@ class OtpController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      print("❌ Resend OTP Error: $e");
+      dev.log("❌ Resend OTP Error: $e", name: 'OtpController');
       Get.snackbar(
         "Error",
         "Network error. Please check your connection and try again.",

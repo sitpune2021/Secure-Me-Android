@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'dart:developer' as dev;
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:secure_me/const/app_url.dart';
@@ -15,41 +15,46 @@ class SettingsController extends GetxController {
 
   Future<void> logout() async {
     isLoading.value = true;
-    print('🔄 Starting logout process...');
+    dev.log('🔄 Starting logout process...', name: 'SettingsController');
 
     try {
       final token = await PreferenceHelper.getToken();
-      print('📖 Using token for logout: ${token?.substring(0, 10)}...');
-
-      // Call Logout API
-      final response = await http.post(
-        Uri.parse(AppUrl.logout),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
-        },
+      dev.log(
+        '📖 Using token for logout: ${token?.substring(0, 10)}...',
+        name: 'SettingsController',
       );
 
-      print("📡 Logout Response Status: ${response.statusCode}");
-      print("📡 Logout Response Body: ${response.body}");
-      isLoading.value = false; // Set to false before snackbar/navigation
+      // Call Logout API
+      final response = await http
+          .post(
+            Uri.parse(AppUrl.logout),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              if (token != null) 'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(const Duration(seconds: 10));
+
+      dev.log(
+        "📡 Logout Response Status: ${response.statusCode}",
+        name: 'SettingsController',
+      );
+      dev.log(
+        "📡 Logout Response Body: ${response.body}",
+        name: 'SettingsController',
+      );
+
+      isLoading.value = false;
 
       // Even if API fails or returns 401 (Unauthenticated), we clear local data
       await PreferenceHelper.clearUserData();
-      print('✅ Local session cleared');
-
-      Get.snackbar(
-        "Logged Out",
-        "You have been successfully logged out",
-        backgroundColor: Colors.black87,
-        colorText: Colors.white,
-      );
+      dev.log('✅ Local session cleared', name: 'SettingsController');
 
       // Redirect to Login
       Get.offAllNamed(AppRoutes.loginView);
     } catch (e) {
-      print("❌ Logout Error: $e");
+      dev.log("❌ Logout Error: $e", name: 'SettingsController');
       // Fallback: Clear local data anyway to prevent being stuck
       await PreferenceHelper.clearUserData();
       Get.offAllNamed(AppRoutes.loginView);

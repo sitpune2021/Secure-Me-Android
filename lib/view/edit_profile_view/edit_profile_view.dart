@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
+import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 
@@ -20,6 +21,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  String? _profileImage;
 
   final ThemeController themeController = Get.find<ThemeController>();
 
@@ -37,13 +39,15 @@ class _EditProfileViewState extends State<EditProfileView> {
     final name = await PreferenceHelper.getUserName();
     final email = await PreferenceHelper.getUserEmail();
     final phone = await PreferenceHelper.getUserPhone();
+    final profileImage = await PreferenceHelper.getUserProfileImage();
 
     log(
-      '🔍 EditProfileView: Retrieved - Name: $name, Email: $email, Phone: $phone',
+      '🔍 EditProfileView: Retrieved - Name: $name, Email: $email, Phone: $phone, Image: $profileImage',
       name: 'EditProfileView',
     );
 
     setState(() {
+      _profileImage = profileImage;
       if (name != null && name.isNotEmpty) {
         _nameController.text = name;
         log(
@@ -137,11 +141,13 @@ class _EditProfileViewState extends State<EditProfileView> {
                         shape: BoxShape.circle,
                         color: AppColors.pureWhite,
                       ),
-                      child: const CircleAvatar(
+                      child: CircleAvatar(
                         radius: 65,
-                        backgroundImage: NetworkImage(
-                          "https://i.pravatar.cc/150?img=47",
-                        ),
+                        backgroundImage: _profileImage != null
+                            ? NetworkImage("${AppUrl.host}/$_profileImage")
+                            : const NetworkImage(
+                                "https://i.pravatar.cc/150?img=47",
+                              ),
                       ),
                     ),
                   ],

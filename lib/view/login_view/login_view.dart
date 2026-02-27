@@ -7,7 +7,6 @@ import 'package:secure_me/controller/login_controller/login_controller.dart';
 import 'package:secure_me/controller/permission_controller/permission_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
-import 'package:secure_me/theme/app_theme.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 
 class LoginView extends StatefulWidget {
@@ -83,47 +82,127 @@ class _LoginViewState extends State<LoginView> {
 
                               // Title
                               Center(
-                                child: Text(
-                                  "Login Account",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: isDark
-                                        ? 34
-                                        : 32, // Login Account (bold)
-
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.loginTitleColor(isDark),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: Get.height * 0.005),
-
-                              Center(
-                                child: Text(
-                                  "Welcome back",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: isDark ? 21 : 20, // Welcome back
-                                    // Login Account (bold)
-                                    color: AppColors.welcomeTextColor(isDark),
-                                  ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "Login Account",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark
+                                            ? AppColors.darkText
+                                            : AppColors.lightText,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      "Welcome back to SecureMe",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        color:
+                                            (isDark
+                                                    ? AppColors.darkText
+                                                    : AppColors.lightText)
+                                                .withOpacity(0.6),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
 
                               SizedBox(height: Get.height * 0.15),
 
-                              // Image (unchanged)
+                              // Improved User Icon with Glow
                               Center(
-                                child: Container(
-                                  width: Get.width * .28,
-                                  height: Get.width * .28,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.loginIconCircle(isDark),
-                                  ),
-                                  child: Icon(
-                                    RemixIcons.user_3_line,
-                                    size: Get.width * .18,
-                                    color: AppColors.loginIconSymbol(isDark),
-                                  ),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Multiple Glow Layers (similar to RegisterView for consistency)
+                                    Container(
+                                      width: Get.width * 0.45,
+                                      height: Get.width * 0.45,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: RadialGradient(
+                                          colors: [
+                                            (isDark
+                                                    ? AppColors.darkRadialGlow
+                                                    : AppColors.lightPrimary)
+                                                .withOpacity(0.3),
+                                            (isDark
+                                                    ? AppColors.darkRadialGlow
+                                                    : AppColors.lightPrimary)
+                                                .withOpacity(0.1),
+                                            Colors.transparent,
+                                          ],
+                                          stops: const [0.3, 0.7, 1.0],
+                                        ),
+                                      ),
+                                    ),
+
+                                    // Neon Ring Shadow
+                                    Container(
+                                      width: Get.width * 0.35,
+                                      height: Get.width * 0.35,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                (isDark
+                                                        ? AppColors
+                                                              .darkRadialGlow
+                                                        : AppColors
+                                                              .lightPrimary)
+                                                    .withOpacity(0.4),
+                                            blurRadius: 30,
+                                            spreadRadius: 2,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // Main Avatar Container
+                                    Container(
+                                      width: Get.width * .28,
+                                      height: Get.width * .28,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: isDark
+                                            ? AppColors.darkSecondaryBackground
+                                            : Colors.grey[100],
+                                        border: Border.all(
+                                          color: isDark
+                                              ? AppColors.darkPrimary
+                                                    .withOpacity(0.5)
+                                              : AppColors.lightPrimary
+                                                    .withOpacity(0.2),
+                                          width: 2.5,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                (isDark
+                                                        ? AppColors.darkPrimary
+                                                        : AppColors
+                                                              .lightPrimary)
+                                                    .withOpacity(0.2),
+                                            blurRadius: 15,
+                                            spreadRadius: 1,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        Remix.user_3_line,
+                                        size: Get.width * .15,
+                                        color: isDark
+                                            ? AppColors.darkRadialGlow
+                                            : AppColors.lightPrimary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
 
@@ -136,9 +215,17 @@ class _LoginViewState extends State<LoginView> {
                                   height: 55,
                                   decoration: BoxDecoration(
                                     color: isDark
-                                        ? const Color(0xFF2C2C2C)
+                                        ? AppColors.darkSecondaryBackground
+                                              .withOpacity(0.8)
                                         : const Color(0xFFF2F4F5),
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? AppColors.darkPrimary.withOpacity(
+                                              0.1,
+                                            )
+                                          : Colors.transparent,
+                                    ),
                                   ),
                                   padding: const EdgeInsets.all(4),
                                   child: Row(
@@ -248,7 +335,7 @@ class _LoginViewState extends State<LoginView> {
                                               vertical: 12,
                                             ),
                                             child: Text(
-                                              "Mobile",
+                                              "OTP Login",
                                               style: GoogleFonts.poppins(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 14,
@@ -291,12 +378,12 @@ class _LoginViewState extends State<LoginView> {
                                         Text(
                                           "Email",
                                           style: GoogleFonts.poppins(
-                                            fontSize: Get.width * 0.04,
-                                            fontWeight: FontWeight.bold,
-                                            color: themeController
-                                                .theme
-                                                .colorScheme
-                                                .onSurface,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark
+                                                ? AppColors.darkRadialGlow
+                                                : AppColors.lightPrimary,
+                                            letterSpacing: 0.2,
                                           ),
                                         ),
                                         SizedBox(height: Get.height * 0.01),
@@ -305,28 +392,70 @@ class _LoginViewState extends State<LoginView> {
                                           keyboardType:
                                               TextInputType.emailAddress,
                                           decoration: InputDecoration(
-                                            hintText: "Enter Email",
-                                            hintStyle: GoogleFonts.poppins(
+                                            prefixIcon: Icon(
+                                              Remix.mail_line,
+                                              size: 20,
                                               color:
-                                                  AppTheme.loginHintTextColor(
-                                                    isDark,
-                                                  ),
+                                                  (isDark
+                                                          ? AppColors.darkText
+                                                          : AppColors.lightText)
+                                                      .withOpacity(0.5),
+                                            ),
+                                            hintText: "Enter your email",
+                                            hintStyle: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              color:
+                                                  (isDark
+                                                          ? AppColors.darkText
+                                                          : AppColors.lightText)
+                                                      .withOpacity(0.3),
                                             ),
                                             filled: true,
-                                            fillColor:
-                                                AppTheme.loginTextFieldBg(
-                                                  isDark,
+                                            fillColor: isDark
+                                                ? Colors.white.withOpacity(0.05)
+                                                : Colors.black.withOpacity(
+                                                    0.05,
+                                                  ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 16,
+                                                  vertical: 16,
                                                 ),
                                             border: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(10),
+                                                  BorderRadius.circular(12),
                                               borderSide: BorderSide.none,
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide(
+                                                color:
+                                                    (isDark
+                                                            ? AppColors.darkText
+                                                            : AppColors
+                                                                  .lightText)
+                                                        .withOpacity(0.1),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide(
+                                                color: isDark
+                                                    ? AppColors.darkRadialGlow
+                                                    : AppColors.lightPrimary,
+                                                width: 1.5,
+                                              ),
                                             ),
                                           ),
                                           style: GoogleFonts.poppins(
-                                            color: AppTheme.loginTextColor(
-                                              isDark,
-                                            ),
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                            color: isDark
+                                                ? AppColors.darkText
+                                                : AppColors.lightText,
                                           ),
                                           onChanged: (val) =>
                                               controller.email.value = val,
@@ -335,12 +464,12 @@ class _LoginViewState extends State<LoginView> {
                                         Text(
                                           "Password",
                                           style: GoogleFonts.poppins(
-                                            fontSize: Get.width * 0.04,
-                                            fontWeight: FontWeight.bold,
-                                            color: themeController
-                                                .theme
-                                                .colorScheme
-                                                .onSurface,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark
+                                                ? AppColors.darkRadialGlow
+                                                : AppColors.lightPrimary,
+                                            letterSpacing: 0.2,
                                           ),
                                         ),
                                         SizedBox(height: Get.height * 0.01),
@@ -348,31 +477,75 @@ class _LoginViewState extends State<LoginView> {
                                           controller: passwordController,
                                           obscureText: obscurePassword,
                                           decoration: InputDecoration(
-                                            hintText: "Enter Password",
-                                            hintStyle: GoogleFonts.poppins(
+                                            prefixIcon: Icon(
+                                              Remix.lock_password_line,
+                                              size: 20,
                                               color:
-                                                  AppTheme.loginHintTextColor(
-                                                    isDark,
-                                                  ),
+                                                  (isDark
+                                                          ? AppColors.darkText
+                                                          : AppColors.lightText)
+                                                      .withOpacity(0.5),
+                                            ),
+                                            hintText: "Enter your password",
+                                            hintStyle: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              color:
+                                                  (isDark
+                                                          ? AppColors.darkText
+                                                          : AppColors.lightText)
+                                                      .withOpacity(0.3),
                                             ),
                                             filled: true,
-                                            fillColor:
-                                                AppTheme.loginTextFieldBg(
-                                                  isDark,
+                                            fillColor: isDark
+                                                ? Colors.white.withOpacity(0.05)
+                                                : Colors.black.withOpacity(
+                                                    0.05,
+                                                  ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 16,
+                                                  vertical: 16,
                                                 ),
                                             border: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(10),
+                                                  BorderRadius.circular(12),
                                               borderSide: BorderSide.none,
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide(
+                                                color:
+                                                    (isDark
+                                                            ? AppColors.darkText
+                                                            : AppColors
+                                                                  .lightText)
+                                                        .withOpacity(0.1),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide(
+                                                color: isDark
+                                                    ? AppColors.darkRadialGlow
+                                                    : AppColors.lightPrimary,
+                                                width: 1.5,
+                                              ),
                                             ),
                                             suffixIcon: IconButton(
                                               icon: Icon(
                                                 obscurePassword
                                                     ? Remix.eye_off_line
                                                     : Remix.eye_line,
-                                                color: AppTheme.loginTextColor(
-                                                  isDark,
-                                                ).withOpacity(0.6),
+                                                size: 20,
+                                                color:
+                                                    (isDark
+                                                            ? AppColors.darkText
+                                                            : AppColors
+                                                                  .lightText)
+                                                        .withOpacity(0.4),
                                               ),
                                               onPressed: () {
                                                 setState(() {
@@ -383,9 +556,11 @@ class _LoginViewState extends State<LoginView> {
                                             ),
                                           ),
                                           style: GoogleFonts.poppins(
-                                            color: AppTheme.loginTextColor(
-                                              isDark,
-                                            ),
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                            color: isDark
+                                                ? AppColors.darkText
+                                                : AppColors.lightText,
                                           ),
                                           onChanged: (val) =>
                                               controller.password.value = val,
@@ -398,56 +573,91 @@ class _LoginViewState extends State<LoginView> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "Mobile Number",
+                                          "Email for OTP",
                                           style: GoogleFonts.poppins(
-                                            fontSize: Get.width * 0.04,
-                                            fontWeight: FontWeight.bold,
-                                            color: themeController
-                                                .theme
-                                                .colorScheme
-                                                .onSurface,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark
+                                                ? AppColors.darkRadialGlow
+                                                : AppColors.lightPrimary,
+                                            letterSpacing: 0.2,
                                           ),
                                         ),
                                         SizedBox(height: Get.height * 0.01),
                                         TextField(
-                                          controller: mobileController,
-                                          keyboardType: TextInputType.phone,
-                                          inputFormatters: [
-                                            FilteringTextInputFormatter
-                                                .digitsOnly,
-                                            LengthLimitingTextInputFormatter(
-                                              10,
-                                            ),
-                                          ],
+                                          controller:
+                                              mobileController, // keeping controller for simplicity but usage is email
+                                          keyboardType:
+                                              TextInputType.emailAddress,
                                           decoration: InputDecoration(
-                                            hintText: "Enter Mobile Number",
-                                            hintStyle: GoogleFonts.poppins(
+                                            prefixIcon: Icon(
+                                              Remix.mail_line,
+                                              size: 20,
                                               color:
-                                                  AppTheme.loginHintTextColor(
-                                                    isDark,
-                                                  ),
+                                                  (isDark
+                                                          ? AppColors.darkText
+                                                          : AppColors.lightText)
+                                                      .withOpacity(0.5),
+                                            ),
+                                            hintText:
+                                                "Enter your email for OTP",
+                                            hintStyle: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              color:
+                                                  (isDark
+                                                          ? AppColors.darkText
+                                                          : AppColors.lightText)
+                                                      .withOpacity(0.3),
                                             ),
                                             filled: true,
-                                            fillColor:
-                                                AppTheme.loginTextFieldBg(
-                                                  isDark,
+                                            fillColor: isDark
+                                                ? Colors.white.withOpacity(0.05)
+                                                : Colors.black.withOpacity(
+                                                    0.05,
+                                                  ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 16,
+                                                  vertical: 16,
                                                 ),
                                             border: OutlineInputBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(10),
+                                                  BorderRadius.circular(12),
                                               borderSide: BorderSide.none,
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide(
+                                                color:
+                                                    (isDark
+                                                            ? AppColors.darkText
+                                                            : AppColors
+                                                                  .lightText)
+                                                        .withOpacity(0.1),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide(
+                                                color: isDark
+                                                    ? AppColors.darkRadialGlow
+                                                    : AppColors.lightPrimary,
+                                                width: 1.5,
+                                              ),
                                             ),
                                           ),
                                           style: GoogleFonts.poppins(
-                                            color: AppTheme.loginTextColor(
-                                              isDark,
-                                            ),
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                            color: isDark
+                                                ? AppColors.darkText
+                                                : AppColors.lightText,
                                           ),
                                           onChanged: (val) {
-                                            controller.mobileNumber.value = val;
-                                            if (val.length == 10) {
-                                              FocusScope.of(context).unfocus();
-                                            }
+                                            controller.email.value = val;
                                           },
                                         ),
                                       ],
@@ -458,36 +668,6 @@ class _LoginViewState extends State<LoginView> {
 
                               SizedBox(height: Get.height * 0.02),
 
-                              // Keep me logged in checkbox
-                              Obx(
-                                () => Row(
-                                  children: [
-                                    Checkbox(
-                                      value: controller.keepLoggedIn.value,
-                                      onChanged: controller.toggleKeepLoggedIn,
-                                      fillColor:
-                                          WidgetStateProperty.resolveWith(
-                                            (states) => isDark
-                                                ? AppColors.darkRadialGlow
-                                                : AppColors.lightPrimary,
-                                          ),
-                                      checkColor: isDark
-                                          ? AppColors.darkHint
-                                          : AppColors.lightHint,
-                                    ),
-                                    Text(
-                                      "Keep me logged in",
-                                      style: GoogleFonts.poppins(
-                                        color: themeController
-                                            .theme
-                                            .colorScheme
-                                            .onSurface,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
                               SizedBox(height: Get.height * 0.05),
 
                               // Login Button
@@ -496,43 +676,73 @@ class _LoginViewState extends State<LoginView> {
                                 height: Get.height * 0.07,
                                 child: Obx(
                                   () => ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          AppTheme.loginButtonBackground(
-                                            isDark,
+                                    style:
+                                        ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
                                           ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor:
+                                              (isDark
+                                                      ? AppColors.darkRadialGlow
+                                                      : AppColors.lightPrimary)
+                                                  .withOpacity(0.4),
+                                          elevation: 8,
+                                        ).copyWith(
+                                          backgroundColor:
+                                              WidgetStateProperty.all(
+                                                Colors.transparent,
+                                              ),
+                                        ),
                                     onPressed: controller.isLoading.value
                                         ? null
                                         : () {
                                             controller.login();
                                           },
-                                    child: controller.isLoading.value
-                                        ? SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                    AppTheme.loginTextColor(
-                                                      isDark,
+                                    child: Ink(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: isDark
+                                              ? [
+                                                  AppColors.darkRadialGlow,
+                                                  AppColors.glowPurple,
+                                                ]
+                                              : [
+                                                  AppColors.lightPrimary,
+                                                  AppColors.lightPrimary
+                                                      .withOpacity(0.8),
+                                                ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        child: controller.isLoading.value
+                                            ? const SizedBox(
+                                                height: 24,
+                                                width: 24,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2.5,
+                                                      color: Colors.white,
                                                     ),
-                                                  ),
-                                            ),
-                                          )
-                                        : Text(
-                                            "Log In",
-                                            style: GoogleFonts.poppins(
-                                              fontSize: Get.width * 0.05,
-                                              color: AppTheme.loginTextColor(
-                                                isDark,
+                                              )
+                                            : Text(
+                                                "Log In",
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                  letterSpacing: 0.5,
+                                                ),
                                               ),
-                                            ),
-                                          ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -540,30 +750,75 @@ class _LoginViewState extends State<LoginView> {
                               SizedBox(height: Get.height * 0.03),
 
                               // OR separator
-                              Center(
-                                child: Text(
-                                  'OR',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    color: AppTheme.loginHintTextColor(isDark),
-                                    fontWeight: FontWeight.w600,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Divider(
+                                      color:
+                                          (isDark
+                                                  ? AppColors.darkText
+                                                  : AppColors.lightText)
+                                              .withOpacity(0.1),
+                                    ),
                                   ),
-                                ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: Text(
+                                      'OR',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color:
+                                            (isDark
+                                                    ? AppColors.darkText
+                                                    : AppColors.lightText)
+                                                .withOpacity(0.4),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Divider(
+                                      color:
+                                          (isDark
+                                                  ? AppColors.darkText
+                                                  : AppColors.lightText)
+                                              .withOpacity(0.1),
+                                    ),
+                                  ),
+                                ],
                               ),
 
-                              SizedBox(height: Get.height * 0.01),
+                              SizedBox(height: Get.height * 0.02),
 
                               // Create Account Button
                               Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    Get.toNamed(AppRoutes.registerView);
-                                  },
-                                  child: Text(
-                                    'Create Account',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      color: AppTheme.loginTextColor(isDark),
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      Get.toNamed(AppRoutes.registerView),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: "New to SecureMe? ",
+                                      style: GoogleFonts.poppins(
+                                        color:
+                                            (isDark
+                                                    ? AppColors.darkText
+                                                    : AppColors.lightText)
+                                                .withOpacity(0.7),
+                                        fontSize: 14,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text: "Create Account",
+                                          style: GoogleFonts.poppins(
+                                            color: isDark
+                                                ? AppColors.darkRadialGlow
+                                                : AppColors.lightPrimary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),

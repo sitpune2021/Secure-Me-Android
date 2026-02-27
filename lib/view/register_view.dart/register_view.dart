@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:secure_me/controller/register_controller/register_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
 
@@ -50,8 +51,10 @@ class _RegisterViewState extends State<RegisterView> {
               fontWeight: FontWeight.w600,
             ),
           ),
+          centerTitle: true,
           backgroundColor: theme.colorScheme.surface,
           elevation: 0,
+          scrolledUnderElevation: 0,
           iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         ),
         body: SingleChildScrollView(
@@ -63,11 +66,37 @@ class _RegisterViewState extends State<RegisterView> {
               children: [
                 SizedBox(height: Get.height * 0.02),
 
-                // Profile Avatar with glow (Glow only in Dark Mode)
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (isDark)
+                // Profile Avatar with premium glow
+                GestureDetector(
+                  onTap: () => _showImageSourceActionSheet(context),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Multiple Radial Glow Layers for a richer effect
+                      Container(
+                        width: Get.width * 0.52,
+                        height: Get.width * 0.52,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              (isDark
+                                      ? AppColors.darkRadialGlow
+                                      : AppColors.lightPrimary)
+                                  .withOpacity(0.35),
+                              (isDark
+                                      ? AppColors.darkRadialGlow
+                                      : AppColors.lightPrimary)
+                                  .withOpacity(0.12),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.3, 0.7, 1.0],
+                          ),
+                        ),
+                      ),
+
+                      // Secondary concentrated glow
                       Container(
                         width: Get.width * 0.42,
                         height: Get.width * 0.42,
@@ -75,59 +104,115 @@ class _RegisterViewState extends State<RegisterView> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.accent.withOpacity(0.4),
-                              spreadRadius: 8,
-                              blurRadius: 24,
-                            ),
-                            BoxShadow(
-                              color: AppColors.accent.withOpacity(0.3),
-                              spreadRadius: 16,
-                              blurRadius: 48,
+                              color:
+                                  (isDark
+                                          ? AppColors.darkRadialGlow
+                                          : AppColors.lightPrimary)
+                                      .withOpacity(0.5),
+                              blurRadius: 35,
+                              spreadRadius: 2,
                             ),
                           ],
                         ),
                       ),
-                    CircleAvatar(
-                      radius: Get.width * 0.18,
-                      backgroundImage: const NetworkImage(
-                        "https://i.pravatar.cc/150?img=47",
-                      ),
-                    ),
-                    Positioned(
-                      top: Get.height * 0.02,
-                      right: Get.width * 0.01,
-                      child: Container(
+
+                      // Outer Border/Glow Ring
+                      Container(
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: isDark
-                                ? [
-                                    AppColors.darkRadialGlow,
-                                    AppColors.lightPrimary,
-                                  ]
-                                : [
-                                    AppColors.glowPurple,
-                                    AppColors.darkRadialGlow,
-                                  ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          shape: BoxShape.rectangle,
+                          shape: BoxShape.circle,
                           border: Border.all(
                             color: isDark
-                                ? AppColors.darkBorder
-                                : AppColors.lightBorder,
-                            width: 1.2,
+                                ? AppColors.darkPrimary.withOpacity(0.6)
+                                : AppColors.lightPrimary.withOpacity(0.3),
+                            width: 2.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  (isDark
+                                          ? AppColors.darkPrimary
+                                          : AppColors.lightPrimary)
+                                      .withOpacity(0.25),
+                              blurRadius: 15,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: Obx(
+                          () => CircleAvatar(
+                            radius: Get.width * 0.18,
+                            backgroundColor: isDark
+                                ? AppColors.darkSecondaryBackground
+                                : Colors.grey[100],
+                            backgroundImage:
+                                registerController.selectedImage.value != null
+                                ? FileImage(
+                                    registerController.selectedImage.value!,
+                                  )
+                                : null,
+                            child:
+                                registerController.selectedImage.value == null
+                                ? Icon(
+                                    Remix.user_3_line,
+                                    size: Get.width * 0.15,
+                                    color: isDark
+                                        ? AppColors.darkText.withOpacity(0.4)
+                                        : AppColors.lightText.withOpacity(0.4),
+                                  )
+                                : null,
                           ),
                         ),
-                        padding: const EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.edit,
-                          color: theme.colorScheme.onSurface,
-                          size: 18,
+                      ),
+
+                      // Camera Icon Badge with more pop
+                      Positioned(
+                        bottom: 6,
+                        right: Get.width * 0.03,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: isDark
+                                  ? [
+                                      AppColors.darkRadialGlow,
+                                      AppColors.darkPrimary,
+                                    ]
+                                  : [
+                                      AppColors.lightPrimary,
+                                      AppColors.lightSecondary,
+                                    ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkBackground
+                                  : Colors.white,
+                              width: 3,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    (isDark
+                                            ? AppColors.darkRadialGlow
+                                            : AppColors.lightPrimary)
+                                        .withOpacity(0.4),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: const Icon(
+                            Icons.camera_alt_rounded,
+                            color: Colors.white,
+                            size: 22,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
 
                 SizedBox(height: Get.height * 0.05),
@@ -225,14 +310,20 @@ class _RegisterViewState extends State<RegisterView> {
                     () => ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(
-                          vertical: Get.height * 0.02,
+                          vertical: Get.height * 0.022,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         backgroundColor: isDark
-                            ? AppColors.glowPurpleTopLeft
+                            ? AppColors.darkRadialGlow
                             : AppColors.lightPrimary,
+                        elevation: isDark ? 8 : 4,
+                        shadowColor:
+                            (isDark
+                                    ? AppColors.darkRadialGlow
+                                    : AppColors.lightPrimary)
+                                .withOpacity(0.5),
                       ),
                       onPressed: registerController.isLoading.value
                           ? null
@@ -248,28 +339,56 @@ class _RegisterViewState extends State<RegisterView> {
                             },
                       child: registerController.isLoading.value
                           ? SizedBox(
-                              height: 20,
-                              width: 20,
+                              height: 22,
+                              width: 22,
                               child: CircularProgressIndicator(
-                                color: isDark
-                                    ? AppColors.darkText
-                                    : AppColors.lightText,
-                                strokeWidth: 2,
+                                color: Colors.white,
+                                strokeWidth: 2.5,
                               ),
                             )
                           : Text(
-                              "Register",
+                              "Create Account",
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? AppColors.darkText
-                                    : AppColors.lightText,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
                               ),
                             ),
                     ),
                   ),
                 ),
+                SizedBox(height: Get.height * 0.04),
+
+                // Already have an account? Login
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Already have an account? ",
+                      style: GoogleFonts.poppins(
+                        color: isDark
+                            ? AppColors.darkText.withOpacity(0.7)
+                            : AppColors.lightText.withOpacity(0.7),
+                        fontSize: 14,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: Text(
+                        "Login",
+                        style: GoogleFonts.poppins(
+                          color: isDark
+                              ? AppColors.darkRadialGlow
+                              : AppColors.lightPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: Get.height * 0.02),
               ],
             ),
           ),
@@ -296,12 +415,14 @@ class _RegisterViewState extends State<RegisterView> {
           label,
           style: GoogleFonts.poppins(
             color: isDark
-                ? AppColors.darkText.withOpacity(0.7)
-                : AppColors.lightText.withOpacity(0.7),
-            fontSize: 14,
+                ? AppColors.darkRadialGlow.withOpacity(0.9)
+                : AppColors.lightPrimary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
           ),
         ),
-        SizedBox(height: Get.height * 0.008),
+        SizedBox(height: 4),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
@@ -332,6 +453,109 @@ class _RegisterViewState extends State<RegisterView> {
           color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
         ),
       ],
+    );
+  }
+
+  void _showImageSourceActionSheet(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+    final isDark = themeController.isDarkMode.value;
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkSearchBg : AppColors.pureWhite,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Text(
+              "Select image from",
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: isDark ? AppColors.darkText : AppColors.lightText,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildSourceOption(
+                  icon: Icons.camera_alt_rounded,
+                  label: "Camera",
+                  onTap: () {
+                    Get.back();
+                    registerController.pickImage(ImageSource.camera);
+                  },
+                  isDark: isDark,
+                ),
+                _buildSourceOption(
+                  icon: Icons.photo_library_rounded,
+                  label: "Gallery",
+                  onTap: () {
+                    Get.back();
+                    registerController.pickImage(ImageSource.gallery);
+                  },
+                  isDark: isDark,
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSourceOption({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required bool isDark,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? AppColors.darkPrimary.withOpacity(0.2)
+                  : AppColors.lightPrimary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 32,
+              color: isDark ? AppColors.darkRadialGlow : AppColors.lightPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: isDark ? AppColors.darkText : AppColors.lightText,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

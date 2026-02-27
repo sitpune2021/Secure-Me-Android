@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -36,14 +37,17 @@ class PermissionController extends GetxController {
       final statuses = await permissions.request();
 
       // Determine granted = at least location granted (or any other required permission)
-      final locationGranted = (await Permission.location.status).isGranted ||
+      final locationGranted =
+          (await Permission.location.status).isGranted ||
           (await Permission.locationWhenInUse.status).isGranted;
 
       // You can choose your own criteria for "granted".
       isPermissionGranted.value = locationGranted;
 
       // If permanently denied, inform user (do not force open settings)
-      final permanentlyDenied = statuses.values.any((s) => s.isPermanentlyDenied);
+      final permanentlyDenied = statuses.values.any(
+        (s) => s.isPermanentlyDenied,
+      );
       if (!isPermissionGranted.value && permanentlyDenied) {
         // show a message once (UI layer can show dialog/snackbar)
         // We avoid calling openAppSettings() automatically here.
@@ -57,7 +61,10 @@ class PermissionController extends GetxController {
       isPermissionGranted.value = false;
       // debug print
       if (kDebugMode) {
-        print('requestAllPermissions error: $e\n$st');
+        log(
+          'requestAllPermissions error: $e\n$st',
+          name: 'PermissionController',
+        );
       }
     }
   }

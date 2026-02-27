@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -8,16 +9,11 @@ import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 
 class LoginController extends GetxController {
-  var keepLoggedIn = false.obs;
   var mobileNumber = ''.obs;
   var email = ''.obs;
   var password = ''.obs;
   var isEmailLogin = true.obs;
   var isLoading = false.obs;
-
-  void toggleKeepLoggedIn(bool? value) {
-    keepLoggedIn.value = value ?? false;
-  }
 
   Future<void> login() async {
     if (isEmailLogin.value) {
@@ -39,7 +35,10 @@ class LoginController extends GetxController {
     }
 
     isLoading.value = true;
-    print('🔄 Starting email login for: ${email.value}');
+    dev.log(
+      '🔄 Starting email login for: ${email.value}',
+      name: 'LoginController',
+    );
 
     try {
       final response = await http.post(
@@ -56,22 +55,34 @@ class LoginController extends GetxController {
 
       isLoading.value = false;
 
-      print("📡 Login Response Status: ${response.statusCode}");
-      print("📡 Login Response Body: ${response.body}");
+      dev.log(
+        "📡 Login Response Status: ${response.statusCode}",
+        name: 'LoginController',
+      );
+      dev.log(
+        "📡 Login Response Body: ${response.body}",
+        name: 'LoginController',
+      );
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        print('🔍 Response is 200 OK');
-        print('🔍 Checking data[status]...');
+        dev.log('🔍 Response is 200 OK', name: 'LoginController');
+        dev.log('🔍 Checking data[status]...', name: 'LoginController');
 
         if (data['status'] == true) {
-          print('✅ Login successful for: ${email.value}');
+          dev.log(
+            '✅ Login successful for: ${email.value}',
+            name: 'LoginController',
+          );
 
-          print('🔍 Checking user data in response...');
-          print('🔍 Full data object: $data');
-          print('🔍 Data keys: ${data.keys}');
-          print('🔍 Data type: ${data.runtimeType}');
+          dev.log(
+            '🔍 Checking user data in response...',
+            name: 'LoginController',
+          );
+          dev.log('🔍 Full data object: $data', name: 'LoginController');
+          dev.log('🔍 Data keys: ${data.keys}', name: 'LoginController');
+          dev.log('🔍 Data type: ${data.runtimeType}', name: 'LoginController');
 
           // Try to find token in different locations
           String? token;
@@ -79,37 +90,52 @@ class LoginController extends GetxController {
 
           if (data['token'] != null) {
             token = data['token'];
-            print('✅ Found token at data["token"]');
+            dev.log('✅ Found token at data["token"]', name: 'LoginController');
           } else if (data['data'] != null && data['data']['token'] != null) {
             token = data['data']['token'];
-            print('✅ Found token at data["data"]["token"]');
+            dev.log(
+              '✅ Found token at data["data"]["token"]',
+              name: 'LoginController',
+            );
           } else if (data['access_token'] != null) {
             token = data['access_token'];
-            print('✅ Found token at data["access_token"]');
+            dev.log(
+              '✅ Found token at data["access_token"]',
+              name: 'LoginController',
+            );
           }
 
           // Try to find user in different locations
           if (data['user'] != null) {
             user = data['user'];
-            print('✅ Found user at data["user"]');
+            dev.log('✅ Found user at data["user"]', name: 'LoginController');
           } else if (data['data'] != null && data['data']['user'] != null) {
             user = data['data']['user'];
-            print('✅ Found user at data["data"]["user"]');
+            dev.log(
+              '✅ Found user at data["data"]["user"]',
+              name: 'LoginController',
+            );
           } else if (data['data'] != null) {
             user = data['data'];
-            print('✅ Using data["data"] as user object');
+            dev.log(
+              '✅ Using data["data"] as user object',
+              name: 'LoginController',
+            );
           }
 
-          print('🔍 Token found: ${token != null}');
-          print('🔍 User found: ${user != null}');
+          dev.log('🔍 Token found: ${token != null}', name: 'LoginController');
+          dev.log('🔍 User found: ${user != null}', name: 'LoginController');
 
           if (user != null && token != null) {
-            print('🔍 User object: $user');
-            print('🔍 User keys: ${user.keys}');
-            print('🔍 User ID: ${user['id']}');
-            print('🔍 User name: ${user['name']}');
-            print('🔍 User email: ${user['email']}');
-            print('🔍 User phone: ${user['phone_no'] ?? user['phone']}');
+            dev.log('🔍 User object: $user', name: 'LoginController');
+            dev.log('🔍 User keys: ${user.keys}', name: 'LoginController');
+            dev.log('🔍 User ID: ${user['id']}', name: 'LoginController');
+            dev.log('🔍 User name: ${user['name']}', name: 'LoginController');
+            dev.log('🔍 User email: ${user['email']}', name: 'LoginController');
+            dev.log(
+              '🔍 User phone: ${user['phone_no'] ?? user['phone']}',
+              name: 'LoginController',
+            );
 
             // Use centralized saveUserData method which creates session automatically
             await PreferenceHelper.saveUserData(
@@ -118,24 +144,46 @@ class LoginController extends GetxController {
               name: user['name'],
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
+              profileImage: user['profile_image'],
             );
 
-            print('✅ All user data and session saved successfully');
+            dev.log(
+              '✅ All user data and session saved successfully',
+              name: 'LoginController',
+            );
           } else {
-            print('⚠️ Missing user object or token in API response!');
-            print('⚠️ Has user key: ${data.containsKey('user')}');
-            print('⚠️ Has token key: ${data.containsKey('token')}');
-            print('⚠️ User value: ${data['user']}');
-            print('⚠️ Token value: ${data['token']}');
-            print('⚠️ Full response for debugging: $data');
+            dev.log(
+              '⚠️ Missing user object or token in API response!',
+              name: 'LoginController',
+            );
+            dev.log(
+              '⚠️ Has user key: ${data.containsKey('user')}',
+              name: 'LoginController',
+            );
+            dev.log(
+              '⚠️ Has token key: ${data.containsKey('token')}',
+              name: 'LoginController',
+            );
+            dev.log('⚠️ User value: ${data['user']}', name: 'LoginController');
+            dev.log(
+              '⚠️ Token value: ${data['token']}',
+              name: 'LoginController',
+            );
+            dev.log(
+              '⚠️ Full response for debugging: $data',
+              name: 'LoginController',
+            );
 
             // Fallback: save token only if available
             if (token != null) {
               await PreferenceHelper.saveToken(token);
               await PreferenceHelper.saveLoginStatus(true);
-              print('✅ Token saved from fallback');
+              dev.log('✅ Token saved from fallback', name: 'LoginController');
             } else {
-              print('❌ Cannot proceed without token!');
+              dev.log(
+                '❌ Cannot proceed without token!',
+                name: 'LoginController',
+              );
               Get.snackbar(
                 "Error",
                 "Login response is missing required data. Please contact support.",
@@ -153,10 +201,13 @@ class LoginController extends GetxController {
             colorText: Colors.white,
           );
 
-          print('🚀 Navigating to home screen');
+          dev.log('🚀 Navigating to home screen', name: 'LoginController');
           Get.offAllNamed(AppRoutes.homeView);
         } else {
-          print('❌ Login failed: ${data['message']}');
+          dev.log(
+            '❌ Login failed: ${data['message']}',
+            name: 'LoginController',
+          );
           Get.snackbar(
             "Error",
             data['message'] ?? "Login failed",
@@ -165,7 +216,7 @@ class LoginController extends GetxController {
           );
         }
       } else if (response.statusCode == 401) {
-        print('❌ Unauthorized: Invalid credentials');
+        dev.log('❌ Unauthorized: Invalid credentials', name: 'LoginController');
         Get.snackbar(
           "Error",
           "Invalid email or password",
@@ -173,7 +224,10 @@ class LoginController extends GetxController {
           colorText: Colors.white,
         );
       } else {
-        print('❌ Login failed with status: ${response.statusCode}');
+        dev.log(
+          '❌ Login failed with status: ${response.statusCode}',
+          name: 'LoginController',
+        );
         Get.snackbar(
           "Error",
           data['message'] ?? "Login failed with status ${response.statusCode}",
@@ -183,7 +237,7 @@ class LoginController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      print("❌ Login Error: $e");
+      dev.log("❌ Login Error: $e", name: 'LoginController');
       Get.snackbar(
         "Error",
         "Network error. Please check your connection and try again.",
@@ -194,10 +248,10 @@ class LoginController extends GetxController {
   }
 
   Future<void> _loginWithMobile() async {
-    if (mobileNumber.value.isEmpty || mobileNumber.value.length != 10) {
+    if (email.value.trim().isEmpty || !email.value.contains('@')) {
       Get.snackbar(
         "Error",
-        "Please enter a valid 10-digit mobile number",
+        "Please enter a valid email address",
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -205,6 +259,10 @@ class LoginController extends GetxController {
     }
 
     isLoading.value = true;
+    dev.log(
+      '🔄 Starting OTP request for: ${email.value}',
+      name: 'LoginController',
+    );
     try {
       final response = await http.post(
         Uri.parse(AppUrl.sendOtp),
@@ -212,18 +270,28 @@ class LoginController extends GetxController {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({"phone_no": mobileNumber.value}),
+        body: jsonEncode({"email": email.value.trim()}),
       );
 
       isLoading.value = false;
 
-      print("📡 Send OTP Response Status: ${response.statusCode}");
-      print("📡 Send OTP Response Body: ${response.body}");
+      dev.log(
+        "📡 Send OTP Response Status: ${response.statusCode}",
+        name: 'LoginController',
+      );
+      dev.log(
+        "📡 Send OTP Response Body: ${response.body}",
+        name: 'LoginController',
+      );
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         if (data['status'] == true) {
+          dev.log(
+            '✅ OTP sent successfully to: ${email.value}',
+            name: 'LoginController',
+          );
           Get.snackbar(
             "Success",
             data['message'] ?? "OTP sent successfully",
@@ -234,9 +302,13 @@ class LoginController extends GetxController {
           // Navigate to OTP screen
           Get.toNamed(
             AppRoutes.otpView,
-            arguments: {'phone_no': mobileNumber.value},
+            arguments: {'email': email.value.trim()},
           );
         } else {
+          dev.log(
+            '❌ Failed to send OTP: ${data['message']}',
+            name: 'LoginController',
+          );
           Get.snackbar(
             "Error",
             data['message'] ?? "Failed to send OTP",
@@ -245,6 +317,10 @@ class LoginController extends GetxController {
           );
         }
       } else {
+        dev.log(
+          '❌ Send OTP failed with status: ${response.statusCode}',
+          name: 'LoginController',
+        );
         Get.snackbar(
           "Error",
           data['message'] ??
@@ -255,7 +331,7 @@ class LoginController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      print("Send OTP Error: $e");
+      dev.log("Send OTP Error: $e", name: 'LoginController');
       Get.snackbar(
         "Error",
         "Network error. Please check your connection and try again.",

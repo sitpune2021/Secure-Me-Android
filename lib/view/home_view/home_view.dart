@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,33 +32,43 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<void> _loadUserData() async {
-    print('🔍 HomeView: Loading user data from SharedPreferences...');
+    dev.log(
+      '🔍 HomeView: Loading user data from SharedPreferences...',
+      name: 'HomeView',
+    );
     final name = await PreferenceHelper.getUserName();
-    print('🔍 HomeView: Retrieved name: $name');
+    dev.log('🔍 HomeView: Retrieved name: $name', name: 'HomeView');
     if (name != null && name.isNotEmpty) {
-      setState(() {
-        userName = name;
-      });
-      print('✅ HomeView: User name set to: $userName');
+      if (mounted) {
+        setState(() {
+          userName = name;
+        });
+      }
+      dev.log('✅ HomeView: User name set to: $userName', name: 'HomeView');
     } else {
-      print('⚠️ HomeView: No user name found, using default: $userName');
+      dev.log(
+        '⚠️ HomeView: No user name found, using default: $userName',
+        name: 'HomeView',
+      );
     }
   }
 
   void _updateGreeting() {
     final hour = DateTime.now().hour;
-    setState(() {
-      if (hour >= 0 && hour < 12) {
-        greeting = "Good Morning ☀️";
-      } else if (hour >= 12 && hour < 17) {
-        greeting = "Good Afternoon 🌤️";
-      } else if (hour >= 17 && hour < 21) {
-        greeting = "Good Evening 🌆";
-      } else {
-        greeting = "Good Night 🌙";
-      }
-    });
-    print('👋 Greeting set to: $greeting (Hour: $hour)');
+    if (mounted) {
+      setState(() {
+        if (hour >= 0 && hour < 12) {
+          greeting = "Good Morning ☀️";
+        } else if (hour >= 12 && hour < 17) {
+          greeting = "Good Afternoon 🌤️";
+        } else if (hour >= 17 && hour < 21) {
+          greeting = "Good Evening 🌆";
+        } else {
+          greeting = "Good Night 🌙";
+        }
+      });
+    }
+    dev.log('👋 Greeting set to: $greeting (Hour: $hour)', name: 'HomeView');
   }
 
   @override
@@ -66,12 +77,10 @@ class _HomeViewState extends State<HomeView> {
     double width = Get.width;
 
     return Obx(() {
-      final isDark = themeController.isDarkMode.value; // 👈 reactive binding
-      final theme = isDark ? ThemeData.dark() : ThemeData.light();
-
+      final isDark = themeController.isDarkMode.value;
       return Scaffold(
         backgroundColor: isDark ? Colors.black : Colors.white,
-        body: _buildBody(controller.currentIndex.value, theme, isDark),
+        body: _buildBody(controller.currentIndex.value, isDark),
         bottomNavigationBar: _buildBottomNav(isDark, height, width),
         floatingActionButton: buildSosButton(isDark, height, width),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -79,22 +88,22 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  Widget _buildBody(int index, ThemeData theme, bool isDark) {
+  Widget _buildBody(int index, bool isDark) {
     switch (index) {
       case 0:
-        return _dashboardUI(theme, isDark);
+        return _dashboardUI(isDark);
       case 1:
-        return TrackMeView();
+        return const TrackMeView();
       case 2:
-        return CommunityView();
+        return const CommunityView();
       case 3:
-        return ProfileView();
+        return const ProfileView();
       default:
-        return _dashboardUI(theme, isDark);
+        return _dashboardUI(isDark);
     }
   }
 
-  Widget _dashboardUI(ThemeData theme, bool isDark) {
+  Widget _dashboardUI(bool isDark) {
     final textColor = isDark ? Colors.white : Colors.black;
 
     double height = Get.height;
@@ -135,9 +144,9 @@ class _HomeViewState extends State<HomeView> {
                   child: Container(
                     width: width * 0.14,
                     height: width * 0.14,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: const LinearGradient(
+                      gradient: LinearGradient(
                         colors: [Colors.purple, Colors.pink],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -151,27 +160,35 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
                 SizedBox(width: width * 0.03),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Hello, $userName!",
-                      style: GoogleFonts.poppins(
-                        fontSize: width * 0.045,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Hello, $userName!",
+                        style: GoogleFonts.poppins(
+                          fontSize: width * 0.045,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    Text(
-                      greeting,
-                      style: GoogleFonts.poppins(
-                        fontSize: width * 0.035,
-                        color: isDark ? Colors.white70 : Colors.black54,
+                      Text(
+                        greeting,
+                        style: GoogleFonts.poppins(
+                          fontSize: width * 0.035,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const Spacer(),
+                // Removed Spacer to prevent layout overflow on narrow screens
+                SizedBox(width: width * 0.02),
                 _gradientCircleIcon(Icons.mic, isDark, width),
                 SizedBox(width: width * 0.03),
                 GestureDetector(
@@ -438,7 +455,7 @@ class _HomeViewState extends State<HomeView> {
       onTap: () => Get.toNamed(AppRoutes.sosActivate),
       child: Container(
         width: width * 0.18,
-        height: height * 0.18,
+        height: width * 0.18, // Changed to width to keep it circular
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.redAccent,
@@ -544,7 +561,7 @@ class CurvedNavBarPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     double centerX = size.width / 2;
-    double notchRadius = width * 0.08;
+    double notchRadius = width * 0.1; // Slightly adjusted for better fit
 
     Path path = Path()..moveTo(0, 0);
     path.lineTo(centerX - notchRadius - 10, 0);

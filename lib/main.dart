@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ Future<void> main() async {
         // await Get.find<PermissionController>().requestAllPermissions();
         if (!askedBefore) storage.write('permissionsRequested', true);
       } catch (e) {
-        if (kDebugMode) print('permission request error: $e');
+        if (kDebugMode) log('permission request error: $e', name: 'Main');
       }
     });
 
@@ -57,39 +58,39 @@ Future<void> main() async {
 /// Check if user is logged in and session is valid
 Future<void> _checkLoginStatus() async {
   try {
-    print('🔍 Checking login status...');
+    log('🔍 Checking login status...', name: 'Main');
 
     final isLoggedIn = await PreferenceHelper.getLoginStatus();
-    print('📖 Login status: $isLoggedIn');
+    log('📖 Login status: $isLoggedIn', name: 'Main');
 
     if (isLoggedIn) {
       // Check if session is still valid (within 30 days)
       final isSessionValid = await PreferenceHelper.isSessionValid();
-      print('📖 Session valid: $isSessionValid');
+      log('📖 Session valid: $isSessionValid', name: 'Main');
 
       if (isSessionValid) {
         final userName = await PreferenceHelper.getUserName();
         final sessionId = await PreferenceHelper.getSessionId();
-        print('✅ Auto-login: User is logged in as: $userName');
-        print('✅ Session ID: $sessionId');
+        log('✅ Auto-login: User is logged in as: $userName', name: 'Main');
+        log('✅ Session ID: $sessionId', name: 'Main');
 
         // Update last login time
         await PreferenceHelper.updateLastLoginTime();
 
         // Set initial route to home
         initialRoute = AppRoutes.homeView;
-        print('🚀 Redirecting to home screen');
+        log('🚀 Redirecting to home screen', name: 'Main');
       } else {
-        print('⚠️ Session expired, clearing user data');
+        log('⚠️ Session expired, clearing user data', name: 'Main');
         await PreferenceHelper.clearUserData();
         initialRoute = AppRoutes.loginView;
       }
     } else {
-      print('ℹ️ User not logged in, showing login screen');
+      log('ℹ️ User not logged in, showing login screen', name: 'Main');
       initialRoute = AppRoutes.loginView;
     }
   } catch (e) {
-    print('❌ Error checking login status: $e');
+    log('❌ Error checking login status: $e', name: 'Main');
     initialRoute = AppRoutes.loginView;
   }
 }
