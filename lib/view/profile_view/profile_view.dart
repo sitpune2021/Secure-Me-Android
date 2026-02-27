@@ -257,8 +257,9 @@ class _ProfileViewState extends State<ProfileView> {
                                                   )
                                                 : null,
                                           ),
-                                        ],
-                                    ),
+                                        ), // Closing the Container
+                                      ], // Closing the children list for Stack
+                                    ), // Closing the Stack
                                     const SizedBox(width: 22),
 
                                     // ── Center: Info Section ──
@@ -653,8 +654,6 @@ class _MenuCard extends StatelessWidget {
   static const Color blueAccent = Colors.blueAccent;
   static const Color purpleAccent = Colors.purpleAccent;
   static const Color pinkAccent = Colors.pinkAccent;
-  static const Color purple = Colors.purple;
-  static const Color pink = Colors.pink;
   final Color textColor;
   final Color cardColor;
   final Color dividerColor;

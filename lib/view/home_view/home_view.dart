@@ -7,7 +7,6 @@ import 'package:secure_me/controller/home_controller/home_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
-import 'package:secure_me/utils/preference_helper.dart';
 import 'package:secure_me/view/community_view/community_view.dart';
 import 'package:secure_me/view/track_me_view/track_me_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
