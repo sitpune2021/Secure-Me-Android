@@ -24,6 +24,8 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String _selectedRole = "User"; // Default role
+  final List<String> _roles = ["User", "Gym_Person", "Guardian", "Police"];
   final RegisterController registerController = Get.put(RegisterController());
 
   // Password visibility toggle
@@ -217,7 +219,6 @@ class _RegisterViewState extends State<RegisterView> {
 
                 SizedBox(height: Get.height * 0.05),
 
-                // Name Field
                 _buildProfileField("Name", _nameController, "Abc", isDark, (
                   value,
                 ) {
@@ -226,6 +227,10 @@ class _RegisterViewState extends State<RegisterView> {
                   }
                   return null;
                 }),
+                SizedBox(height: Get.height * 0.03),
+
+                // Role Selection (Moved Higher for visibility)
+                _buildRoleDropdown(theme, isDark),
                 SizedBox(height: Get.height * 0.03),
 
                 // Phone Field
@@ -301,7 +306,9 @@ class _RegisterViewState extends State<RegisterView> {
                     },
                   ),
                 ),
-                SizedBox(height: Get.height * 0.06),
+                SizedBox(height: Get.height * 0.03),
+
+                SizedBox(height: Get.height * 0.03),
 
                 // Register Button
                 SizedBox(
@@ -334,18 +341,12 @@ class _RegisterViewState extends State<RegisterView> {
                                   email: _emailController.text.trim(),
                                   phone: _phoneController.text.trim(),
                                   password: _passwordController.text.trim(),
+                                  role: _selectedRole,
                                 );
                               }
                             },
                       child: registerController.isLoading.value
-                          ? SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
+                          ? const _DotsLoading()
                           : Text(
                               "Create Account",
                               style: GoogleFonts.poppins(
@@ -388,7 +389,7 @@ class _RegisterViewState extends State<RegisterView> {
                     ),
                   ],
                 ),
-                SizedBox(height: Get.height * 0.02),
+                SizedBox(height: Get.height * 0.1), // Extra space for keyboard
               ],
             ),
           ),
@@ -451,6 +452,110 @@ class _RegisterViewState extends State<RegisterView> {
         Container(
           height: 1,
           color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRoleDropdown(ThemeData theme, bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "I am a...",
+          style: GoogleFonts.poppins(
+            color: theme.colorScheme.primary,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: _roles.map((role) {
+            final isSelected = _selectedRole == role;
+            final label = role.replaceAll('_', ' ');
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedRole = role;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? (isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.lightPrimary)
+                      : (isDark
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.black.withValues(alpha: 0.04)),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSelected
+                        ? (isDark
+                              ? AppColors.darkRadialGlow
+                              : AppColors.lightPrimary)
+                        : (isDark
+                              ? Colors.white.withValues(alpha: 0.15)
+                              : Colors.black.withValues(alpha: 0.1)),
+                    width: 1.5,
+                  ),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color:
+                                (isDark
+                                        ? AppColors.darkPrimary
+                                        : AppColors.lightPrimary)
+                                    .withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : [],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isSelected
+                          ? Icons.check_circle_rounded
+                          : Icons.circle_outlined,
+                      size: 16,
+                      color: isSelected
+                          ? Colors.white
+                          : (isDark ? Colors.white : Colors.black).withValues(
+                              alpha: 0.5,
+                            ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      label,
+                      style: GoogleFonts.poppins(
+                        color: isSelected
+                            ? Colors.white
+                            : (isDark
+                                  ? AppColors.darkText
+                                  : AppColors.lightText),
+                        fontSize: 14,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );
@@ -555,6 +660,61 @@ class _RegisterViewState extends State<RegisterView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Animated 3-dots loading indicator for buttons
+class _DotsLoading extends StatefulWidget {
+  const _DotsLoading();
+  @override
+  State<_DotsLoading> createState() => _DotsLoadingState();
+}
+
+class _DotsLoadingState extends State<_DotsLoading>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (_, __) => Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(3, (i) {
+          final t = ((_ctrl.value + i / 3) % 1.0);
+          final scale = 0.6 + 0.4 * (1 - (2 * t - 1).abs());
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: Transform.scale(
+              scale: scale,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

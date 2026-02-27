@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class AppColors {
   // ---------------- LIGHT THEME ----------------
   static const Color lightBackground = Colors.white;
-  static const Color lightPrimary = Color(0xFF8E2DE2); // violet
-  static const Color lightSecondary = Color(0xFF4A00E0); // deep purple
+  static const Color lightPrimary = Color(0xFF9C27B0); // purple
+  static const Color lightSecondary = Color(0xFFE91E63); // pink
   static const Color lightText = Colors.black87;
   static const Color lightHint = Color(0xFF9E9E9E);
   static const Color lightDivider = Color(0xFFDDDDDD);
@@ -31,8 +31,8 @@ class AppColors {
   static const Color darkSecondaryBackground = Color(
     0xFF1A0B2E,
   ); // bottom gradient
-  static const Color darkPrimary = Color(0xFF7C4DFF); // purple glow
-  static const Color darkSecondary = Color(0xFF4B1E68); // darker purple blend
+  static const Color darkPrimary = Color(0xFFD05CE3); // vibrant purple
+  static const Color darkSecondary = Color(0xFFF06292); // pink
   static const Color darkText = Colors.white;
   static const Color darkHint = Colors.white70;
   static const Color darkDivider = Color(0x33FFFFFF); // faint line
@@ -83,7 +83,7 @@ class AppColors {
   // Glow gradients
   static const Gradient lightGlowGradient = RadialGradient(
     colors: [
-      Color(0xFF8E2DE2), // violet
+      Color(0xFF9C27B0), // purple
       Colors.transparent,
     ],
     radius: 0.6,
@@ -136,7 +136,7 @@ class AppColors {
 
   // Login Screen
   static Color loginButtonBackground(bool isDark) =>
-      isDark ? glowPurpleTopLeft : lightPrimary;
+      isDark ? darkPrimary : lightPrimary;
 
   static Color loginTextColor(bool isDark) => isDark ? darkText : lightText;
 
@@ -147,6 +147,7 @@ class AppColors {
 
   // Common Colors
   static const Color red = Colors.red;
+  static const Color sosRed = Color(0xFFFF1744); // Vibrant Red for Emergency
   static const Color green = Colors.green;
   static const Color greenAccent = Colors.greenAccent;
 
@@ -165,7 +166,7 @@ class AppColors {
       isDark ? AppColors.darkText : AppColors.lightText;
 
   static Color loginIconCircle(bool isDark) =>
-      isDark ? const Color(0xFFB573FF) : const Color(0xFF8A2BE2);
+      isDark ? darkPrimary : lightPrimary;
 
   static Color loginIconSymbol(bool isDark) => isDark ? pureWhite : pureWhite;
 

@@ -8,6 +8,8 @@ class PreferenceHelper {
   static const String _keyUserEmail = 'user_email';
   static const String _keyUserPhone = 'user_phone';
   static const String _keyUserProfileImage = 'user_profile_image';
+  static const String _keyUserRole = 'user_role';
+  static const String _keyUserCreatedAt = 'user_created_at';
   static const String _keyIsLoggedIn = 'is_logged_in';
   static const String _keySessionId = 'session_id';
   static const String _keyLastLoginTime = 'last_login_time';
@@ -110,6 +112,48 @@ class PreferenceHelper {
     return phone;
   }
 
+  // Save user role
+  static Future<void> saveUserRole(String role) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyUserRole, role);
+    log(
+      '✅ User role saved to SharedPreferences: $role',
+      name: 'PreferenceHelper',
+    );
+  }
+
+  // Get user role
+  static Future<String?> getUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    final role = prefs.getString(_keyUserRole);
+    log(
+      '📖 User role retrieved from SharedPreferences: $role',
+      name: 'PreferenceHelper',
+    );
+    return role;
+  }
+
+  // Save user created at
+  static Future<void> saveUserCreatedAt(String createdAt) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyUserCreatedAt, createdAt);
+    log(
+      '✅ User created at saved to SharedPreferences: $createdAt',
+      name: 'PreferenceHelper',
+    );
+  }
+
+  // Get user created at
+  static Future<String?> getUserCreatedAt() async {
+    final prefs = await SharedPreferences.getInstance();
+    final createdAt = prefs.getString(_keyUserCreatedAt);
+    log(
+      '📖 User created at retrieved from SharedPreferences: $createdAt',
+      name: 'PreferenceHelper',
+    );
+    return createdAt;
+  }
+
   // Save profile image
   static Future<void> saveUserProfileImage(String? image) async {
     final prefs = await SharedPreferences.getInstance();
@@ -160,6 +204,8 @@ class PreferenceHelper {
     await prefs.remove(_keyUserEmail);
     await prefs.remove(_keyUserPhone);
     await prefs.remove(_keyUserProfileImage);
+    await prefs.remove(_keyUserRole);
+    await prefs.remove(_keyUserCreatedAt);
     await prefs.setBool(_keyIsLoggedIn, false);
     await clearSession();
     log(
@@ -176,6 +222,8 @@ class PreferenceHelper {
     String? email,
     String? phone,
     String? profileImage,
+    String? userRole,
+    String? userCreatedAt,
   }) async {
     log('💾 saveUserData called with:', name: 'PreferenceHelper');
     log('  - Token: ${token.substring(0, 10)}...', name: 'PreferenceHelper');
@@ -184,26 +232,28 @@ class PreferenceHelper {
     log('  - Email: $email', name: 'PreferenceHelper');
     log('  - Phone: $phone', name: 'PreferenceHelper');
     log('  - Profile Image: $profileImage', name: 'PreferenceHelper');
+    log('  - Role: $userRole', name: 'PreferenceHelper');
+    log('  - CreatedAt: $userCreatedAt', name: 'PreferenceHelper');
 
     await saveToken(token);
     await saveUserId(userId);
     if (name != null && name.isNotEmpty) {
       await saveUserName(name);
-    } else {
-      log('⚠️ Name is null or empty, not saving', name: 'PreferenceHelper');
     }
     if (email != null && email.isNotEmpty) {
       await saveUserEmail(email);
-    } else {
-      log('⚠️ Email is null or empty, not saving', name: 'PreferenceHelper');
     }
     if (phone != null && phone.isNotEmpty) {
       await saveUserPhone(phone);
-    } else {
-      log('⚠️ Phone is null or empty, not saving', name: 'PreferenceHelper');
     }
     if (profileImage != null && profileImage.isNotEmpty) {
       await saveUserProfileImage(profileImage);
+    }
+    if (userRole != null && userRole.isNotEmpty) {
+      await saveUserRole(userRole);
+    }
+    if (userCreatedAt != null && userCreatedAt.isNotEmpty) {
+      await saveUserCreatedAt(userCreatedAt);
     }
     await saveLoginStatus(true);
     await _createSession();

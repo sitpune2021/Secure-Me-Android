@@ -41,6 +41,7 @@ class RegisterController extends GetxController {
     required String email,
     required String phone,
     required String password,
+    required String role,
   }) async {
     isLoading.value = true;
     try {
@@ -56,7 +57,7 @@ class RegisterController extends GetxController {
       request.fields['email'] = email;
       request.fields['phone_no'] = phone;
       request.fields['password'] = password;
-      request.fields['user_role'] = 'Gym_Person';
+      request.fields['user_role'] = role;
 
       // Add image if selected
       if (selectedImage.value != null) {

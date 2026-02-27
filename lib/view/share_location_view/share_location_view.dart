@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:secure_me/controller/location_controller.dart/location_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 
@@ -35,7 +36,19 @@ class ShareLocationView extends StatelessWidget {
 
         body: Obx(() {
           if (controller.isFetching.value) {
-            return const Center(child: CircularProgressIndicator());
+            return Shimmer.fromColors(
+              baseColor: isDark
+                  ? const Color(0xFF1E1E2E)
+                  : const Color(0xFFE0E0E0),
+              highlightColor: isDark
+                  ? const Color(0xFF2E2E4E)
+                  : const Color(0xFFF5F5F5),
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.white,
+              ),
+            );
           }
 
           if (controller.currentPosition.value == null) {

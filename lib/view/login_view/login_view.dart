@@ -723,15 +723,7 @@ class _LoginViewState extends State<LoginView> {
                                       child: Container(
                                         alignment: Alignment.center,
                                         child: controller.isLoading.value
-                                            ? const SizedBox(
-                                                height: 24,
-                                                width: 24,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      strokeWidth: 2.5,
-                                                      color: Colors.white,
-                                                    ),
-                                              )
+                                            ? const _DotsLoading()
                                             : Text(
                                                 "Log In",
                                                 style: GoogleFonts.poppins(
@@ -838,5 +830,64 @@ class _LoginViewState extends State<LoginView> {
         ),
       );
     });
+  }
+}
+
+// Animated 3-dots loading indicator for buttons
+class _DotsLoading extends StatefulWidget {
+  const _DotsLoading();
+
+  @override
+  State<_DotsLoading> createState() => _DotsLoadingState();
+}
+
+class _DotsLoadingState extends State<_DotsLoading>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (_, __) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(3, (i) {
+            final t = ((_ctrl.value + i / 3) % 1.0);
+            final scale = 0.6 + 0.4 * (1 - (2 * t - 1).abs());
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: Transform.scale(
+                scale: scale,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+      },
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +17,7 @@ class ProfileController extends GetxController {
   void onInit() {
     super.onInit();
     fetchProfile();
+    fetchUserRole();
   }
 
   Future<void> fetchProfile() async {
@@ -52,17 +54,27 @@ class ProfileController extends GetxController {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['status'] == true) {
-        userData.value = data['data']['user'];
+        userData.value = data['data'];
         dev.log(
           '✅ Profile retrieved successfully: ${userData['name']}',
           name: 'ProfileController',
         );
 
         // Sync local storage with latest data from server
-        await PreferenceHelper.saveUserName(userData['name']);
-        await PreferenceHelper.saveUserEmail(userData['email']);
-        await PreferenceHelper.saveUserPhone(userData['phone_no']);
-        await PreferenceHelper.saveUserProfileImage(userData['profile_image']);
+        await PreferenceHelper.saveUserName(userData['name'] ?? '');
+        await PreferenceHelper.saveUserEmail(userData['email'] ?? '');
+        await PreferenceHelper.saveUserPhone(userData['phone_no'] ?? '');
+        if (userData['profile_image'] != null) {
+          await PreferenceHelper.saveUserProfileImage(
+            userData['profile_image'],
+          );
+        }
+        if (userData['user_role'] != null) {
+          await PreferenceHelper.saveUserRole(userData['user_role']);
+        }
+        if (userData['created_at'] != null) {
+          await PreferenceHelper.saveUserCreatedAt(userData['created_at']);
+        }
       } else {
         dev.log(
           '❌ Failed to retrieve profile: ${data['message']}',
@@ -72,6 +84,129 @@ class ProfileController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       dev.log('❌ Error fetching profile: $e', name: 'ProfileController');
+    }
+  }
+
+  Future<void> fetchUserRole() async {
+    try {
+      String? token = await PreferenceHelper.getToken();
+
+      if (token == null || token.isEmpty) return;
+
+      final response = await http.get(
+        Uri.parse(AppUrl.userRole),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && data['status'] == true) {
+        String role = data['user_role'] ?? 'User';
+        userData['user_role'] = role;
+        userData.refresh();
+        await PreferenceHelper.saveUserRole(role);
+
+        dev.log(
+          '✅ User role fetched successfully: $role',
+          name: 'ProfileController',
+        );
+      }
+    } catch (e) {
+      dev.log('❌ Error fetching user role: $e', name: 'ProfileController');
+    }
+  }
+
+  Future<bool> updateProfile({
+    required String name,
+    required String email,
+    required String phone,
+    File? image,
+  }) async {
+    isLoading.value = true;
+    dev.log('🔄 Updating user profile...', name: 'ProfileController');
+
+    try {
+      String? token = await PreferenceHelper.getToken();
+
+      if (token == null || token.isEmpty) {
+        isLoading.value = false;
+        return false;
+      }
+
+      // Use MultipartRequest for profile update to support image
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(AppUrl.updateProfile),
+      );
+
+      request.headers.addAll({
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+
+      request.fields['name'] = name;
+      request.fields['email'] = email;
+      request.fields['phone_no'] = phone;
+      request.fields['_method'] =
+          'PUT'; // Common requirement for Laravel multipart updates
+
+      if (image != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', image.path),
+        );
+        dev.log(
+          '📸 Profile image attached: ${image.path}',
+          name: 'ProfileController',
+        );
+      }
+
+      var streamedResponse = await request.send().timeout(
+        const Duration(seconds: 30),
+      );
+      var response = await http.Response.fromStream(streamedResponse);
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && data['status'] == true) {
+        dev.log(
+          '✅ Profile updated successfully: ${data['message']}',
+          name: 'ProfileController',
+        );
+
+        // Fetch fresh profile data to sync everything
+        await fetchProfile();
+
+        return true;
+      } else {
+        isLoading.value = false;
+        dev.log(
+          '❌ Failed to update profile: ${data['message']}',
+          name: 'ProfileController',
+        );
+        Get.snackbar(
+          "Error",
+          data['message'] ?? "Failed to update profile",
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return false;
+      }
+    } catch (e) {
+      isLoading.value = false;
+      dev.log('❌ Error updating profile: $e', name: 'ProfileController');
+      Get.snackbar(
+        "Error",
+        "Could not connect to the server",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
     }
   }
 
