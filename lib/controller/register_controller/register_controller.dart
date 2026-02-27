@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
@@ -9,6 +11,24 @@ import 'package:secure_me/utils/preference_helper.dart';
 
 class RegisterController extends GetxController {
   var isLoading = false.obs;
+  var selectedImage = Rx<File?>(null);
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+      );
+      if (image != null) {
+        selectedImage.value = File(image.path);
+        print("📸 Image selected: ${image.path}");
+      }
+    } catch (e) {
+      print("❌ Error picking image: $e");
+      Get.snackbar("Error", "Failed to pick image");
+    }
+  }
 
   Future<void> registerUser({
     required String name,
@@ -18,20 +38,32 @@ class RegisterController extends GetxController {
   }) async {
     isLoading.value = true;
     try {
-      final response = await http.post(
-        Uri.parse(AppUrl.register),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({
-          "name": name,
-          "email": email,
-          "phone_no": phone,
-          "password": password,
-          "user_role": "bouncer",
-        }),
-      );
+      // Use MultipartRequest for image upload
+      var request = http.MultipartRequest('POST', Uri.parse(AppUrl.register));
+
+      // Add text fields
+      request.fields['name'] = name;
+      request.fields['email'] = email;
+      request.fields['phone_no'] = phone;
+      request.fields['password'] = password;
+      request.fields['user_role'] = 'bouncer';
+
+      // Add image if selected
+      if (selectedImage.value != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'profile_image', // Adjust field name according to your API
+            selectedImage.value!.path,
+          ),
+        );
+        print("📸 Attached image to request");
+      }
+
+      request.headers.addAll({'Accept': 'application/json'});
+
+      print("🚀 Sending Multipart Registration Request...");
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
 
       isLoading.value = false;
 
@@ -44,7 +76,7 @@ class RegisterController extends GetxController {
         if (data['status'] == true) {
           print('✅ Registration successful for: $email');
 
-          // Extract token and user data similar to login behavior
+          // Extract token and user data fallback logic
           String? token;
           Map<String, dynamic>? user;
 
@@ -65,7 +97,6 @@ class RegisterController extends GetxController {
           }
 
           if (user != null && token != null) {
-            // Save all user data and initiate session
             await PreferenceHelper.saveUserData(
               token: token,
               userId: user['id']?.toString() ?? '',
@@ -73,12 +104,9 @@ class RegisterController extends GetxController {
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
             );
-            print('✅ Token and User ID saved successfully');
           } else if (token != null) {
-            // Fallback: just save the token and login status
             await PreferenceHelper.saveToken(token);
             await PreferenceHelper.saveLoginStatus(true);
-            print('✅ Token saved (user data missing in response)');
           }
 
           Get.snackbar(
@@ -88,7 +116,6 @@ class RegisterController extends GetxController {
             colorText: Colors.white,
           );
 
-          // If session is created, navigate to Home, otherwise Login
           if (token != null) {
             Get.offAllNamed(AppRoutes.homeView);
           } else {
@@ -105,8 +132,7 @@ class RegisterController extends GetxController {
       } else {
         Get.snackbar(
           "Error",
-          data['message'] ??
-              "Registration failed with status ${response.statusCode}",
+          data['message'] ?? "Registration failed (${response.statusCode})",
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
