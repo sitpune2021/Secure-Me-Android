@@ -241,7 +241,11 @@ class _ProfileViewState extends State<ProfileView> {
                                                 profileImage != null &&
                                                     profileImage.isNotEmpty
                                                 ? NetworkImage(
-                                                    "${AppUrl.host}/$profileImage",
+                                                    profileImage.startsWith(
+                                                          'http',
+                                                        )
+                                                        ? profileImage
+                                                        : "${AppUrl.host}/$profileImage",
                                                   )
                                                 : null,
                                             backgroundColor: Colors.white

@@ -25,6 +25,25 @@ class ProfileController extends GetxController {
     dev.log('🔄 Fetching user profile...', name: 'ProfileController');
 
     try {
+      // First, load cached user data
+      String? cachedName = await PreferenceHelper.getUserName();
+      String? cachedEmail = await PreferenceHelper.getUserEmail();
+      String? cachedPhone = await PreferenceHelper.getUserPhone();
+      String? cachedRole = await PreferenceHelper.getUserRole();
+      String? cachedImage = await PreferenceHelper.getUserProfileImage();
+      String? cachedCreatedAt = await PreferenceHelper.getUserCreatedAt();
+
+      if (cachedName != null) {
+        userData.value = {
+          'name': cachedName,
+          'email': cachedEmail,
+          'phone_no': cachedPhone,
+          'user_role': cachedRole,
+          'profile_image': cachedImage,
+          'created_at': cachedCreatedAt,
+        };
+      }
+
       String? token = await PreferenceHelper.getToken();
 
       if (token == null || token.isEmpty) {
@@ -36,20 +55,29 @@ class ProfileController extends GetxController {
         return;
       }
 
-      final response = await http.get(
-        Uri.parse(AppUrl.profile),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
+      final response = await http
+          .get(
+            Uri.parse(AppUrl.profile),
+            headers: {
+              // 'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer ${token.trim()}',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
 
       isLoading.value = false;
       dev.log(
         '📡 Profile Response Status: ${response.statusCode}',
         name: 'ProfileController',
       );
+
+      if (response.statusCode == 401) {
+        await PreferenceHelper.clearUserData();
+        Get.offAllNamed(AppRoutes.loginView);
+        isLoading.value = false;
+        return;
+      }
 
       final data = jsonDecode(response.body);
 
@@ -84,6 +112,13 @@ class ProfileController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       dev.log('❌ Error fetching profile: $e', name: 'ProfileController');
+      Get.snackbar(
+        "Connection Error",
+        "Failed to load profile. Please check your network connection.",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -93,14 +128,22 @@ class ProfileController extends GetxController {
 
       if (token == null || token.isEmpty) return;
 
-      final response = await http.get(
-        Uri.parse(AppUrl.userRole),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
+      final response = await http
+          .get(
+            Uri.parse(AppUrl.userRole),
+            headers: {
+              // 'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer ${token.trim()}',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 401) {
+        await PreferenceHelper.clearUserData();
+        Get.offAllNamed(AppRoutes.loginView);
+        return;
+      }
 
       final data = jsonDecode(response.body);
 
@@ -218,14 +261,16 @@ class ProfileController extends GetxController {
       String? token = await PreferenceHelper.getToken();
       if (token != null && token.isNotEmpty) {
         // According to user request #6, logout is a GET request to /api/auth/logout
-        await http.get(
-          Uri.parse(AppUrl.logout),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        );
+        await http
+            .get(
+              Uri.parse(AppUrl.logout),
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': 'Bearer $token',
+              },
+            )
+            .timeout(const Duration(seconds: 15));
       }
 
       await PreferenceHelper.clearUserData();

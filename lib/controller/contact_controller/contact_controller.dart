@@ -6,6 +6,7 @@ import 'package:secure_me/const/app_url.dart';
 import 'package:fast_contacts/fast_contacts.dart' as fast;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:secure_me/model/contact_model.dart';
+import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 
 class ContactController extends GetxController {
@@ -52,18 +53,28 @@ class ContactController extends GetxController {
         return;
       }
 
-      final response = await http.get(
-        Uri.parse("${AppUrl.contacts}?page=${currentPage.value}"),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
+      final response = await http
+          .get(
+            Uri.parse("${AppUrl.contacts}?page=${currentPage.value}"),
+            headers: {
+              // 'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer ${token.trim()}',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
 
       dev.log(
         '📡 Contacts Response Status: ${response.statusCode}',
         name: 'ContactController',
       );
+
+      if (response.statusCode == 401) {
+        await PreferenceHelper.clearUserData();
+        Get.offAllNamed(AppRoutes.loginView);
+        isLoading.value = false;
+        return;
+      }
 
       final data = jsonDecode(response.body);
 
@@ -99,6 +110,41 @@ class ContactController extends GetxController {
     }
   }
 
+  Future<bool> deleteContact(int id) async {
+    try {
+      String? token = await PreferenceHelper.getToken();
+      if (token == null || token.isEmpty) return false;
+
+      final response = await http
+          .get(
+            // Most Laravel basic endpoints use GET for delete action with specific routes
+            Uri.parse("${AppUrl.deleteContact}/$id"),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer ${token.trim()}',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
+
+      dev.log('📡 Delete Contact Status: ${response.statusCode}');
+
+      if (response.statusCode == 401) {
+        await PreferenceHelper.clearUserData();
+        Get.offAllNamed(AppRoutes.loginView);
+        return false;
+      }
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data['status'] == true) {
+        contacts.removeWhere((c) => c.id == id);
+        return true;
+      }
+    } catch (e) {
+      dev.log('❌ Error deleting contact: $e', name: 'ContactController');
+    }
+    return false;
+  }
+
   Future<void> fetchPhoneContacts() async {
     isPhoneLoading.value = true;
     dev.log('🔄 Requesting contacts permission...', name: 'ContactController');
@@ -121,7 +167,7 @@ class ContactController extends GetxController {
             id: -1, // Distinguish from API contacts
             name: c.displayName,
             phoneNo: phone,
-            userRole: "Phone Contact",
+            userRole: "Emergency Contact",
           );
         }).toList();
 

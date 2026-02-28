@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
+import 'package:secure_me/controller/add_contact_controller/add_contact_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
 
 class AddContactView extends StatefulWidget {
@@ -19,8 +20,48 @@ class _AddContactViewState extends State<AddContactView> {
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   final ThemeController themeController = Get.find<ThemeController>();
+  final AddContactController addContactController = Get.put(
+    AddContactController(),
+  );
+
+  String _selectedRole = "Gym_Person";
+  final List<String> _roles = ["User", "Gym_Person", "Guardian", "Police"];
+
+  @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments;
+    if (args != null &&
+        args is Map<String, dynamic> &&
+        args['isEdit'] == true) {
+      final contact = args['contact'];
+      if (contact != null) {
+        addContactController.isEditing.value = true;
+        addContactController.editingContactId.value = contact.id ?? -1;
+
+        // Populate fields
+        _phoneController.text = contact.phoneNo ?? "";
+        _emailController.text = contact.email ?? "";
+
+        final name = contact.name ?? "";
+        final parts = name.split(" ");
+        _firstnameController.text = parts.isNotEmpty ? parts[0] : "";
+        _lastnameController.text = parts.length > 1
+            ? parts.sublist(1).join(" ")
+            : "";
+
+        if (_roles.contains(contact.userRole)) {
+          _selectedRole = contact.userRole!;
+        }
+      }
+    } else {
+      addContactController.isEditing.value = false;
+      addContactController.editingContactId.value = -1;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +78,9 @@ class _AddContactViewState extends State<AddContactView> {
               : AppColors.lightBackground,
           elevation: 1,
           title: Text(
-            "New Contact",
+            addContactController.isEditing.value
+                ? "Update Contact"
+                : "New Contact",
             style: GoogleFonts.poppins(
               fontSize: Get.width * 0.05,
               fontWeight: FontWeight.bold,
@@ -57,24 +100,25 @@ class _AddContactViewState extends State<AddContactView> {
               : null,
           actions: [
             TextButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  Get.snackbar(
-                    "Saved",
-                    "Contact saved successfully",
-                    backgroundColor: isDark
-                        ? AppColors.darkPrimary
-                        : AppColors.lightPrimary,
-                    colorText: AppColors.pureWhite,
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                }
-              },
+              onPressed: addContactController.isLoading.value
+                  ? null
+                  : () {
+                      if (_formKey.currentState!.validate()) {
+                        addContactController.addContact(
+                          name:
+                              '${_firstnameController.text.trim()} ${_lastnameController.text.trim()}',
+                          phoneNo: _phoneController.text.trim(),
+                          email: _emailController.text.trim(),
+                          userRole: _selectedRole,
+                        );
+                      }
+                    },
               child: Text(
                 "Save",
                 style: GoogleFonts.poppins(
                   color: isDark
-                      ? AppColors.saveButtonColor
+                      ? AppColors
+                            .darkHint // Changed to safe color
                       : AppColors.lightPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -133,6 +177,29 @@ class _AddContactViewState extends State<AddContactView> {
                       },
                       isDark: isDark,
                     ),
+                    const SizedBox(height: 20),
+                    // Email
+                    _buildProfileField(
+                      "Email",
+                      _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Email is required";
+                        }
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$',
+                        ).hasMatch(value)) {
+                          return "Enter a valid email";
+                        }
+                        return null;
+                      },
+                      isDark: isDark,
+                    ),
+                    const SizedBox(height: 20),
+                    // Role
+                    _buildRoleDropdown(isDark),
+
                     SizedBox(height: Get.height * 0.08),
                     // Add Button
                     SizedBox(
@@ -154,27 +221,38 @@ class _AddContactViewState extends State<AddContactView> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              Get.snackbar(
-                                "Success",
-                                "Contact added successfully",
-                                backgroundColor: isDark
-                                    ? AppColors.darkPrimary
-                                    : AppColors.lightPrimary,
-                                colorText: AppColors.pureWhite,
-                                snackPosition: SnackPosition.BOTTOM,
-                              );
-                            }
-                          },
-                          child: Text(
-                            "Add",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.pureWhite,
-                            ),
-                          ),
+                          onPressed: addContactController.isLoading.value
+                              ? null
+                              : () {
+                                  if (_formKey.currentState!.validate()) {
+                                    addContactController.addContact(
+                                      name:
+                                          '${_firstnameController.text.trim()} ${_lastnameController.text.trim()}',
+                                      phoneNo: _phoneController.text.trim(),
+                                      email: _emailController.text.trim(),
+                                      userRole: _selectedRole,
+                                    );
+                                  }
+                                },
+                          child: addContactController.isLoading.value
+                              ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : Text(
+                                  addContactController.isEditing.value
+                                      ? "Update"
+                                      : "Add",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.pureWhite,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
@@ -228,6 +306,55 @@ class _AddContactViewState extends State<AddContactView> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRoleDropdown(bool isDark) {
+    return DropdownButtonFormField<String>(
+      value: _selectedRole,
+      decoration: InputDecoration(
+        labelText: "Role",
+        labelStyle: GoogleFonts.poppins(
+          color: isDark ? AppColors.darkHint : AppColors.lightHint,
+        ),
+        filled: false,
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+          ),
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+          ),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: isDark ? AppColors.darkRadialGlow : AppColors.lightPrimary,
+            width: 2,
+          ),
+        ),
+      ),
+      dropdownColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
+      style: GoogleFonts.poppins(
+        color: isDark ? AppColors.darkText : AppColors.lightText,
+        fontSize: 16,
+      ),
+      items: _roles.map((role) {
+        return DropdownMenuItem(
+          value: role,
+          child: Text(role.replaceAll('_', ' ')),
+        );
+      }).toList(),
+      onChanged: (val) {
+        if (val != null) {
+          setState(() {
+            _selectedRole = val;
+          });
+        }
+      },
     );
   }
 }

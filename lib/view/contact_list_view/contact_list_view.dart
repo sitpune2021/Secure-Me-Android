@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/contact_controller/contact_controller.dart';
@@ -307,7 +308,7 @@ class _ContactListViewState extends State<ContactListView> {
     final textColor = isDark ? AppColors.darkText : AppColors.lightText;
     final hintColor = isDark ? AppColors.darkHint : AppColors.lightHint;
 
-    return Container(
+    Widget cardContent = Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: cardColor,
@@ -330,7 +331,15 @@ class _ContactListViewState extends State<ContactListView> {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              // Ignore local phone contacts id == -1
+              if (contact.id != -1) {
+                Get.toNamed(
+                  AppRoutes.addContact,
+                  arguments: {'isEdit': true, 'contact': contact},
+                );
+              }
+            },
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -413,12 +422,16 @@ class _ContactListViewState extends State<ContactListView> {
                               color: hintColor,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              contact.phoneNo ?? "No number",
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: hintColor,
-                                fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: Text(
+                                contact.phoneNo ?? "No number",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: hintColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
                             ),
                           ],
@@ -446,6 +459,74 @@ class _ContactListViewState extends State<ContactListView> {
           ),
         ),
       ),
+    );
+
+    if (contact.id == -1) {
+      return cardContent;
+    }
+
+    return Dismissible(
+      key: ValueKey('contact_dismissible_${contact.id}'),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.redAccent.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 24),
+        child: const Icon(
+          Icons.delete_sweep_rounded,
+          color: Colors.white,
+          size: 32,
+        ),
+      ),
+      confirmDismiss: (direction) async {
+        HapticFeedback.heavyImpact();
+        return await Get.defaultDialog<bool>(
+          title: "Delete Contact",
+          titleStyle: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+          middleText:
+              "Are you sure you want to remove ${contact.name ?? 'this contact'} from your emergency contacts?",
+          middleTextStyle: GoogleFonts.poppins(fontSize: 14),
+          backgroundColor: Theme.of(Get.context!).scaffoldBackgroundColor,
+          cancelTextColor: isDark ? Colors.white : Colors.black,
+          confirmTextColor: Colors.white,
+          buttonColor: Colors.redAccent,
+          textCancel: "Cancel",
+          textConfirm: "Delete",
+          onConfirm: () => Get.back(result: true),
+          onCancel: () => Get.back(result: false),
+        );
+      },
+      onDismissed: (direction) async {
+        bool success = await controller.deleteContact(contact.id!);
+        if (success) {
+          Get.snackbar(
+            "Success",
+            "Contact deleted successfully",
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            margin: const EdgeInsets.all(16),
+          );
+        } else {
+          controller.fetchContacts();
+          Get.snackbar(
+            "Error",
+            "Failed to delete contact",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            margin: const EdgeInsets.all(16),
+          );
+        }
+      },
+      child: cardContent,
     );
   }
 }

@@ -310,9 +310,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                                     ),
                                     backgroundImage: _imageFile != null
                                         ? FileImage(_imageFile!)
-                                        : (_profileImage != null
+                                        : (_profileImage != null &&
+                                                      _profileImage!.isNotEmpty
                                                   ? NetworkImage(
-                                                      "${AppUrl.host}/$_profileImage",
+                                                      _profileImage!.startsWith(
+                                                            'http',
+                                                          )
+                                                          ? _profileImage!
+                                                          : "${AppUrl.host}/$_profileImage",
                                                     )
                                                   : null)
                                               as ImageProvider?,

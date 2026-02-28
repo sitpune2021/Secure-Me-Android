@@ -11,4 +11,11 @@ class AppUrl {
   static const String userRole = "$baseUrl/auth/user-role";
   static const String updateProfile = "$baseUrl/user/update/profile";
   static const String contacts = "$baseUrl/contacts";
+  static const String addContact = "$baseUrl/add/contacts";
+  static const String updateContact = "$baseUrl/update/contacts";
+  static const String deleteContact = "$baseUrl/delete/contacts";
+  static const String signalTrigger = "$baseUrl/signal/trigger";
+  static const String signalRespond = "$baseUrl/signal/respond";
+  static const String createCommunity = "$baseUrl/community/create";
+  static const String addCommunityContact = "$baseUrl/community/add-contacts";
 }
