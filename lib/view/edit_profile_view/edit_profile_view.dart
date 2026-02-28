@@ -313,11 +313,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                                         : (_profileImage != null &&
                                                       _profileImage!.isNotEmpty
                                                   ? NetworkImage(
-                                                      _profileImage!.startsWith(
-                                                            'http',
-                                                          )
-                                                          ? _profileImage!
-                                                          : "${AppUrl.host}/$_profileImage",
+                                                      AppUrl.buildImageUrl(
+                                                        _profileImage!,
+                                                      ),
                                                     )
                                                   : null)
                                               as ImageProvider?,

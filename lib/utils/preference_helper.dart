@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +15,7 @@ class PreferenceHelper {
   static const String _keySessionId = 'session_id';
   static const String _keyLastLoginTime = 'last_login_time';
   static const String _keySessionStartTime = 'session_start_time';
+  static const String _keyCommunities = 'local_communities';
 
   // Save token
   static Future<void> saveToken(String token) async {
@@ -349,5 +351,31 @@ class PreferenceHelper {
     await prefs.remove(_keyLastLoginTime);
     await prefs.remove(_keySessionStartTime);
     log('🗑️ Session data cleared', name: 'PreferenceHelper');
+  }
+
+  // ── Community local persistence ──────────────────────────────────────────────
+  /// Saves a list of communities as a JSON string list.
+  static Future<void> saveCommunities(
+    List<Map<String, dynamic>> communities,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = communities.map((c) => jsonEncode(c)).toList();
+    await prefs.setStringList(_keyCommunities, encoded);
+    log(
+      '💾 Saved ${communities.length} communities locally',
+      name: 'PreferenceHelper',
+    );
+  }
+
+  /// Loads the locally saved communities list.
+  static Future<List<Map<String, dynamic>>> loadCommunities() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getStringList(_keyCommunities) ?? [];
+    final list = raw.map((s) => jsonDecode(s) as Map<String, dynamic>).toList();
+    log(
+      '📖 Loaded ${list.length} communities from local storage',
+      name: 'PreferenceHelper',
+    );
+    return list;
   }
 }

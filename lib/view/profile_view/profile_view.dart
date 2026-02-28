@@ -25,6 +25,110 @@ class _ProfileViewState extends State<ProfileView> {
     profileController.fetchProfile();
   }
 
+  // ── Logout confirmation dialog ────────────────────────────────────────────
+  void _showLogoutDialog(
+    BuildContext context,
+    ProfileController controller,
+    bool isDark,
+    Color primaryColor,
+  ) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black54,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        contentPadding: const EdgeInsets.fromLTRB(28, 28, 28, 20),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.redAccent.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.logout_rounded,
+                color: Colors.redAccent,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "Log Out?",
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "Are you sure you want to log out of your account?",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.55)
+                    : Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 28),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: isDark ? Colors.white70 : Colors.black54,
+                      side: BorderSide(
+                        color: isDark
+                            ? Colors.white24
+                            : Colors.black.withValues(alpha: 0.15),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      "No",
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      controller.logout();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      "Yes, Logout",
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
@@ -241,11 +345,9 @@ class _ProfileViewState extends State<ProfileView> {
                                                 profileImage != null &&
                                                     profileImage.isNotEmpty
                                                 ? NetworkImage(
-                                                    profileImage.startsWith(
-                                                          'http',
-                                                        )
-                                                        ? profileImage
-                                                        : "${AppUrl.host}/$profileImage",
+                                                    AppUrl.buildImageUrl(
+                                                      profileImage,
+                                                    ),
                                                   )
                                                 : null,
                                             backgroundColor: Colors.white
@@ -596,7 +698,12 @@ class _ProfileViewState extends State<ProfileView> {
                       icon: Icons.logout_rounded,
                       label: "Log Out",
                       iconBgColor: AppColors.red,
-                      onTap: () => profileController.logout(),
+                      onTap: () => _showLogoutDialog(
+                        context,
+                        profileController,
+                        effectiveDark,
+                        primaryColor,
+                      ),
                     ),
                   ],
                 ),
