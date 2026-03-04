@@ -48,11 +48,11 @@ class _LoginViewState extends State<LoginView> {
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              return SingleChildScrollView(
+              return CustomScrollView(
                 physics: const ClampingScrollPhysics(),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Stack(
                       children: [
                         // ---------------- BACKGROUND IMAGE ----------------
@@ -823,7 +823,7 @@ class _LoginViewState extends State<LoginView> {
                       ],
                     ),
                   ),
-                ),
+                ],
               );
             },
           ),
