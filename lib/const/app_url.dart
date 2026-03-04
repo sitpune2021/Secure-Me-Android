@@ -1,20 +1,15 @@
 class AppUrl {
-  static const String host = "http://192.168.1.58:8000";
+  static const String host = "https://secureme.thecanatech.com";
   static const String storageUrl = "$host/storage";
   static const String baseUrl = "$host/api";
 
-  /// Safely build an image URL regardless of what the API returns:
-  ///  - Full URL with /storage/ already       → returned as-is
-  ///  - Full URL WITHOUT /storage/ (e.g. http://host/file.png) → inject /storage/
-  ///  - "/storage/..." relative path          → host prepended
-  ///  - bare filename                         → host/storage/ prepended
   static String buildImageUrl(String path) {
     if (path.isEmpty) return path;
 
     if (path.startsWith('http')) {
-      // Already correct: has /storage/ somewhere in the path
+
       if (path.contains('/storage/')) return path;
-      // Full URL but missing /storage/ — extract filename and rebuild
+
       final uri = Uri.tryParse(path);
       if (uri != null && uri.pathSegments.isNotEmpty) {
         return '$storageUrl/${uri.pathSegments.last}';
