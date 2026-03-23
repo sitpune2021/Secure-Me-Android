@@ -7,20 +7,28 @@ import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/controller/auth_controller.dart';
+import 'package:secure_me/model/user_model.dart';
 
 class OtpController extends GetxController {
   var otp = "".obs;
   var isLoading = false.obs;
-  var email = "".obs;
+  var identifier = "".obs;
+  var isPhone = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Get phone number from arguments
     final args = Get.arguments;
-    if (args != null && args['email'] != null) {
-      email.value = args['email'];
-      dev.log('📱 Email received: ${email.value}', name: 'OtpController');
+    if (args != null) {
+      if (args['email'] != null) {
+        identifier.value = args['email'];
+        isPhone.value = false;
+      } else if (args['phone'] != null) {
+        identifier.value = args['phone'];
+        isPhone.value = true;
+      }
+      dev.log('📱 Identifier received: ${identifier.value}', name: 'OtpController');
     }
   }
 
@@ -30,17 +38,12 @@ class OtpController extends GetxController {
 
   Future<void> verifyOtp() async {
     if (otp.value.length < 6) {
-      Get.snackbar(
-        "Error",
-        "Please enter 6 digit OTP",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      Get.snackbar("Error", "Please enter 6 digit OTP", backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
     isLoading.value = true;
-    dev.log('🔄 Verifying OTP for: ${email.value}', name: 'OtpController');
+    dev.log('🔄 Verifying OTP for: ${identifier.value}', name: 'OtpController');
 
     try {
       final response = await http.post(
@@ -49,7 +52,10 @@ class OtpController extends GetxController {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({"email": email.value, "otp": otp.value}),
+        body: jsonEncode({
+        isPhone.value ? "phone" : "email": identifier.value, 
+        "otp": otp.value
+      }),
       );
 
       isLoading.value = false;
@@ -68,7 +74,7 @@ class OtpController extends GetxController {
       if (response.statusCode == 200) {
         if (data['status'] == true) {
           dev.log(
-            '✅ OTP verified successfully for: ${email.value}',
+            '✅ OTP verified successfully for: ${identifier.value}',
             name: 'OtpController',
           );
 
@@ -122,6 +128,18 @@ class OtpController extends GetxController {
               phone: user['phone_no'] ?? user['phone'],
               profileImage: user['profile_image'],
             );
+
+            // Update AuthController state
+            if (Get.isRegistered<AuthController>()) {
+               final auth = Get.find<AuthController>();
+               auth.user.value = UserModel(
+                 id: user['id']?.toString() ?? '',
+                 name: user['name'] ?? 'Verified User',
+                 email: user['email'] ?? '',
+                 phone: user['phone_no'] ?? user['phone'] ?? '',
+                 role: UserRole.user, // Dynamic from args if needed
+               );
+            }
 
             dev.log(
               '✅ All user data and session saved successfully',
@@ -199,10 +217,10 @@ class OtpController extends GetxController {
   }
 
   Future<void> resendOtp() async {
-    if (email.value.isEmpty) {
+    if (identifier.value.isEmpty) {
       Get.snackbar(
         "Error",
-        "Email not found",
+        "${isPhone.value ? 'Phone' : 'Email'} not found",
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -210,7 +228,7 @@ class OtpController extends GetxController {
     }
 
     isLoading.value = true;
-    dev.log('🔄 Resending OTP to: ${email.value}', name: 'OtpController');
+    dev.log('🔄 Resending OTP to: ${identifier.value}', name: 'OtpController');
 
     try {
       final response = await http.post(
@@ -219,7 +237,7 @@ class OtpController extends GetxController {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({"email": email.value}),
+        body: jsonEncode({isPhone.value ? "phone" : "email": identifier.value}),
       );
 
       isLoading.value = false;
@@ -238,7 +256,7 @@ class OtpController extends GetxController {
       if (response.statusCode == 200) {
         if (data['status'] == true) {
           dev.log(
-            '✅ OTP resent successfully to: ${email.value}',
+            '✅ OTP resent successfully to: ${identifier.value}',
             name: 'OtpController',
           );
 

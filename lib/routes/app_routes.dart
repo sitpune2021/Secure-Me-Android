@@ -8,12 +8,12 @@ import 'package:secure_me/view/edit_profile_view/edit_profile_view.dart';
 import 'package:secure_me/view/fake_call_view/fake_call_view.dart';
 import 'package:secure_me/view/home_view/home_view.dart';
 import 'package:secure_me/view/location_view/location_view.dart';
-import 'package:secure_me/view/login_view/login_view.dart';
+import 'package:secure_me/view/login_screen.dart';
 import 'package:secure_me/view/notification_view/notification_view.dart';
 import 'package:secure_me/view/otp_view/otp_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
 import 'package:secure_me/view/push_notification_view/push_notification_view.dart';
-import 'package:secure_me/view/register_view.dart/register_view.dart';
+import 'package:secure_me/view/register_screen.dart';
 import 'package:secure_me/view/setting_view/setting_view.dart';
 import 'package:secure_me/view/share_location_view/share_location_view.dart';
 import 'package:secure_me/view/sos_active_view/sos_active_view.dart';
@@ -21,7 +21,7 @@ import 'package:secure_me/view/theme_view/theme_view.dart';
 
 class AppPages {
   static final pages = [
-    GetPage(name: AppRoutes.loginView, page: () => LoginView()),
+    GetPage(name: AppRoutes.loginView, page: () => const LoginScreen()),
     GetPage(name: AppRoutes.otpView, page: () => OtpView()),
     GetPage(name: AppRoutes.homeView, page: () => HomeView()),
     GetPage(name: AppRoutes.notification, page: () => NotificationView()),
@@ -38,7 +38,7 @@ class AppPages {
     ),
     GetPage(name: AppRoutes.fakecall, page: () => FakeCallView()),
     GetPage(name: AppRoutes.sosActivate, page: () => SosActivatedView()),
-    GetPage(name: AppRoutes.registerView, page: () => RegisterView()),
+    GetPage(name: AppRoutes.registerView, page: () => const RegisterScreen()),
     GetPage(name: AppRoutes.shareLiveLocation, page: () => ShareLocationView()),
     GetPage(name: AppRoutes.theme, page: ()=>ThemeModeView())
     // GetPage(name: AppRoutes.help, page: () => const HelpView()),

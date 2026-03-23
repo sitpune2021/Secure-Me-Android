@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:secure_me/controller/safety_controller.dart';
 import 'package:secure_me/model/signal_model.dart';
 import 'package:secure_me/core/theme.dart';
+import 'package:secure_me/core/components.dart';
 
 class UserHomeScreen extends StatelessWidget {
   UserHomeScreen({super.key});
@@ -91,36 +92,40 @@ class UserHomeScreen extends StatelessWidget {
                   children: [
                     // Pulse animation
                     if (isActivated)
-                      Container(
-                        width: 140,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppTheme.primaryRed.withValues(alpha: 0.2),
+                      GlowContainer(
+                        glowColor: AppTheme.primaryRed,
+                        blurRadius: 40,
+                        spreadRadius: 10,
+                        child: Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppTheme.primaryRed.withValues(alpha: 0.1),
+                          ),
                         ),
                       ).animate(onPlay: (controller) => controller.repeat())
-                       .scale(begin: const Offset(1, 1), end: const Offset(1.5, 1.5), duration: const Duration(seconds: 1), curve: Curves.easeInOut)
-                       .fadeOut(begin: 0.5, duration: const Duration(seconds: 1)),
+                       .scale(begin: const Offset(1, 1), end: const Offset(1.3, 1.3), duration: const Duration(seconds: 1), curve: Curves.easeInOut)
+                       .fadeOut(begin: 0.4, duration: const Duration(seconds: 1)),
                     
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isActivated ? AppTheme.primaryRed : Colors.white10,
-                        boxShadow: [
-                          BoxShadow(
-                            color: isActivated ? AppTheme.primaryRed.withValues(alpha: 0.5) : Colors.black26,
-                            blurRadius: 20,
-                            spreadRadius: 5,
+                    GlowContainer(
+                      glowColor: isActivated ? AppTheme.primaryRed : Colors.transparent,
+                      child: Container(
+                        width: 130,
+                        height: 130,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isActivated ? AppTheme.primaryRed : Colors.white.withValues(alpha: 0.05),
+                          border: Border.all(
+                            color: isActivated ? Colors.white30 : Colors.white24,
+                            width: 2,
                           ),
-                        ],
-                        border: Border.all(color: isActivated ? Colors.transparent : Colors.white24, width: 2),
-                      ),
-                      child: Icon(
-                        isActivated ? Icons.security : Icons.emergency,
-                        color: Colors.white,
-                        size: 48,
+                        ),
+                        child: Icon(
+                          isActivated ? Icons.security : Icons.emergency,
+                          color: Colors.white,
+                          size: 54,
+                        ),
                       ),
                     ),
                   ],
@@ -209,25 +214,24 @@ class UserHomeScreen extends StatelessWidget {
   }
 
   Widget _buildFloatingInfoCard({required String title, required String content, required IconData icon, required Color color}) {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppTheme.glassBackground,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10, width: 0.5),
-        boxShadow: [
-          BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 1),
-        ],
-      ),
+      opacity: 0.15,
+      borderColor: color.withValues(alpha: 0.3),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+          GlowContainer(
+            glowColor: color,
+            blurRadius: 10,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+                border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
+              ),
+              child: Icon(icon, color: color, size: 24),
             ),
-            child: Icon(icon, color: color, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -236,7 +240,7 @@ class UserHomeScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(title, style: GoogleFonts.poppins(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.w500)),
-                Text(content, style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                Text(content, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
               ],
             ),
           ),

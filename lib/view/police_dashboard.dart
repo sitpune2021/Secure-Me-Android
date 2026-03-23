@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:secure_me/controller/safety_controller.dart';
 import 'package:secure_me/model/signal_model.dart';
 import 'package:secure_me/core/theme.dart';
+import 'package:secure_me/core/components.dart';
 
 class PoliceDashboard extends StatelessWidget {
   PoliceDashboard({super.key});
@@ -50,22 +51,29 @@ class PoliceDashboard extends StatelessWidget {
   }
 
   Widget _buildPoliceHeader() {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3)),
-      ),
+      borderColor: AppTheme.primaryBlue.withValues(alpha: 0.3),
       child: Row(
         children: [
-          const Icon(Icons.security, color: AppTheme.primaryBlue, size: 40),
+          GlowContainer(
+            glowColor: AppTheme.primaryBlue,
+            blurRadius: 15,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: AppTheme.primaryBlue,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.security, color: Colors.white, size: 28),
+            ),
+          ),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('San Francisco Precinct', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
-              Text('System Online | 12 Officers Patroling', style: GoogleFonts.poppins(fontSize: 11, color: AppTheme.primaryBlue)),
+              Text('System Online | 12 Officers Patroling', style: GoogleFonts.poppins(fontSize: 11, color: AppTheme.primaryBlue.withValues(alpha: 0.8))),
             ],
           ),
         ],
@@ -74,59 +82,57 @@ class PoliceDashboard extends StatelessWidget {
   }
 
   Widget _buildEmergencyItem(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.glassBackground,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.primaryRed.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              const CircleAvatar(backgroundColor: AppTheme.primaryRed, radius: 4),
-              const SizedBox(width: 8),
-              Text('PRIORITY ALERT', style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.primaryRed)),
-              const Spacer(),
-              Text('3m ago', style: GoogleFonts.poppins(fontSize: 11, color: Colors.white38)),
-            ],
-          ),
-          const SizedBox(height: 12),
-           Row(
-            children: [
-              const CircleAvatar(backgroundColor: Colors.white10, radius: 24, child: Icon(Icons.person, color: Colors.white)),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Unknown Victim', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
-                  Text(_safetyController.victimLocation.value?.address ?? "Locating...", style: GoogleFonts.poppins(fontSize: 12, color: Colors.white54)),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Responders: ${_safetyController.responderIds.length}', style: GoogleFonts.poppins(fontSize: 12, color: AppTheme.primaryBlue)),
-               Text('Stage: ${_safetyController.stage.value == SignalStage.stage1 ? "1" : "2"}', style: GoogleFonts.poppins(fontSize: 12, color: AppTheme.primaryRed)),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryBlue,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return GlowContainer(
+      glowColor: AppTheme.primaryRed,
+      blurRadius: 20,
+      spreadRadius: -10,
+      child: GlassCard(
+        padding: const EdgeInsets.all(16),
+        borderColor: AppTheme.primaryRed.withValues(alpha: 0.4),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const CircleAvatar(backgroundColor: AppTheme.primaryRed, radius: 4),
+                const SizedBox(width: 8),
+                Text('PRIORITY ALERT', style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.primaryRed)),
+                const Spacer(),
+                Text('3m ago', style: GoogleFonts.poppins(fontSize: 11, color: Colors.white38)),
+              ],
             ),
-            child: const Center(child: Text('Dispatch & Track')),
-          ),
-        ],
+            const SizedBox(height: 12),
+             Row(
+              children: [
+                const CircleAvatar(backgroundColor: Colors.white10, radius: 24, child: Icon(Icons.person, color: Colors.white)),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Unknown Victim', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text('${_safetyController.victimLocation.value?.address ?? "Locating..."}', style: GoogleFonts.poppins(fontSize: 12, color: Colors.white54)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Responders: ${_safetyController.responderIds.length}', style: GoogleFonts.poppins(fontSize: 12, color: AppTheme.primaryBlue)),
+                 Text('Stage: ${_safetyController.stage.value == SignalStage.stage1 ? "1" : "2"}', style: GoogleFonts.poppins(fontSize: 12, color: AppTheme.primaryRed)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            FuturisticButton(
+              text: 'Dispatch & Track',
+              color: AppTheme.primaryBlue,
+              onPressed: () {},
+              icon: Icons.local_police,
+            ),
+          ],
+        ),
       ),
     ).animate().slideX(begin: -1, end: 0, curve: Curves.easeOut);
   }
