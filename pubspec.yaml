@@ -44,8 +44,6 @@ dependencies:
   image_picker: ^1.2.1
   shimmer: ^3.0.0
   fast_contacts: ^5.0.1
-  flutter_bloc: ^9.1.1
-  bloc: ^9.2.0
   equatable: ^2.0.8
   flutter_animate: ^4.5.2
 dev_dependencies:

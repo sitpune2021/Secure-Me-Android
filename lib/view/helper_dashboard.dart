@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:secure_me/features/safety/presentation/bloc/safety_bloc.dart';
-import 'package:secure_me/features/safety/domain/models.dart';
+import 'package:secure_me/controller/safety_controller.dart';
+import 'package:secure_me/model/signal_model.dart';
 import 'package:secure_me/core/theme.dart';
 
 class HelperDashboard extends StatefulWidget {
@@ -15,57 +15,48 @@ class HelperDashboard extends StatefulWidget {
 }
 
 class _HelperDashboardState extends State<HelperDashboard> {
-  bool _isAwaitingResponse = false;
+  final SafetyController _safetyController = Get.put(SafetyController());
   bool _isHelping = false;
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SafetyBloc, SafetyState>(
-      listener: (context, state) {
-        if (state.status == SignalStatus.sent && !_isHelping) {
-          setState(() => _isAwaitingResponse = true);
-        } else if (state.status == SignalStatus.pending) {
-          setState(() {
-            _isAwaitingResponse = false;
-            _isHelping = false;
-          });
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          body: Stack(
-            children: [
-              // Map Background
-              const GoogleMap(
-                initialCameraPosition: CameraPosition(target: LatLng(37.7749, -122.4194), zoom: 14),
-                mapType: MapType.normal,
-              ),
-              
-              // Helper Panel
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildHeader(),
-                      const Spacer(),
-                      
-                      if (_isAwaitingResponse) 
-                        _buildEmergencyAlertCard()
-                      else if (_isHelping)
-                        _buildOnTheWayCard()
-                      else
-                        _buildStatusCard("Ready To Help", "You are online and nearby.", AppTheme.primaryGreen),
-                    ],
-                  ),
+    return Obx(() {
+      final status = _safetyController.status.value;
+      final isAwaitingResponse = status == SignalStatus.sent && !_isHelping;
+
+      return Scaffold(
+        body: Stack(
+          children: [
+            // Map Background
+            const GoogleMap(
+              initialCameraPosition: CameraPosition(target: LatLng(37.7749, -122.4194), zoom: 14),
+              mapType: MapType.normal,
+            ),
+            
+            // Helper Panel
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildHeader(),
+                    const Spacer(),
+                    
+                    if (isAwaitingResponse) 
+                      _buildEmergencyAlertCard()
+                    else if (_isHelping)
+                      _buildOnTheWayCard()
+                    else
+                      _buildStatusCard("Ready To Help", "You are online and nearby.", AppTheme.primaryGreen),
+                  ],
                 ),
               ),
-            ],
-          ),
-        );
-      },
-    );
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildHeader() {
@@ -112,7 +103,7 @@ class _HelperDashboardState extends State<HelperDashboard> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => setState(() => _isAwaitingResponse = false),
+                  onPressed: () => _safetyController.cancelEmergency(),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.white),
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -125,9 +116,8 @@ class _HelperDashboardState extends State<HelperDashboard> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    context.read<SafetyBloc>().add(const AcceptEmergency('helper1'));
+                    _safetyController.acceptEmergency('helper1');
                     setState(() {
-                      _isAwaitingResponse = false;
                       _isHelping = true;
                     });
                   },
@@ -144,7 +134,7 @@ class _HelperDashboardState extends State<HelperDashboard> {
           ),
         ],
       ),
-    ).animate().scale(begin: const Offset(0.8, 0.8), curve: Curves.elasticOut, duration: 800.ms);
+    ).animate().scale(begin: const Offset(0.8, 0.8), curve: Curves.elasticOut, duration: const Duration(milliseconds: 800));
   }
 
   Widget _buildOnTheWayCard() {
@@ -153,7 +143,7 @@ class _HelperDashboardState extends State<HelperDashboard> {
       decoration: BoxDecoration(
         color: AppTheme.glassBackground,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.primaryGreen.withOpacity(0.3)),
+        border: Border.all(color: AppTheme.primaryGreen.withValues(alpha: 0.3)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

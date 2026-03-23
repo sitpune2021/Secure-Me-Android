@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:secure_me/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:secure_me/features/safety/domain/models.dart';
+import 'package:secure_me/controller/auth_controller.dart';
+import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/core/theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final AuthController _authController = Get.put(AuthController());
   UserRole _selectedRole = UserRole.user;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -98,14 +99,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 32),
             
-            ElevatedButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(
-                  LoginRequested(
-                    _emailController.text.isNotEmpty ? _emailController.text : 'test@secureme.com',
-                    'password',
-                    _selectedRole,
-                  ),
+            Obx(() => ElevatedButton(
+              onPressed: _authController.isLoading.value ? null : () {
+                _authController.login(
+                  _emailController.text.isNotEmpty ? _emailController.text : 'test@secureme.com',
+                  'password',
+                  _selectedRole,
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -113,8 +112,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            ),
+              child: _authController.isLoading.value 
+                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                : const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            )),
           ],
         ),
       ),

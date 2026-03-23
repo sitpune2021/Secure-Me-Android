@@ -1,52 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:secure_me/features/safety/presentation/bloc/safety_bloc.dart';
-import 'package:secure_me/features/safety/domain/models.dart';
+import 'package:secure_me/controller/safety_controller.dart';
+import 'package:secure_me/model/signal_model.dart';
 import 'package:secure_me/core/theme.dart';
 
 class PoliceDashboard extends StatelessWidget {
-  const PoliceDashboard({super.key});
+  PoliceDashboard({super.key});
+
+  final SafetyController _safetyController = Get.put(SafetyController());
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SafetyBloc, SafetyState>(
-      builder: (context, state) {
-        final activeAlerts = state.status == SignalStatus.sent ? 1 : 0;
-        
-        return Scaffold(
-          backgroundColor: AppTheme.darkBackground,
-          appBar: AppBar(
-            title: Text('POLICE COMMAND', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue)),
-            actions: [
-              IconButton(onPressed: () {}, icon: const Icon(Icons.history, color: Colors.white70)),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.settings, color: Colors.white70)),
+    return Obx(() {
+      final activeAlerts = _safetyController.status.value == SignalStatus.sent ? 1 : 0;
+      
+      return Scaffold(
+        backgroundColor: AppTheme.darkBackground,
+        appBar: AppBar(
+          title: Text('POLICE COMMAND', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue)),
+          actions: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.history, color: Colors.white70)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.settings, color: Colors.white70)),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildPoliceHeader(),
+              const SizedBox(height: 32),
+              Text('ACTIVE EMERGENCIES', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white60)),
+              const SizedBox(height: 16),
+              
+              if (activeAlerts > 0) 
+                _buildEmergencyItem(context)
+              else
+                _buildEmptyState(),
+              
+              const Spacer(),
+              _buildSystemMetrics(),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildPoliceHeader(),
-                const SizedBox(height: 32),
-                Text('ACTIVE EMERGENCIES', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white60)),
-                const SizedBox(height: 16),
-                
-                if (activeAlerts > 0) 
-                  _buildEmergencyItem(context, state)
-                else
-                  _buildEmptyState(),
-                
-                const Spacer(),
-                _buildSystemMetrics(),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+        ),
+      );
+    });
   }
 
   Widget _buildPoliceHeader() {
@@ -73,7 +73,7 @@ class PoliceDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildEmergencyItem(BuildContext context, SafetyState state) {
+  Widget _buildEmergencyItem(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -101,7 +101,7 @@ class PoliceDashboard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Unknown Victim', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
-                  Text(state.victimLocation?.address ?? "Locating...", style: GoogleFonts.poppins(fontSize: 12, color: Colors.white54)),
+                  Text('${_safetyController.victimLocation.value?.address ?? "Locating..."}', style: GoogleFonts.poppins(fontSize: 12, color: Colors.white54)),
                 ],
               ),
             ],
@@ -110,8 +110,8 @@ class PoliceDashboard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Responders: ${state.responderIds.length}', style: GoogleFonts.poppins(fontSize: 12, color: AppTheme.primaryBlue)),
-               Text('Stage: ${state.stage == SignalStage.stage1 ? "1" : "2"}', style: GoogleFonts.poppins(fontSize: 12, color: AppTheme.primaryRed)),
+              Text('Responders: ${_safetyController.responderIds.length}', style: GoogleFonts.poppins(fontSize: 12, color: AppTheme.primaryBlue)),
+               Text('Stage: ${_safetyController.stage.value == SignalStage.stage1 ? "1" : "2"}', style: GoogleFonts.poppins(fontSize: 12, color: AppTheme.primaryRed)),
             ],
           ),
           const SizedBox(height: 16),
