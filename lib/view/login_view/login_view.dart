@@ -103,7 +103,7 @@ class _LoginViewState extends State<LoginView> {
                                             (isDark
                                                     ? AppColors.darkText
                                                     : AppColors.lightText)
-                                                .withOpacity(0.6),
+                                                .withValues(alpha: 0.6),
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -129,11 +129,11 @@ class _LoginViewState extends State<LoginView> {
                                             (isDark
                                                     ? AppColors.darkRadialGlow
                                                     : AppColors.lightPrimary)
-                                                .withOpacity(0.3),
+                                                .withValues(alpha: 0.3),
                                             (isDark
                                                     ? AppColors.darkRadialGlow
                                                     : AppColors.lightPrimary)
-                                                .withOpacity(0.1),
+                                                .withValues(alpha: 0.1),
                                             Colors.transparent,
                                           ],
                                           stops: const [0.3, 0.7, 1.0],
@@ -155,7 +155,7 @@ class _LoginViewState extends State<LoginView> {
                                                               .darkRadialGlow
                                                         : AppColors
                                                               .lightPrimary)
-                                                    .withOpacity(0.4),
+                                                    .withValues(alpha: 0.4),
                                             blurRadius: 30,
                                             spreadRadius: 2,
                                           ),
@@ -175,9 +175,9 @@ class _LoginViewState extends State<LoginView> {
                                         border: Border.all(
                                           color: isDark
                                               ? AppColors.darkPrimary
-                                                    .withOpacity(0.5)
+                                                    .withValues(alpha: 0.5)
                                               : AppColors.lightPrimary
-                                                    .withOpacity(0.2),
+                                                    .withValues(alpha: 0.2),
                                           width: 2.5,
                                         ),
                                         boxShadow: [
@@ -187,7 +187,7 @@ class _LoginViewState extends State<LoginView> {
                                                         ? AppColors.darkPrimary
                                                         : AppColors
                                                               .lightPrimary)
-                                                    .withOpacity(0.2),
+                                                    .withValues(alpha: 0.2),
                                             blurRadius: 15,
                                             spreadRadius: 1,
                                           ),
@@ -215,12 +215,12 @@ class _LoginViewState extends State<LoginView> {
                                   decoration: BoxDecoration(
                                     color: isDark
                                         ? AppColors.darkSecondaryBackground
-                                              .withOpacity(0.8)
+                                              .withValues(alpha: 0.8)
                                         : const Color(0xFFF2F4F5),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
                                       color: isDark
-                                          ? AppColors.darkPrimary.withOpacity(
+                                          ? AppColors.darkPrimary.withValues(alpha: 
                                               0.1,
                                             )
                                           : Colors.transparent,
@@ -258,7 +258,7 @@ class _LoginViewState extends State<LoginView> {
                                                       BoxShadow(
                                                         color: AppColors
                                                             .pureBlack
-                                                            .withOpacity(0.05),
+                                                            .withValues(alpha: 0.05),
                                                         blurRadius: 4,
                                                         spreadRadius: 1,
                                                       ),
@@ -322,7 +322,7 @@ class _LoginViewState extends State<LoginView> {
                                                       BoxShadow(
                                                         color: AppColors
                                                             .pureBlack
-                                                            .withOpacity(0.05),
+                                                            .withValues(alpha: 0.05),
                                                         blurRadius: 4,
                                                         spreadRadius: 1,
                                                       ),
@@ -398,7 +398,7 @@ class _LoginViewState extends State<LoginView> {
                                                   (isDark
                                                           ? AppColors.darkText
                                                           : AppColors.lightText)
-                                                      .withOpacity(0.5),
+                                                      .withValues(alpha: 0.5),
                                             ),
                                             hintText: "Enter your email",
                                             hintStyle: GoogleFonts.poppins(
@@ -407,12 +407,12 @@ class _LoginViewState extends State<LoginView> {
                                                   (isDark
                                                           ? AppColors.darkText
                                                           : AppColors.lightText)
-                                                      .withOpacity(0.3),
+                                                      .withValues(alpha: 0.3),
                                             ),
                                             filled: true,
                                             fillColor: isDark
-                                                ? Colors.white.withOpacity(0.05)
-                                                : Colors.black.withOpacity(
+                                                ? Colors.white.withValues(alpha: 0.05)
+                                                : Colors.black.withValues(alpha: 
                                                     0.05,
                                                   ),
                                             contentPadding:
@@ -434,7 +434,7 @@ class _LoginViewState extends State<LoginView> {
                                                             ? AppColors.darkText
                                                             : AppColors
                                                                   .lightText)
-                                                        .withOpacity(0.1),
+                                                        .withValues(alpha: 0.1),
                                                 width: 1,
                                               ),
                                             ),
@@ -483,7 +483,7 @@ class _LoginViewState extends State<LoginView> {
                                                   (isDark
                                                           ? AppColors.darkText
                                                           : AppColors.lightText)
-                                                      .withOpacity(0.5),
+                                                      .withValues(alpha: 0.5),
                                             ),
                                             hintText: "Enter your password",
                                             hintStyle: GoogleFonts.poppins(
@@ -492,12 +492,12 @@ class _LoginViewState extends State<LoginView> {
                                                   (isDark
                                                           ? AppColors.darkText
                                                           : AppColors.lightText)
-                                                      .withOpacity(0.3),
+                                                      .withValues(alpha: 0.3),
                                             ),
                                             filled: true,
                                             fillColor: isDark
-                                                ? Colors.white.withOpacity(0.05)
-                                                : Colors.black.withOpacity(
+                                                ? Colors.white.withValues(alpha: 0.05)
+                                                : Colors.black.withValues(alpha: 
                                                     0.05,
                                                   ),
                                             contentPadding:
@@ -519,7 +519,7 @@ class _LoginViewState extends State<LoginView> {
                                                             ? AppColors.darkText
                                                             : AppColors
                                                                   .lightText)
-                                                        .withOpacity(0.1),
+                                                        .withValues(alpha: 0.1),
                                                 width: 1,
                                               ),
                                             ),
@@ -544,7 +544,7 @@ class _LoginViewState extends State<LoginView> {
                                                             ? AppColors.darkText
                                                             : AppColors
                                                                   .lightText)
-                                                        .withOpacity(0.4),
+                                                        .withValues(alpha: 0.4),
                                               ),
                                               onPressed: () {
                                                 setState(() {
@@ -596,7 +596,7 @@ class _LoginViewState extends State<LoginView> {
                                                   (isDark
                                                           ? AppColors.darkText
                                                           : AppColors.lightText)
-                                                      .withOpacity(0.5),
+                                                      .withValues(alpha: 0.5),
                                             ),
                                             hintText:
                                                 "Enter your email for OTP",
@@ -606,12 +606,12 @@ class _LoginViewState extends State<LoginView> {
                                                   (isDark
                                                           ? AppColors.darkText
                                                           : AppColors.lightText)
-                                                      .withOpacity(0.3),
+                                                      .withValues(alpha: 0.3),
                                             ),
                                             filled: true,
                                             fillColor: isDark
-                                                ? Colors.white.withOpacity(0.05)
-                                                : Colors.black.withOpacity(
+                                                ? Colors.white.withValues(alpha: 0.05)
+                                                : Colors.black.withValues(alpha: 
                                                     0.05,
                                                   ),
                                             contentPadding:
@@ -633,7 +633,7 @@ class _LoginViewState extends State<LoginView> {
                                                             ? AppColors.darkText
                                                             : AppColors
                                                                   .lightText)
-                                                        .withOpacity(0.1),
+                                                        .withValues(alpha: 0.1),
                                                 width: 1,
                                               ),
                                             ),
@@ -688,7 +688,7 @@ class _LoginViewState extends State<LoginView> {
                                               (isDark
                                                       ? AppColors.darkRadialGlow
                                                       : AppColors.lightPrimary)
-                                                  .withOpacity(0.4),
+                                                  .withValues(alpha: 0.4),
                                           elevation: 8,
                                         ).copyWith(
                                           backgroundColor:
@@ -712,7 +712,7 @@ class _LoginViewState extends State<LoginView> {
                                               : [
                                                   AppColors.lightPrimary,
                                                   AppColors.lightPrimary
-                                                      .withOpacity(0.8),
+                                                      .withValues(alpha: 0.8),
                                                 ],
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
@@ -749,7 +749,7 @@ class _LoginViewState extends State<LoginView> {
                                           (isDark
                                                   ? AppColors.darkText
                                                   : AppColors.lightText)
-                                              .withOpacity(0.1),
+                                              .withValues(alpha: 0.1),
                                     ),
                                   ),
                                   Padding(
@@ -764,7 +764,7 @@ class _LoginViewState extends State<LoginView> {
                                             (isDark
                                                     ? AppColors.darkText
                                                     : AppColors.lightText)
-                                                .withOpacity(0.4),
+                                                .withValues(alpha: 0.4),
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -775,7 +775,7 @@ class _LoginViewState extends State<LoginView> {
                                           (isDark
                                                   ? AppColors.darkText
                                                   : AppColors.lightText)
-                                              .withOpacity(0.1),
+                                              .withValues(alpha: 0.1),
                                     ),
                                   ),
                                 ],
@@ -796,7 +796,7 @@ class _LoginViewState extends State<LoginView> {
                                             (isDark
                                                     ? AppColors.darkText
                                                     : AppColors.lightText)
-                                                .withOpacity(0.7),
+                                                .withValues(alpha: 0.7),
                                         fontSize: 14,
                                       ),
                                       children: [

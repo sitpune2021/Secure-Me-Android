@@ -89,7 +89,7 @@ class LocationView extends StatelessWidget {
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          AppColors.glowPurple.withOpacity(0.3),
+                          AppColors.glowPurple.withValues(alpha: 0.3),
                           Colors.transparent,
                         ],
                         radius: 0.8,

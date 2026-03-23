@@ -176,14 +176,14 @@ class LocationController extends GetxController {
     // Get initial position
     try {
       Position pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation,
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.bestForNavigation),
       );
       currentPosition.value = LatLng(pos.latitude, pos.longitude);
     } catch (e) {
       try {
         Position pos = await Geolocator.getLastKnownPosition() ??
             await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.high,
+              locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
             );
         currentPosition.value = LatLng(pos.latitude, pos.longitude);
       } catch (_) {

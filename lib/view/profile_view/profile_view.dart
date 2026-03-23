@@ -720,7 +720,7 @@ class _ProfileViewState extends State<ProfileView> {
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 4,
-                          color: textColor.withOpacity(0.4),
+                          color: textColor.withValues(alpha: 0.4),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -730,7 +730,7 @@ class _ProfileViewState extends State<ProfileView> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: textColor.withOpacity(0.05),
+                          color: textColor.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -739,7 +739,7 @@ class _ProfileViewState extends State<ProfileView> {
                             fontSize: 9,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 1.2,
-                            color: textColor.withOpacity(0.3),
+                            color: textColor.withValues(alpha: 0.3),
                           ),
                         ),
                       ),

@@ -45,7 +45,7 @@ class OtpView extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: Get.width * 0.045,
                       color: (isDark ? AppColors.darkText : AppColors.lightText)
-                          .withOpacity(0.7),
+                          .withValues(alpha: 0.7),
                     ),
                   ),
                   Obx(

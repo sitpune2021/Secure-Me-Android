@@ -41,7 +41,7 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.black.withOpacity(0.05),
+      fillColor: Colors.black.withValues(alpha: 0.05),
       hintStyle: const TextStyle(color: AppColors.lightHint),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -102,7 +102,7 @@ class AppTheme {
 
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.white.withOpacity(0.08),
+      fillColor: Colors.white.withValues(alpha: 0.08),
       hintStyle: const TextStyle(color: AppColors.darkHint),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(30)),

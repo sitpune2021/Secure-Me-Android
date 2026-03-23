@@ -5,11 +5,6 @@ class AuthController extends GetxController {
   final Rx<UserModel?> user = Rx<UserModel?>(null);
   final RxBool isLoading = false.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    // Initialize if needed
-  }
 
   void login(String email, String password, UserRole role) async {
     isLoading.value = true;

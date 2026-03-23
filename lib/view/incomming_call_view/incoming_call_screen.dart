@@ -40,7 +40,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
 
     // Vibrate every second
     _vibrationTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
-      if (await Vibration.hasVibrator() ?? false) {
+      if (await Vibration.hasVibrator() == true) {
         Vibration.vibrate(duration: 500);
       }
     });
@@ -85,7 +85,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                 Container(
                   width: width,
                   height: height,
-                  color: AppColors.pureBlack.withOpacity(0.6),
+                  color: AppColors.pureBlack.withValues(alpha: 0.6),
                 ),
                 Center(
                   child: Column(
@@ -159,7 +159,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                 Container(
                   width: width,
                   height: height,
-                  color: AppColors.pureBlack.withOpacity(0.6),
+                  color: AppColors.pureBlack.withValues(alpha: 0.6),
                 ),
                 Column(
                   children: [

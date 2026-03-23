@@ -170,7 +170,7 @@ class TrackMeView extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color: isSelected
-              ? theme.colorScheme.primary.withOpacity(0.15)
+              ? theme.colorScheme.primary.withValues(alpha: 0.15)
               : Colors.transparent,
         ),
         child: Column(
@@ -180,7 +180,7 @@ class TrackMeView extends StatelessWidget {
               icon,
               color: isSelected
                   ? theme.colorScheme.primary
-                  : theme.iconTheme.color?.withOpacity(0.6),
+                  : theme.iconTheme.color?.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 4),
             Text(
@@ -188,7 +188,7 @@ class TrackMeView extends StatelessWidget {
               style: GoogleFonts.poppins(
                 color: isSelected
                     ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 fontSize: 13,
               ),
             ),

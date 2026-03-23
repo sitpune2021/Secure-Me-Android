@@ -101,7 +101,7 @@ class PoliceDashboard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Unknown Victim', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
-                  Text('${_safetyController.victimLocation.value?.address ?? "Locating..."}', style: GoogleFonts.poppins(fontSize: 12, color: Colors.white54)),
+                  Text(_safetyController.victimLocation.value?.address ?? "Locating...", style: GoogleFonts.poppins(fontSize: 12, color: Colors.white54)),
                 ],
               ),
             ],

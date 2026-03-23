@@ -86,11 +86,11 @@ class _RegisterViewState extends State<RegisterView> {
                               (isDark
                                       ? AppColors.darkRadialGlow
                                       : AppColors.lightPrimary)
-                                  .withOpacity(0.35),
+                                  .withValues(alpha: 0.35),
                               (isDark
                                       ? AppColors.darkRadialGlow
                                       : AppColors.lightPrimary)
-                                  .withOpacity(0.12),
+                                  .withValues(alpha: 0.12),
                               Colors.transparent,
                             ],
                             stops: const [0.3, 0.7, 1.0],
@@ -110,7 +110,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   (isDark
                                           ? AppColors.darkRadialGlow
                                           : AppColors.lightPrimary)
-                                      .withOpacity(0.5),
+                                      .withValues(alpha: 0.5),
                               blurRadius: 35,
                               spreadRadius: 2,
                             ),
@@ -125,8 +125,8 @@ class _RegisterViewState extends State<RegisterView> {
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: isDark
-                                ? AppColors.darkPrimary.withOpacity(0.6)
-                                : AppColors.lightPrimary.withOpacity(0.3),
+                                ? AppColors.darkPrimary.withValues(alpha: 0.6)
+                                : AppColors.lightPrimary.withValues(alpha: 0.3),
                             width: 2.5,
                           ),
                           boxShadow: [
@@ -135,7 +135,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   (isDark
                                           ? AppColors.darkPrimary
                                           : AppColors.lightPrimary)
-                                      .withOpacity(0.25),
+                                      .withValues(alpha: 0.25),
                               blurRadius: 15,
                               spreadRadius: 1,
                             ),
@@ -159,8 +159,8 @@ class _RegisterViewState extends State<RegisterView> {
                                     Remix.user_3_line,
                                     size: Get.width * 0.15,
                                     color: isDark
-                                        ? AppColors.darkText.withOpacity(0.4)
-                                        : AppColors.lightText.withOpacity(0.4),
+                                        ? AppColors.darkText.withValues(alpha: 0.4)
+                                        : AppColors.lightText.withValues(alpha: 0.4),
                                   )
                                 : null,
                           ),
@@ -199,7 +199,7 @@ class _RegisterViewState extends State<RegisterView> {
                                     (isDark
                                             ? AppColors.darkRadialGlow
                                             : AppColors.lightPrimary)
-                                        .withOpacity(0.4),
+                                        .withValues(alpha: 0.4),
                                 blurRadius: 10,
                                 spreadRadius: 2,
                               ),
@@ -296,7 +296,7 @@ class _RegisterViewState extends State<RegisterView> {
                     icon: Icon(
                       obscurePassword ? Remix.eye_off_line : Remix.eye_line,
                       color: (isDark ? AppColors.darkText : AppColors.lightText)
-                          .withOpacity(0.6),
+                          .withValues(alpha: 0.6),
                       size: 20,
                     ),
                     onPressed: () {
@@ -330,7 +330,7 @@ class _RegisterViewState extends State<RegisterView> {
                             (isDark
                                     ? AppColors.darkRadialGlow
                                     : AppColors.lightPrimary)
-                                .withOpacity(0.5),
+                                .withValues(alpha: 0.5),
                       ),
                       onPressed: registerController.isLoading.value
                           ? null
@@ -369,8 +369,8 @@ class _RegisterViewState extends State<RegisterView> {
                       "Already have an account? ",
                       style: GoogleFonts.poppins(
                         color: isDark
-                            ? AppColors.darkText.withOpacity(0.7)
-                            : AppColors.lightText.withOpacity(0.7),
+                            ? AppColors.darkText.withValues(alpha: 0.7)
+                            : AppColors.lightText.withValues(alpha: 0.7),
                         fontSize: 14,
                       ),
                     ),
@@ -416,7 +416,7 @@ class _RegisterViewState extends State<RegisterView> {
           label,
           style: GoogleFonts.poppins(
             color: isDark
-                ? AppColors.darkRadialGlow.withOpacity(0.9)
+                ? AppColors.darkRadialGlow.withValues(alpha: 0.9)
                 : AppColors.lightPrimary,
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -436,8 +436,8 @@ class _RegisterViewState extends State<RegisterView> {
             hintText: hint,
             hintStyle: GoogleFonts.poppins(
               color: isDark
-                  ? AppColors.darkHint.withOpacity(0.7)
-                  : AppColors.lightHint.withOpacity(0.7),
+                  ? AppColors.darkHint.withValues(alpha: 0.7)
+                  : AppColors.lightHint.withValues(alpha: 0.7),
             ),
             contentPadding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
             suffixIcon: suffixIcon,
@@ -640,8 +640,8 @@ class _RegisterViewState extends State<RegisterView> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: isDark
-                  ? AppColors.darkPrimary.withOpacity(0.2)
-                  : AppColors.lightPrimary.withOpacity(0.1),
+                  ? AppColors.darkPrimary.withValues(alpha: 0.2)
+                  : AppColors.lightPrimary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
