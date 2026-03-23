@@ -452,10 +452,12 @@ class _EditProfileViewState extends State<EditProfileView> {
                                 LengthLimitingTextInputFormatter(10),
                               ],
                               validator: (v) {
-                                if (v == null || v.trim().isEmpty)
+                                if (v == null || v.trim().isEmpty) {
                                   return "Phone required";
-                                if (!RegExp(r'^[0-9]{10}$').hasMatch(v))
+                                }
+                                if (!RegExp(r'^[0-9]{10}$').hasMatch(v)) {
                                   return "Enter valid 10-digit number";
+                                }
                                 return null;
                               },
                               primaryColor: primaryColor,
@@ -472,8 +474,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                               hint: "abc@example.com",
                               keyboardType: TextInputType.emailAddress,
                               validator: (v) {
-                                if (v == null || v.trim().isEmpty)
+                                if (v == null || v.trim().isEmpty) {
                                   return "Email required";
+                                }
                                 if (!RegExp(
                                   r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$',
                                 ).hasMatch(v)) {
@@ -727,7 +730,7 @@ class _DotsLoadingState extends State<_DotsLoading>
       children: List.generate(3, (i) {
         return AnimatedBuilder(
           animation: _ctrl,
-          builder: (_, __) {
+          builder: (_, _) {
             final t = (_ctrl.value - i * 0.2).clamp(0.0, 1.0);
             final scale = (t < 0.5 ? t * 2 : (1 - t) * 2).clamp(0.5, 1.0);
             return Container(

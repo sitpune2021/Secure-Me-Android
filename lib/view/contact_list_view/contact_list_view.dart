@@ -288,7 +288,7 @@ class _ContactListViewState extends State<ContactListView> {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       itemCount: 6,
-      itemBuilder: (_, __) => Container(
+      itemBuilder: (_, _) => Container(
         margin: const EdgeInsets.only(bottom: 16),
         height: 90,
         decoration: BoxDecoration(

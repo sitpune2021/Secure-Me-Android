@@ -311,7 +311,7 @@ class _AddContactViewState extends State<AddContactView> {
 
   Widget _buildRoleDropdown(bool isDark) {
     return DropdownButtonFormField<String>(
-      value: _selectedRole,
+      initialValue: _selectedRole,
       decoration: InputDecoration(
         labelText: "Role",
         labelStyle: GoogleFonts.poppins(

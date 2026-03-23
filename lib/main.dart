@@ -1,166 +1,60 @@
-import 'dart:developer';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show SystemUiOverlayStyle;
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:secure_me/controller/permission_controller/permission_controller.dart';
-import 'package:secure_me/controller/theme_controller/theme_controller.dart';
-import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/routes/app_routes.dart';
-import 'package:secure_me/theme/app_color.dart';
-import 'package:secure_me/theme/app_theme.dart';
-import 'package:secure_me/utils/preference_helper.dart';
-import 'package:upgrader/upgrader.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:secure_me/core/theme.dart';
+import 'package:secure_me/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:secure_me/features/safety/presentation/bloc/safety_bloc.dart';
+import 'package:secure_me/features/auth/presentation/pages/login_screen.dart';
+import 'package:secure_me/features/user/presentation/pages/home_screen.dart';
+import 'package:secure_me/features/helper/presentation/pages/helper_dashboard.dart';
+import 'package:secure_me/features/police/presentation/pages/police_dashboard.dart';
+import 'package:secure_me/features/safety/domain/models.dart';
 
-// Global variable to store initial route
-String initialRoute = AppRoutes.loginView;
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    // ✅ Ensure the GetStorage directory exists before initializing
-    final dir = await getApplicationDocumentsDirectory();
-    Directory(dir.path).createSync(recursive: true);
-
-    // ✅ Initialize GetStorage (new API — only 1 arg max)
-    await GetStorage.init();
-
-    // ✅ Check login status and session validity
-    await _checkLoginStatus();
-
-    // ✅ Register controllers AFTER storage initialization
-    Get.put(PermissionController());
-    final themeController = Get.put(ThemeController());
-
-    // ✅ Safe delayed storage access (avoids early read)
-    Future.microtask(() async {
-      final storage = GetStorage();
-      try {
-        bool askedBefore = storage.read('permissionsRequested') ?? false;
-        // await Get.find<PermissionController>().requestAllPermissions();
-        if (!askedBefore) storage.write('permissionsRequested', true);
-      } catch (e) {
-        if (kDebugMode) log('permission request error: $e', name: 'Main');
-      }
-    });
-
-    // ✅ Launch the app
-    runApp(MyApp(themeController: themeController));
-  } catch (e, st) {
-    debugPrint('❌ GetStorage initialization failed: $e\n$st');
-  }
+void main() {
+  runApp(const SecureMeApp());
 }
 
-/// Check if user is logged in and session is valid
-Future<void> _checkLoginStatus() async {
-  try {
-    log('🔍 Checking login status...', name: 'Main');
-
-    final isLoggedIn = await PreferenceHelper.getLoginStatus();
-    log('📖 Login status: $isLoggedIn', name: 'Main');
-
-    if (isLoggedIn) {
-      // Check if session is still valid (within 30 days)
-      final isSessionValid = await PreferenceHelper.isSessionValid();
-      log('📖 Session valid: $isSessionValid', name: 'Main');
-
-      if (isSessionValid) {
-        final userName = await PreferenceHelper.getUserName();
-        final sessionId = await PreferenceHelper.getSessionId();
-        log('✅ Auto-login: User is logged in as: $userName', name: 'Main');
-        log('✅ Session ID: $sessionId', name: 'Main');
-
-        // Update last login time
-        await PreferenceHelper.updateLastLoginTime();
-
-        // Set initial route to home
-        initialRoute = AppRoutes.homeView;
-        log('🚀 Redirecting to home screen', name: 'Main');
-      } else {
-        log('⚠️ Session expired, clearing user data', name: 'Main');
-        await PreferenceHelper.clearUserData();
-        initialRoute = AppRoutes.loginView;
-      }
-    } else {
-      log('ℹ️ User not logged in, showing login screen', name: 'Main');
-      initialRoute = AppRoutes.loginView;
-    }
-  } catch (e) {
-    log('❌ Error checking login status: $e', name: 'Main');
-    initialRoute = AppRoutes.loginView;
-  }
-}
-
-class MyApp extends StatelessWidget {
-  final ThemeController themeController;
-  const MyApp({super.key, required this.themeController});
+class SecureMeApp extends StatelessWidget {
+  const SecureMeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final effectiveDark = themeController.userOverride.value
-          ? themeController.isDarkMode.value
-          : WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-                Brightness.dark;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => AuthBloc()),
+        BlocProvider(create: (context) => SafetyBloc()),
+      ],
+      child: MaterialApp(
+        title: 'Secure Me – 7 Seconds',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
+        home: const AppRouter(),
+      ),
+    );
+  }
+}
 
-      return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: effectiveDark
-              ? Brightness.light
-              : Brightness.dark,
-          statusBarBrightness: effectiveDark
-              ? Brightness.dark
-              : Brightness.light,
-          systemNavigationBarColor: effectiveDark
-              ? AppColors.darkBackground
-              : AppColors.lightBackground,
-          systemNavigationBarIconBrightness: effectiveDark
-              ? Brightness.light
-              : Brightness.dark,
-        ),
-        child: UpgradeAlert(
-          upgrader: Upgrader(
-            debugDisplayAlways: false,
-            minAppVersion: '99.0.0',
-            durationUntilAlertAgain: const Duration(days: 2),
-          ),
-          child: GetMaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Secure Me',
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            themeMode: themeController.userOverride.value
-                ? (themeController.isDarkMode.value
-                      ? ThemeMode.dark
-                      : ThemeMode.light)
-                : ThemeMode.system,
-            initialRoute:
-                initialRoute, // Use dynamic route based on login status
-            getPages: AppPages.pages,
-            builder: (context, child) {
-              final widgetChild = child ?? const SizedBox.shrink();
-              if (effectiveDark) {
-                return Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.darkBackground, AppColors.accent],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                  child: widgetChild,
-                );
-              }
-              return widgetChild;
-            },
-          ),
-        ),
-      );
-    });
+class AppRouter extends StatelessWidget {
+  const AppRouter({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is Authenticated) {
+          // Role-based routing
+          switch (state.user.role) {
+            case UserRole.user:
+              return const UserHomeScreen();
+            case UserRole.helper:
+              return const HelperDashboard();
+            case UserRole.police:
+              return const PoliceDashboard();
+          }
+        }
+        
+        // Default to Login
+        return const LoginScreen();
+      },
+    );
   }
 }

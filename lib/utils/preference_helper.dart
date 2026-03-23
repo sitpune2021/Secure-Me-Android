@@ -318,7 +318,7 @@ class PreferenceHelper {
 
       final isValid = difference <= 30;
       log(
-        '🔍 Session validation: ${isValid ? "Valid" : "Expired"} (${difference} days old)',
+        '🔍 Session validation: ${isValid ? "Valid" : "Expired"} ($difference days old)',
         name: 'PreferenceHelper',
       );
       return isValid;
