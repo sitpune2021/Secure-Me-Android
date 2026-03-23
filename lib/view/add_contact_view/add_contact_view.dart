@@ -27,8 +27,8 @@ class _AddContactViewState extends State<AddContactView> {
     AddContactController(),
   );
 
-  String _selectedRole = "Gym_Person";
-  final List<String> _roles = ["User", "Gym_Person", "Guardian", "Police"];
+  String _selectedRole = "police";
+  final List<String> _roles = ["police", "Manager", "Gym_Person"];
 
   @override
   void initState() {

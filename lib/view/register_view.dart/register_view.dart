@@ -24,8 +24,8 @@ class _RegisterViewState extends State<RegisterView> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _selectedRole = "User"; // Default role
-  final List<String> _roles = ["User", "Gym_Person", "Guardian", "Police"];
+  String _selectedRole = "police"; // Default role
+  final List<String> _roles = ["police", "Manager", "Gym_Person"];
   final RegisterController registerController = Get.put(RegisterController());
 
   // Password visibility toggle
