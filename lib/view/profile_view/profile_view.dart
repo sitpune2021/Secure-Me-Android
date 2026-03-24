@@ -161,20 +161,23 @@ class _ProfileViewState extends State<ProfileView> {
             icon: AppBackIcon(color: textColor),
             onPressed: () => Get.back(),
           ),
-          centerTitle: GetPlatform.isAndroid ? false : true,
+          centerTitle: true,
           iconTheme: IconThemeData(color: textColor),
-          title: Padding(
-            padding: const EdgeInsets.only(left: 4),
-            child: Text(
-              "Profile",
-              style: GoogleFonts.poppins(
-                color: textColor,
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-              ),
+          title: Text(
+            "Account Profile",
+            style: GoogleFonts.poppins(
+              color: textColor,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
             ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings_outlined, color: textColor),
+              onPressed: () => Get.toNamed(AppRoutes.setting),
+            ),
+          ],
         ),
         body: Obx(() {
           if (profileController.isLoading.value) {
@@ -207,39 +210,21 @@ class _ProfileViewState extends State<ProfileView> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: cardColor,
-                      borderRadius: BorderRadius.circular(32),
+                      borderRadius: BorderRadius.circular(30),
                       border: Border.all(
                         color: primaryColor.withValues(
-                          alpha: effectiveDark ? 0.22 : 0.12,
+                          alpha: effectiveDark ? 0.3 : 0.1,
                         ),
-                        width: 1.5,
+                        width: 1,
                       ),
                       boxShadow: [
-                        // Deep Soft Shadow
-                        BoxShadow(
-                          color: Colors.black.withValues(
-                            alpha: effectiveDark ? 0.45 : 0.08,
-                          ),
-                          blurRadius: 45,
-                          offset: const Offset(0, 22),
-                          spreadRadius: -12,
-                        ),
-                        // Primary Ambient Glow
                         BoxShadow(
                           color: primaryColor.withValues(
-                            alpha: effectiveDark ? 0.35 : 0.14,
+                            alpha: effectiveDark ? 0.2 : 0.1,
                           ),
-                          blurRadius: 55,
-                          spreadRadius: -15,
-                          offset: const Offset(0, 18),
+                          blurRadius: 30,
+                          offset: const Offset(0, 15),
                         ),
-                        // Inner Highlight for Glassy look
-                        if (!effectiveDark)
-                          BoxShadow(
-                            color: Colors.white.withValues(alpha: 0.7),
-                            blurRadius: 0,
-                            offset: const Offset(1.5, 1.5),
-                          ),
                       ],
                     ),
                     child: Column(
@@ -581,6 +566,22 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                 ),
 
+                const SizedBox(height: 24),
+                
+                // 📊 Safety Statistics
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Row(
+                    children: [
+                      _statCard("Safe Trips", "12", Icons.route, Colors.green, effectiveDark),
+                      const SizedBox(width: 12),
+                      _statCard("Alerts", "0", Icons.warning_amber, Colors.orange, effectiveDark),
+                      const SizedBox(width: 12),
+                      _statCard("Active", "4d", Icons.timer, Colors.blue, effectiveDark),
+                    ],
+                  ),
+                ),
+
                 const SizedBox(height: 32),
 
                 // ══════════════════════════════════════════════
@@ -757,6 +758,27 @@ class _ProfileViewState extends State<ProfileView> {
         }),
       );
     });
+  }
+
+  Widget _statCard(String label, String value, IconData icon, Color color, bool isDark) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(height: 8),
+            Text(value, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(label, style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey)),
+          ],
+        ),
+      ),
+    );
   }
 }
 

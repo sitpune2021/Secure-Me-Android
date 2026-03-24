@@ -6,6 +6,7 @@ import 'package:secure_me/controller/safety_controller.dart';
 import 'package:secure_me/model/signal_model.dart';
 import 'package:secure_me/core/theme.dart';
 import 'package:secure_me/core/components.dart';
+import 'package:secure_me/routes/app_pages.dart';
 
 class PoliceDashboard extends StatelessWidget {
   PoliceDashboard({super.key});
@@ -23,6 +24,10 @@ class PoliceDashboard extends StatelessWidget {
           title: Text('POLICE COMMAND', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue)),
           actions: [
             IconButton(onPressed: () {}, icon: const Icon(Icons.history, color: Colors.white70)),
+            IconButton(
+              onPressed: () => Get.toNamed(AppRoutes.profile),
+              icon: const Icon(Icons.person_outline, color: Colors.white70),
+            ),
             IconButton(onPressed: () {}, icon: const Icon(Icons.settings, color: Colors.white70)),
           ],
         ),

@@ -27,9 +27,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final roleColor = _selectedRole == UserRole.helper 
-      ? AppTheme.primaryGreen 
-      : (_selectedRole == UserRole.police ? AppTheme.primaryBlue : AppTheme.primaryRed);
+    final roleColor = AppTheme.getThemeForRole(_selectedRole.name).primaryColor;
 
     return Scaffold(
       backgroundColor: const Color(0XFF0A0A0F),
@@ -114,9 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: UserRole.values.map((role) {
                 final isSelected = _selectedRole == role;
-                final thisRoleColor = role == UserRole.helper 
-                  ? AppTheme.primaryGreen 
-                  : (role == UserRole.police ? AppTheme.primaryBlue : AppTheme.primaryRed);
+                final thisRoleColor = AppTheme.getThemeForRole(role.name).primaryColor;
                 
                 return GestureDetector(
                   onTap: () => setState(() => _selectedRole = role),

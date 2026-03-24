@@ -7,6 +7,7 @@ import 'package:secure_me/controller/safety_controller.dart';
 import 'package:secure_me/model/signal_model.dart';
 import 'package:secure_me/core/theme.dart';
 import 'package:secure_me/core/components.dart';
+import 'package:secure_me/routes/app_pages.dart';
 
 class UserHomeScreen extends StatefulWidget {
   const UserHomeScreen({super.key});
@@ -137,10 +138,13 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               tooltip: 'Hidden Identity',
                             ),
                             const SizedBox(width: 12),
-                            const CircleAvatar(
-                              backgroundColor: AppTheme.glassBackground,
-                              child: Icon(Icons.person, color: Colors.white),
-                            ),
+                             GestureDetector(
+                               onTap: () => Get.toNamed(AppRoutes.profile),
+                               child: const CircleAvatar(
+                                 backgroundColor: AppTheme.glassBackground,
+                                 child: Icon(Icons.person, color: Colors.white),
+                               ),
+                             ),
                           ],
                         ),
                       ],

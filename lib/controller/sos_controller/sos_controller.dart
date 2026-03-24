@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:secure_me/const/app_url.dart';
@@ -34,11 +35,17 @@ class SosController extends GetxController {
         return;
       }
 
-      // TODO: Replace with actual device GPS coordinates
-      // For now, using the coordinates provided in the requirements
+      // Get actual device GPS coordinates
+      Position? position;
+      try {
+        position = await _getCurrentPosition();
+      } catch (e) {
+        dev.log("⚠️ Failed to get current location: $e", name: 'SosController');
+      }
+
       final Map<String, dynamic> body = {
-        "latitude": "18.48873120",
-        "longitude": "73.85786330",
+        "latitude": position?.latitude.toString() ?? "18.48873120",
+        "longitude": position?.longitude.toString() ?? "73.85786330",
       };
 
       final response = await http
@@ -199,5 +206,33 @@ class SosController extends GetxController {
     } finally {
       isResponding.value = false;
     }
+  }
+
+  Future<Position> _getCurrentPosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
+    }
+
+    return await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+    );
   }
 }

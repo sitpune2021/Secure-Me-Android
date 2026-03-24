@@ -6,7 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:secure_me/core/theme.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
-import 'package:secure_me/view/login_screen.dart';
+import 'package:secure_me/view/login_view/login_view.dart';
 import 'package:secure_me/view/home_screen.dart';
 import 'package:secure_me/view/helper_dashboard.dart';
 import 'package:secure_me/view/police_dashboard.dart';
@@ -66,7 +66,7 @@ class AppRouter extends StatelessWidget {
           }
        }
        
-       return const LoginScreen();
+       return const LoginView();
     });
   }
 }

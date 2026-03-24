@@ -61,7 +61,39 @@ class SosActivatedView extends StatelessWidget {
                   ],
                 ),
 
-                const Spacer(), // pushes button to bottom
+                SizedBox(height: Get.height * 0.04),
+                
+                // 👥 Instant Emergency Response Group
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Instant Response Group",
+                        style: GoogleFonts.poppins(
+                          fontSize: Get.width * 0.045,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
+                      ),
+                      SizedBox(height: Get.height * 0.02),
+                      Expanded(
+                        child: ListView(
+                          physics: const BouncingScrollPhysics(),
+                          children: [
+                            _helperTile("Police Officers", "Near you (Alerted)", Icons.shield, Colors.blue, "3 Online"),
+                            _helperTile("Gym Bros", "Physical Strength Support", Icons.fitness_center, Colors.orange, "5 Nearby"),
+                            _helperTile("Local Helpers", "Civilians nearby", Icons.groups, Colors.green, "12 Active"),
+                            _helperTile("Family Members", "Emergency contacts notified", Icons.favorite, Colors.pink, "Notified"),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: Get.height * 0.02),
+
                 // Cancel Button
                 SizedBox(
                   width: double.infinity,
@@ -93,5 +125,52 @@ class SosActivatedView extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _helperTile(String title, String subtitle, IconData icon, Color color, String status) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha:0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha:0.2)),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: color.withValues(alpha:0.2),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              status,
+              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

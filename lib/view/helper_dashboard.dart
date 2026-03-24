@@ -7,6 +7,7 @@ import 'package:secure_me/controller/safety_controller.dart';
 import 'package:secure_me/model/signal_model.dart';
 import 'package:secure_me/core/theme.dart';
 import 'package:secure_me/core/components.dart';
+import 'package:secure_me/routes/app_pages.dart';
 
 class HelperDashboard extends StatefulWidget {
   const HelperDashboard({super.key});
@@ -77,7 +78,23 @@ class _HelperDashboardState extends State<HelperDashboard> {
               Text('ACTIVE HELPER', style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen)),
             ],
           ),
-          const Icon(Icons.notifications_none, color: Colors.white70),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => Get.toNamed(AppRoutes.notification),
+                icon: const Icon(Icons.notifications_none, color: Colors.white70),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoutes.profile),
+                child: const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: AppTheme.glassBackground,
+                  child: Icon(Icons.person, color: Colors.white, size: 18),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

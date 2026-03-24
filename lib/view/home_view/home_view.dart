@@ -10,6 +10,9 @@ import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/view/community_view/community_view.dart';
 import 'package:secure_me/view/track_me_view/track_me_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
+import 'package:secure_me/core/components.dart';
+import 'package:secure_me/controller/voice_controller/voice_controller.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -22,6 +25,7 @@ class _HomeViewState extends State<HomeView> {
   final HomeController controller = Get.put(HomeController());
   final ThemeController themeController = Get.find<ThemeController>();
   final ProfileController profileController = Get.put(ProfileController());
+  final VoiceController voiceController = Get.put(VoiceController());
   String greeting = "Good Morning";
 
   @override
@@ -99,6 +103,79 @@ class _HomeViewState extends State<HomeView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 🔹 Map Preview with Safety Zones
+            Container(
+              height: height * 0.3,
+              width: double.infinity,
+              margin: EdgeInsets.only(bottom: height * 0.02),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha:0.15),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: GoogleMap(
+                  initialCameraPosition: const CameraPosition(
+                    target: LatLng(18.48873120, 73.85786330), // From requirements
+                    zoom: 14,
+                  ),
+                  myLocationEnabled: true,
+                  zoomControlsEnabled: false,
+                  mapType: MapType.normal,
+                  markers: {
+                    // Police (Blue Shield)
+                    Marker(
+                      markerId: const MarkerId('police_1'),
+                      position: const LatLng(18.490, 73.858),
+                      infoWindow: const InfoWindow(title: 'Police Officer nearby'),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+                    ),
+                    // Gym Bro (Dumbbell)
+                    Marker(
+                      markerId: const MarkerId('gym_bro_1'),
+                      position: const LatLng(18.487, 73.856),
+                      infoWindow: const InfoWindow(title: 'Strong Helper nearby'),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+                    ),
+                    // Safe Home
+                    Marker(
+                      markerId: const MarkerId('safe_home_1'),
+                      position: const LatLng(18.493, 73.862),
+                      infoWindow: const InfoWindow(title: 'Safe Shelter'),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                    ),
+                  },
+                  circles: {
+
+                    // Safe Zone (Green)
+                    Circle(
+                      circleId: const CircleId('safe_zone'),
+                      center: const LatLng(18.495, 73.86),
+                      radius: 800,
+                      fillColor: Colors.green.withValues(alpha:0.3),
+                      strokeColor: Colors.green,
+                      strokeWidth: 2,
+                    ),
+                    // Danger Zone (Red)
+                    Circle(
+                      circleId: const CircleId('danger_zone'),
+                      center: const LatLng(18.48, 73.85),
+                      radius: 1200,
+                      fillColor: Colors.red.withValues(alpha:0.3),
+                      strokeColor: Colors.red,
+                      strokeWidth: 2,
+                    ),
+                  },
+                ),
+              ),
+            ),
+
             // 🔹 Profile Row
             Row(
               children: [
@@ -129,24 +206,27 @@ class _HomeViewState extends State<HomeView> {
                           shape: BoxShape.circle,
                           color: Colors.transparent,
                         ),
-                  child: Container(
-                    width: width * 0.14,
-                    height: width * 0.14,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primary(effectiveDark),
-                          AppColors.secondary(effectiveDark),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                  child: GestureDetector(
+                    onTap: () => controller.changeTab(3), // Profile Tab
+                    child: Container(
+                      width: width * 0.14,
+                      height: width * 0.14,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary(effectiveDark),
+                            AppColors.secondary(effectiveDark),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                       ),
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      size: width * 0.08,
-                      color: Colors.white,
+                      child: Icon(
+                        Icons.person,
+                        size: width * 0.08,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -185,8 +265,20 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 // Removed Spacer to prevent layout overflow on narrow screens
                 SizedBox(width: width * 0.02),
-                _gradientCircleIcon(Icons.mic, effectiveDark, width),
+                Obx(() => GestureDetector(
+                  onLongPress: () => voiceController.startListening(),
+                  onLongPressEnd: (_) => voiceController.stopListening(),
+                  onTap: () {
+                    Get.snackbar("Voice Control", "Hold to speak location updates or 'SOS'", snackPosition: SnackPosition.BOTTOM);
+                  },
+                  child: _gradientCircleIcon(
+                    voiceController.isListening.value ? Icons.graphic_eq : Icons.mic, 
+                    effectiveDark, 
+                    width
+                  ),
+                )),
                 SizedBox(width: width * 0.03),
+
                 GestureDetector(
                   onTap: () => Get.toNamed(AppRoutes.notification),
                   child: _gradientCircleIcon(
@@ -275,7 +367,24 @@ class _HomeViewState extends State<HomeView> {
                 width,
               ),
             ),
+            SizedBox(height: height * 0.03),
+            // 🆘 SOS Slider Activation
+            SosSlider(
+              onTrigger: () => controller.sosAction(),
+            ),
             SizedBox(height: height * 0.02),
+            Center(
+              child: Text(
+                "OR TAP SOS BUTTON BELOW",
+                style: GoogleFonts.poppins(
+                  fontSize: 10,
+                  color: effectiveDark ? Colors.white38 : Colors.black38,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+            SizedBox(height: height * 0.1), // padding for FAB
           ],
         ),
       ),

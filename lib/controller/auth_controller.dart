@@ -131,7 +131,8 @@ class AuthController extends GetxController {
     Get.offAllNamed('/'); // Navigate to home
   }
 
-  void logout() {
+  void logout() async {
+    await PreferenceHelper.clearUserData();
     user.value = null;
     Get.changeTheme(AppTheme.getThemeForRole('user'));
   }
