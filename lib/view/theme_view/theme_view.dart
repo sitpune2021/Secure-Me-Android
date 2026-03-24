@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -53,7 +52,7 @@ class ThemeModeView extends StatelessWidget {
             icon: AppBackIcon(color: textColor),
             onPressed: () => Get.back(),
           ),
-          centerTitle: Platform.isAndroid ? false : true,
+          centerTitle: GetPlatform.isAndroid ? false : true,
           iconTheme: IconThemeData(color: textColor),
           title: Text(
             'Theme Mode',

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,6 +7,7 @@ import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/controller/profile_controller/profile_controller.dart';
+import 'package:secure_me/core/components.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -157,7 +157,11 @@ class _ProfileViewState extends State<ProfileView> {
           surfaceTintColor: AppColors.transparent,
           backgroundColor: backgroundColor,
           elevation: 0,
-          centerTitle: Platform.isAndroid ? false : true,
+          leading: IconButton(
+            icon: AppBackIcon(color: textColor),
+            onPressed: () => Get.back(),
+          ),
+          centerTitle: GetPlatform.isAndroid ? false : true,
           iconTheme: IconThemeData(color: textColor),
           title: Padding(
             padding: const EdgeInsets.only(left: 4),

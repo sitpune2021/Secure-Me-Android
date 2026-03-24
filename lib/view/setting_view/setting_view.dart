@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -52,7 +51,7 @@ class _SettingsViewState extends State<SettingsView> {
             statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
             statusBarBrightness: dark ? Brightness.dark : Brightness.light,
           ),
-          centerTitle: Platform.isAndroid ? false : true,
+          centerTitle: GetPlatform.isAndroid ? false : true,
           leading: IconButton(
             icon: AppBackIcon(color: textColor),
             onPressed: () => Get.back(),

@@ -10,6 +10,7 @@ import 'package:secure_me/controller/profile_controller/profile_controller.dart'
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/core/components.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -213,6 +214,10 @@ class _EditProfileViewState extends State<EditProfileView> {
               backgroundColor: bgColor,
               surfaceTintColor: AppColors.transparent,
               elevation: 0,
+              leading: IconButton(
+                icon: const AppBackIcon(color: Colors.white),
+                onPressed: () => Get.back(),
+              ),
               iconTheme: const IconThemeData(color: Colors.white),
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
