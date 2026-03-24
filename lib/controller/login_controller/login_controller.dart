@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/controller/auth_controller.dart';
+import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 
 class LoginController extends GetxController {
@@ -141,11 +143,31 @@ class LoginController extends GetxController {
             await PreferenceHelper.saveUserData(
               token: token,
               userId: user['id']?.toString() ?? '',
-              name: user['name'],
+              name: user['name'] ?? 'User',
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
               profileImage: user['profile_image'],
+              userRole: user['role'] ?? 'user',
             );
+
+            // Notify global AuthController
+            if (Get.isRegistered<AuthController>()) {
+              final authController = Get.find<AuthController>();
+              
+              UserRole role = UserRole.user;
+              final roleStr = user['role'] ?? 'user';
+              if (roleStr == 'helper') role = UserRole.helper;
+              if (roleStr == 'police') role = UserRole.police;
+
+              authController.setUser(UserModel(
+                 id: user['id']?.toString() ?? '',
+                 name: user['name'] ?? 'User',
+                 email: user['email'] ?? '',
+                 phone: (user['phone_no'] ?? user['phone']) ?? '',
+                 role: role,
+                 profileImage: user['profile_image'],
+              ));
+            }
 
             dev.log(
               '✅ All user data and session saved successfully',

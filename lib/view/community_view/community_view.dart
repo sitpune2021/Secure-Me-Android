@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -346,7 +345,7 @@ class CommunityView extends StatelessWidget {
               color: isDark ? AppColors.darkText : AppColors.lightText,
             ),
           ),
-          centerTitle: Platform.isAndroid ? false : true,
+          centerTitle: GetPlatform.isAndroid ? false : true,
           surfaceTintColor: AppColors.transparent,
           actions: [
             // ➕ Create new community

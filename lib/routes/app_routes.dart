@@ -8,7 +8,7 @@ import 'package:secure_me/view/edit_profile_view/edit_profile_view.dart';
 import 'package:secure_me/view/fake_call_view/fake_call_view.dart';
 import 'package:secure_me/view/home_view/home_view.dart';
 import 'package:secure_me/view/location_view/location_view.dart';
-import 'package:secure_me/view/login_screen.dart';
+import 'package:secure_me/view/login_view/login_view.dart';
 import 'package:secure_me/view/notification_view/notification_view.dart';
 import 'package:secure_me/view/otp_view/otp_view.dart';
 import 'package:secure_me/view/profile_view/profile_view.dart';
@@ -21,7 +21,7 @@ import 'package:secure_me/view/theme_view/theme_view.dart';
 
 class AppPages {
   static final pages = [
-    GetPage(name: AppRoutes.loginView, page: () => const LoginScreen()),
+    GetPage(name: AppRoutes.loginView, page: () => const LoginView()),
     GetPage(name: AppRoutes.otpView, page: () => OtpView()),
     GetPage(name: AppRoutes.homeView, page: () => HomeView()),
     GetPage(name: AppRoutes.notification, page: () => NotificationView()),

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,7 +31,7 @@ class AddFriendsView extends StatelessWidget {
               color: isDark ? AppColors.pinkAccent : AppColors.pureBlack,
             ),
           ),
-          centerTitle: Platform.isAndroid ? false : true,
+          centerTitle: GetPlatform.isAndroid ? false : true,
           surfaceTintColor: AppColors.transparent,
           leading: IconButton(
             icon: AppBackIcon(color: AppColors.text(isDark)),

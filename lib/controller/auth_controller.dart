@@ -41,17 +41,33 @@ class AuthController extends GetxController {
 
   void _loadUserSession() async {
     final token = await PreferenceHelper.getToken();
-    if (token != null) {
-       // Mock loading user from preferences
-       // In a real app, you would fetch user data from an API or local DB
+    final isLoggedIn = await PreferenceHelper.isLoggedIn();
+    
+    if (token != null && isLoggedIn) {
+       final id = await PreferenceHelper.getUserId() ?? '';
+       final name = await PreferenceHelper.getUserName() ?? 'User';
+       final email = await PreferenceHelper.getUserEmail() ?? '';
+       final phone = await PreferenceHelper.getUserPhone() ?? '';
+       final roleStr = await PreferenceHelper.getUserRole() ?? 'user';
+       final profileImage = await PreferenceHelper.getUserProfileImage();
+       
+       UserRole role = UserRole.user;
+       if (roleStr == 'helper') role = UserRole.helper;
+       if (roleStr == 'police') role = UserRole.police;
+
        user.value = UserModel(
-         id: '1',
-         name: 'Loaded User',
-         email: 'user@example.com',
-         phone: '1234567890',
-         role: UserRole.user,
+         id: id,
+         name: name,
+         email: email,
+         phone: phone,
+         role: role,
+         profileImage: profileImage,
        );
     }
+  }
+
+  void setUser(UserModel? newUser) {
+    user.value = newUser;
   }
 
   @override

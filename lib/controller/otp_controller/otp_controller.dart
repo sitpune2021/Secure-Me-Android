@@ -127,19 +127,26 @@ class OtpController extends GetxController {
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
               profileImage: user['profile_image'],
+              userRole: user['role'] ?? 'user',
             );
 
-            // Update AuthController state
-            if (Get.isRegistered<AuthController>()) {
-               final auth = Get.find<AuthController>();
-               auth.user.value = UserModel(
-                 id: user['id']?.toString() ?? '',
-                 name: user['name'] ?? 'Verified User',
-                 email: user['email'] ?? '',
-                 phone: user['phone_no'] ?? user['phone'] ?? '',
-                 role: UserRole.user, // Dynamic from args if needed
-               );
-            }
+             // Update AuthController state
+             if (Get.isRegistered<AuthController>()) {
+                final auth = Get.find<AuthController>();
+                UserRole role = UserRole.user;
+                final roleStr = user['role'] ?? 'user';
+                if (roleStr == 'helper') role = UserRole.helper;
+                if (roleStr == 'police') role = UserRole.police;
+
+                auth.user.value = UserModel(
+                  id: user['id']?.toString() ?? '',
+                  name: user['name'] ?? 'Verified User',
+                  email: user['email'] ?? '',
+                  phone: (user['phone_no'] ?? user['phone']) ?? '',
+                  role: role,
+                  profileImage: user['profile_image'],
+                );
+             }
 
             dev.log(
               '✅ All user data and session saved successfully',
