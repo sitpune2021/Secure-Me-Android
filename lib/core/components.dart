@@ -9,6 +9,8 @@ class GlassCard extends StatelessWidget {
   final double borderRadius;
   final Color? borderColor;
 
+  final Color? backgroundColor;
+
   const GlassCard({
     super.key,
     required this.child,
@@ -17,6 +19,7 @@ class GlassCard extends StatelessWidget {
     this.padding,
     this.borderRadius = 16.0,
     this.borderColor,
+    this.backgroundColor,
   });
 
   @override
@@ -28,7 +31,7 @@ class GlassCard extends StatelessWidget {
         child: Container(
           padding: padding ?? const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: opacity),
+            color: backgroundColor ?? Colors.white.withValues(alpha: opacity),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
               color: borderColor ?? Colors.white.withValues(alpha: 0.2),
@@ -126,3 +129,20 @@ class FuturisticButton extends StatelessWidget {
     );
   }
 }
+
+class AppBackIcon extends StatelessWidget {
+  final Color? color;
+  final double? size;
+
+  const AppBackIcon({super.key, this.color, this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+      Icons.adaptive.arrow_back,
+      color: color,
+      size: size,
+    );
+  }
+}
+

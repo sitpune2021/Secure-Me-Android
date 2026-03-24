@@ -6,6 +6,7 @@ import 'package:secure_me/controller/add_friend_controller/add_friend_controller
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/core/components.dart';
 
 class AddFriendsView extends StatelessWidget {
   const AddFriendsView({super.key});
@@ -34,10 +35,7 @@ class AddFriendsView extends StatelessWidget {
           centerTitle: Platform.isAndroid ? false : true,
           surfaceTintColor: AppColors.transparent,
           leading: IconButton(
-            icon: Icon(
-              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
-              color: AppColors.text(isDark),
-            ),
+            icon: AppBackIcon(color: AppColors.text(isDark)),
             onPressed: () => Get.back(),
           ),
           actions: [

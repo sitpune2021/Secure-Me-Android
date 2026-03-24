@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/core/components.dart';
 
 class ThemeModeView extends StatelessWidget {
   const ThemeModeView({super.key});
@@ -47,6 +48,10 @@ class ThemeModeView extends StatelessWidget {
             statusBarBrightness: effectiveDark
                 ? Brightness.dark
                 : Brightness.light,
+          ),
+          leading: IconButton(
+            icon: AppBackIcon(color: textColor),
+            onPressed: () => Get.back(),
           ),
           centerTitle: Platform.isAndroid ? false : true,
           iconTheme: IconThemeData(color: textColor),

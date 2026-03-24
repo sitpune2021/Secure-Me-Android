@@ -5,6 +5,7 @@ import 'package:pinput/pinput.dart';
 import 'package:secure_me/controller/otp_controller/otp_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/core/components.dart';
 
 class OtpView extends StatelessWidget {
   final OtpController controller = Get.put(OtpController());
@@ -174,8 +175,7 @@ class OtpView extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.arrow_back,
+                        AppBackIcon(
                           size: 18,
                           color: isDark
                               ? AppColors.darkText

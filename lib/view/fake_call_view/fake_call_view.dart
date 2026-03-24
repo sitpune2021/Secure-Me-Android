@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/fake_call_controller/fake_call_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
+import 'package:secure_me/core/components.dart';
 
 class FakeCallView extends StatelessWidget {
   FakeCallView({super.key});
@@ -23,10 +24,7 @@ class FakeCallView extends StatelessWidget {
           backgroundColor: isDark ? const Color(0xFF0B0213) : Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(
-              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
-              color: isDark ? Colors.white : Colors.black,
-            ),
+            icon: AppBackIcon(color: isDark ? Colors.white : Colors.black),
             onPressed: () => Get.back(),
           ),
           title: Text(

@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:secure_me/controller/register_controller/register_controller.dart';
 import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/core/theme.dart';
+import 'package:secure_me/core/components.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -36,7 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const AppBackIcon(color: Colors.white),
           onPressed: () => Get.back(),
         ),
         title: Text(
@@ -53,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             // Profile Image Section
             Center(
               child: GestureDetector(
-                onTap: () => _showImageSourceActionSheet(context),
+                onTap: () => _showImageSourceActionSheet(context, roleColor),
                 child: Stack(
                   children: [
                     Obx(() => Container(
@@ -229,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _showImageSourceActionSheet(BuildContext context) {
+  void _showImageSourceActionSheet(BuildContext context, Color roleColor) {
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.all(24),
@@ -267,6 +268,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _buildSourceOption(
                   icon: Icons.camera_alt_outlined,
                   label: "Camera",
+                  roleColor: roleColor,
                   onTap: () {
                     Get.back();
                     _registerController.pickImage(ImageSource.camera);
@@ -275,6 +277,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _buildSourceOption(
                   icon: Icons.photo_library_outlined,
                   label: "Gallery",
+                  roleColor: roleColor,
                   onTap: () {
                     Get.back();
                     _registerController.pickImage(ImageSource.gallery);
@@ -292,6 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildSourceOption({
     required IconData icon,
     required String label,
+    required Color roleColor,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -304,7 +308,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               color: Colors.white.withValues(alpha: 0.05),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: Colors.white, size: 28),
+            child: Icon(icon, color: roleColor, size: 28),
           ),
           const SizedBox(height: 8),
           Text(

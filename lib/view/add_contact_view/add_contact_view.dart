@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/add_contact_controller/add_contact_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/core/components.dart';
 
 class AddContactView extends StatefulWidget {
   const AddContactView({super.key});
@@ -89,15 +90,10 @@ class _AddContactViewState extends State<AddContactView> {
           ),
           centerTitle: Platform.isAndroid ? false : true,
           surfaceTintColor: AppColors.transparent,
-          leading: Platform.isIOS
-              ? IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: isDark ? AppColors.darkText : AppColors.lightText,
-                  ),
-                  onPressed: () => Get.back(),
-                )
-              : null,
+          leading: IconButton(
+            icon: AppBackIcon(color: isDark ? AppColors.darkText : AppColors.lightText),
+            onPressed: () => Get.back(),
+          ),
           actions: [
             TextButton(
               onPressed: addContactController.isLoading.value

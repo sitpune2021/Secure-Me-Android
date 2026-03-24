@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/core/components.dart';
 
 class PushNotificationView extends StatelessWidget {
   PushNotificationView({super.key});
@@ -90,10 +91,7 @@ class PushNotificationView extends StatelessWidget {
               ),
               centerTitle: Platform.isAndroid ? false : true,
               leading: IconButton(
-                icon: Icon(
-                  Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back,
-                  color: isDark ? AppColors.darkText : AppColors.lightText,
-                ),
+                icon: AppBackIcon(color: isDark ? AppColors.darkText : AppColors.lightText),
                 onPressed: () => Get.back(),
               ),
             ),

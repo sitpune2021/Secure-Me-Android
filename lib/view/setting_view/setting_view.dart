@@ -7,6 +7,7 @@ import 'package:secure_me/controller/setting_controller/setting_controller.dart'
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/core/components.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -52,12 +53,10 @@ class _SettingsViewState extends State<SettingsView> {
             statusBarBrightness: dark ? Brightness.dark : Brightness.light,
           ),
           centerTitle: Platform.isAndroid ? false : true,
-          leading: Platform.isIOS
-              ? IconButton(
-                  icon: Icon(Icons.arrow_back_ios, color: textColor),
-                  onPressed: () => Get.back(),
-                )
-              : null,
+          leading: IconButton(
+            icon: AppBackIcon(color: textColor),
+            onPressed: () => Get.back(),
+          ),
           title: Text(
             'Settings',
             style: GoogleFonts.poppins(

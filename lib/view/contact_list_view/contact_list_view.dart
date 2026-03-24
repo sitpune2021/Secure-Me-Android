@@ -7,6 +7,7 @@ import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/model/contact_model.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/core/components.dart';
 
 class ContactListView extends StatefulWidget {
   const ContactListView({super.key});
@@ -95,8 +96,7 @@ class _ContactListViewState extends State<ContactListView> {
                     children: [
                       IconButton(
                         onPressed: () => Get.back(),
-                        icon: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
+                        icon: const AppBackIcon(
                           color: Colors.white,
                           size: 20,
                         ),

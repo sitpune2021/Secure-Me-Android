@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/core/components.dart';
 
 class LocationView extends StatelessWidget {
   LocationView({super.key});
@@ -41,10 +42,7 @@ class LocationView extends StatelessWidget {
                   : Brightness.light, // iOS
             ),
             leading: IconButton(
-              icon: Icon(
-                Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
-                color: isDark ? AppColors.darkText : AppColors.lightText,
-              ),
+            icon: AppBackIcon(color: isDark ? AppColors.darkText : AppColors.lightText),
               onPressed: () => Get.back(),
             ),
             centerTitle: Platform.isAndroid ? false : true,
