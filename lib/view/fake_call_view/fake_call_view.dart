@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -110,7 +108,7 @@ class FakeCallView extends StatelessWidget {
               /// Start Fake Call Button
               Padding(
                 padding: EdgeInsets.only(
-                  bottom: Platform.isAndroid ? 0 : Get.height * .015,
+                  bottom: GetPlatform.isAndroid ? 0 : Get.height * .015,
                 ),
                 child: SizedBox(
                   width: double.infinity,

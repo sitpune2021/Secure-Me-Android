@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -88,7 +87,7 @@ class _AddContactViewState extends State<AddContactView> {
               color: isDark ? AppColors.darkText : AppColors.lightText,
             ),
           ),
-          centerTitle: Platform.isAndroid ? false : true,
+          centerTitle: GetPlatform.isAndroid ? false : true,
           surfaceTintColor: AppColors.transparent,
           leading: IconButton(
             icon: AppBackIcon(color: isDark ? AppColors.darkText : AppColors.lightText),

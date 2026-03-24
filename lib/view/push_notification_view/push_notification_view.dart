@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -89,7 +88,7 @@ class PushNotificationView extends StatelessWidget {
                   color: isDark ? AppColors.darkText : AppColors.lightText,
                 ),
               ),
-              centerTitle: Platform.isAndroid ? false : true,
+              centerTitle: GetPlatform.isAndroid ? false : true,
               leading: IconButton(
                 icon: AppBackIcon(color: isDark ? AppColors.darkText : AppColors.lightText),
                 onPressed: () => Get.back(),

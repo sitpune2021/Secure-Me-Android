@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -45,7 +44,7 @@ class LocationView extends StatelessWidget {
             icon: AppBackIcon(color: isDark ? AppColors.darkText : AppColors.lightText),
               onPressed: () => Get.back(),
             ),
-            centerTitle: Platform.isAndroid ? false : true,
+            centerTitle: GetPlatform.isAndroid ? false : true,
             title: Text(
               "Location",
               style: GoogleFonts.poppins(
