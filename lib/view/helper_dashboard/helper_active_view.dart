@@ -313,24 +313,25 @@ class _HelperActiveViewState extends State<HelperActiveView> {
             const SizedBox(height: 24),
             StatefulBuilder(builder: (context, setModalState) {
               return Column(
-                children: [
-                  _buildCompletionOption(
-                     "I SUCCESSFULLY HELPED",
-                     Remix.checkbox_circle_fill,
-                     Colors.green,
-                     wasSuccessful,
-                     () => setModalState(() => wasSuccessful = true),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildCompletionOption(
-                     "COULDN'T REACH / OTHERS HELPED",
-                     Remix.close_circle_fill,
-                     Colors.red,
-                     !wasSuccessful,
-                     () => setModalState(() => wasSuccessful = false),
-                  ),
-                ],
-              );
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildCompletionOption(
+                         "I SUCCESSFULLY HELPED",
+                         Remix.checkbox_circle_fill,
+                         Colors.green,
+                         wasSuccessful,
+                         () => setModalState(() => wasSuccessful = true),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompletionOption(
+                         "COULDN'T REACH / OTHERS HELPED",
+                         Remix.close_circle_fill,
+                         Colors.red,
+                         !wasSuccessful,
+                         () => setModalState(() => wasSuccessful = false),
+                      ),
+                    ],
+                  );
             }),
             const SizedBox(height: 24),
             TextField(

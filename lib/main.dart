@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:developer' as dev;
 import 'package:secure_me/model/user_model.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -23,6 +24,8 @@ void main() async {
   await GetStorage.init();
   
   // Load critical controllers and ensure they persist across the app lifecycle
+  // We put them here so they are available immediately. 
+  // We use permanent: true to ensure they are not disposed.
   Get.put(ThemeController(), permanent: true);
   Get.put(AuthController(), permanent: true);
   Get.put(ProfileController(), permanent: true);
@@ -46,36 +49,33 @@ class SecureMeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeController = Get.find<ThemeController>();
-    
-    return Obx(() => GetMaterialApp(
+    return GetMaterialApp(
       title: 'Secure Me – 7 Seconds',
       debugShowCheckedModeBanner: false,
-      theme: themeController.currentTheme.value,
-      themeMode: themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
-      initialBinding: InitialBinding(), // Use binding for consistent controller access
-      home: AppRouter(),
+      // Use Obx only for the values that actually change
+      theme: Get.find<ThemeController>().currentTheme.value,
+      themeMode: Get.find<ThemeController>().isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
+      // home: AppRouter(), // We will use a wrapper that ensures controllers are found
+      home: const AppRouterWrapper(),
       getPages: AppPages.pages,
-    ));
+    );
   }
 }
 
-class InitialBinding extends Bindings {
+// Wrapper to ensure AuthController is found by AppRouter
+class AppRouterWrapper extends StatelessWidget {
+  const AppRouterWrapper({super.key});
+
   @override
-  void dependencies() {
-    Get.put(ThemeController(), permanent: true);
-    Get.put(AuthController(), permanent: true);
-    Get.put(ProfileController(), permanent: true);
-    Get.put(PermissionController(), permanent: true);
-    Get.put(LocationController(), permanent: true);
-    Get.put(CommunitySafetyController(), permanent: true);
-    Get.put(IncidentController(), permanent: true);
+  Widget build(BuildContext context) {
+    return AppRouter();
   }
 }
 
 class AppRouter extends StatelessWidget {
   AppRouter({super.key});
 
+  // Access AuthController lazily inside build or as a field if already put
   final AuthController _authController = Get.find<AuthController>();
 
   @override
@@ -84,17 +84,20 @@ class AppRouter extends StatelessWidget {
        final user = _authController.user.value;
        
        if (user != null) {
+          dev.log('🚦 Routing user with role: ${user.role} and roleString: ${user.roleString}', name: 'AppRouter');
+          
           switch (user.role) {
             case UserRole.Manager:
-              // Managers see the HQ dashboard, regular users see the home view
-              if (user.roleString == 'Manager') {
+              // Access specialized dashboard for Manager role
+              if (user.roleString.toLowerCase() == 'manager') {
                  return const UserDashboard();
               }
+              // Fallback to regular HomeView for generic users
               return const HomeView();
             case UserRole.Gym_Person:
               return const HelperDashboard();
             case UserRole.police:
-              return PoliceDashboard();
+              return const PoliceDashboard();
           }
        }
        

@@ -5,7 +5,6 @@ import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/theme/app_theme.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:secure_me/view/common/app_snackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class AuthController extends GetxController {
@@ -85,14 +84,26 @@ class AuthController extends GetxController {
     }
   }
 
-  void updateUserData({String? name, String? email, String? phone, String? profileImage}) {
+  void updateUserData({
+    String? name,
+    String? email,
+    String? phone,
+    String? profileImage,
+    String? roleString,
+    UserRole? role,
+  }) {
     if (user.value != null) {
       user.value = user.value!.copyWith(
         name: name,
         email: email,
         phone: phone,
         profileImage: profileImage,
+        roleString: roleString,
+        role: role,
       );
+      if (roleString != null) {
+        Get.changeTheme(AppTheme.getThemeForRole(roleString));
+      }
     }
   }
 

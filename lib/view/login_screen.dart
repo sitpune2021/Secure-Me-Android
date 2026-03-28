@@ -254,7 +254,14 @@ class _LoginScreenState extends State<LoginScreen> {
             final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
             
             String getRoleDisplayName(UserRole role) {
-              return role.name;
+              switch (role) {
+                case UserRole.police:
+                  return "police";
+                case UserRole.Manager:
+                  return "Manager";
+                case UserRole.Gym_Person:
+                  return "Gym_Person";
+              }
             }
 
             return GestureDetector(

@@ -98,8 +98,11 @@ class ProfileController extends GetxController {
             userData['profile_image'],
           );
         }
-        if (userData['user_role'] != null) {
-          await PreferenceHelper.saveUserRole(userData['user_role']);
+        // Normalize role-related keys to ensure consistent lookup in views
+        final String? rawRole = userData['user_role'] ?? userData['role'];
+        if (rawRole != null) {
+          userData['user_role'] = rawRole;
+          await PreferenceHelper.saveUserRole(rawRole);
         }
         if (userData['created_at'] != null) {
           await PreferenceHelper.saveUserCreatedAt(userData['created_at']);
@@ -107,11 +110,21 @@ class ProfileController extends GetxController {
 
         // --- Sync with global AuthController ---
         if (Get.isRegistered<AuthController>()) {
-          Get.find<AuthController>().updateUserData(
+          final auth = Get.find<AuthController>();
+          UserRole roleEnum = UserRole.Manager;
+          if (rawRole != null) {
+            final norm = rawRole.toLowerCase();
+            if (norm.contains('gym')) roleEnum = UserRole.Gym_Person;
+            else if (norm.contains('police')) roleEnum = UserRole.police;
+          }
+
+          auth.updateUserData(
             name: userData['name'],
             email: userData['email'],
             phone: userData['phone_no'],
             profileImage: userData['profile_image'],
+            roleString: rawRole,
+            role: roleEnum,
           );
         }
       } else {

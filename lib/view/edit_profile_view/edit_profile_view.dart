@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/profile_controller/profile_controller.dart';
 import 'package:secure_me/const/app_url.dart';
@@ -139,7 +140,9 @@ class _EditProfileViewState extends State<EditProfileView> {
     required VoidCallback onTap,
     required bool isDark,
   }) {
-    final role = profileController.userData['user_role'] ?? 'user';
+    final authController = Get.find<AuthController>();
+    final role = authController.user.value?.roleString ?? 
+                 profileController.userData['user_role'] ?? 'user';
     final primaryColor = AppTheme.getThemeForRole(role, isDark: isDark).primaryColor;
 
     return GestureDetector(
@@ -195,7 +198,9 @@ class _EditProfileViewState extends State<EditProfileView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Obx(() {
         final dark = _effectiveDark;
-        final role = profileController.userData['user_role'] ?? 'user';
+        final authController = Get.find<AuthController>();
+        final role = authController.user.value?.roleString ?? 
+                     profileController.userData['user_role'] ?? 'user';
         final themeData = AppTheme.getThemeForRole(role, isDark: dark);
         final primary = themeData.primaryColor;
         
