@@ -193,7 +193,6 @@ class UserDashboard extends StatelessWidget {
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
-                      color: Colors.white,
                     ),
                   ),
                   Text(
