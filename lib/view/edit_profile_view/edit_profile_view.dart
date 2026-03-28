@@ -1,16 +1,18 @@
 import 'dart:io';
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/profile_controller/profile_controller.dart';
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/theme/app_theme.dart';
 import 'package:secure_me/utils/preference_helper.dart';
-import 'package:secure_me/core/components.dart';
+import 'package:secure_me/view/common/tactical_button.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -39,16 +41,15 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   Future<void> _loadUserData() async {
-    log('🔍 EditProfileView: Loading user data...', name: 'EditProfileView');
     final name = await PreferenceHelper.getUserName();
     final email = await PreferenceHelper.getUserEmail();
     final phone = await PreferenceHelper.getUserPhone();
     final profileImage = await PreferenceHelper.getUserProfileImage();
     setState(() {
       _profileImage = profileImage;
-      if (name != null && name.isNotEmpty) _nameController.text = name;
-      if (email != null && email.isNotEmpty) _emailController.text = email;
-      if (phone != null && phone.isNotEmpty) _phoneController.text = phone;
+      if (name != null) _nameController.text = name;
+      if (email != null) _emailController.text = email;
+      if (phone != null) _phoneController.text = phone;
     });
   }
 
@@ -78,8 +79,8 @@ class _EditProfileViewState extends State<EditProfileView> {
               ),
             ),
             Text(
-              "Select image from",
-              style: GoogleFonts.poppins(
+              "Select profile picture",
+              style: GoogleFonts.outfit(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: isDark ? AppColors.darkText : AppColors.lightText,
@@ -90,7 +91,7 @@ class _EditProfileViewState extends State<EditProfileView> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildSourceOption(
-                  icon: Icons.camera_alt_rounded,
+                  icon: Remix.camera_3_line,
                   label: "Camera",
                   onTap: () async {
                     Get.back();
@@ -99,7 +100,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                   isDark: isDark,
                 ),
                 _buildSourceOption(
-                  icon: Icons.photo_library_rounded,
+                  icon: Remix.image_2_line,
                   label: "Gallery",
                   onTap: () async {
                     Get.back();
@@ -126,10 +127,9 @@ class _EditProfileViewState extends State<EditProfileView> {
         setState(() {
           _imageFile = File(pickedFile.path);
         });
-        log('📸 Image selected: ${pickedFile.path}', name: 'EditProfileView');
       }
     } catch (e) {
-      log('❌ Error picking image: $e', name: 'EditProfileView');
+      log('❌ Error picking image: $e');
     }
   }
 
@@ -139,7 +139,9 @@ class _EditProfileViewState extends State<EditProfileView> {
     required VoidCallback onTap,
     required bool isDark,
   }) {
-    final primaryColor = AppColors.primary(isDark);
+    final role = profileController.userData['user_role'] ?? 'user';
+    final primaryColor = AppTheme.getThemeForRole(role, isDark: isDark).primaryColor;
+
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -147,21 +149,19 @@ class _EditProfileViewState extends State<EditProfileView> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: isDark
-                  ? primaryColor.withValues(alpha: 0.2)
-                  : primaryColor.withValues(alpha: 0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
               size: 32,
-              color: isDark ? AppColors.darkRadialGlow : primaryColor,
+              color: primaryColor,
             ),
           ),
           const SizedBox(height: 12),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.outfit(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: isDark ? AppColors.darkText : AppColors.lightText,
@@ -170,14 +170,6 @@ class _EditProfileViewState extends State<EditProfileView> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    super.dispose();
   }
 
   bool get _effectiveDark {
@@ -190,500 +182,292 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final effectiveDark = _effectiveDark;
-      final bgColor = AppColors.background(effectiveDark);
-      final cardColor = AppColors.card(effectiveDark);
-      final textColor = AppColors.text(effectiveDark);
-      final hintColor = AppColors.hint(effectiveDark);
-      final primaryColor = AppColors.primary(effectiveDark);
-      final secondaryColor = AppColors.secondary(effectiveDark);
-      final dividerColor = AppColors.divider(effectiveDark);
-      final borderColor = AppColors.border(effectiveDark);
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
 
-      return Scaffold(
-        backgroundColor: bgColor,
-        body: CustomScrollView(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Obx(() {
+        final dark = _effectiveDark;
+        final role = profileController.userData['user_role'] ?? 'user';
+        final themeData = AppTheme.getThemeForRole(role, isDark: dark);
+        final primary = themeData.primaryColor;
+        
+        final bg = AppColors.background(dark);
+        final card = AppColors.card(dark);
+        final txt = AppColors.text(dark);
+        final subTxt = AppColors.hint(dark);
+        final divider = AppColors.divider(dark);
+
+        return CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // ── Collapsible gradient header ──────────────────────────────
             SliverAppBar(
-              expandedHeight: 240,
+              expandedHeight: 280,
               pinned: true,
-              backgroundColor: bgColor,
-              surfaceTintColor: AppColors.transparent,
+              stretch: true,
+              backgroundColor: bg,
               elevation: 0,
               leading: IconButton(
-                icon: const AppBackIcon(color: Colors.white),
+                icon: Icon(Remix.arrow_left_line, color: txt),
                 onPressed: () => Get.back(),
               ),
-              iconTheme: const IconThemeData(color: Colors.white),
+              centerTitle: true,
+              title: Text(
+                "Edit Profile",
+                style: GoogleFonts.outfit(
+                  color: txt,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // Gradient background
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [primaryColor, secondaryColor],
+                          colors: [primary, primary.withValues(alpha: 0.85)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                       ),
                     ),
-                    // Premium Mesh Highlight
                     Positioned(
-                      top: -40,
-                      left: -20,
+                      top: -50,
+                      right: -50,
                       child: Container(
-                        width: 200,
-                        height: 200,
+                        width: 250,
+                        height: 250,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              Colors.white.withValues(alpha: 0.12),
-                              Colors.white.withValues(alpha: 0),
-                            ],
-                          ),
+                          color: Colors.white.withValues(alpha: 0.1),
                         ),
                       ),
                     ),
-                    Positioned(
-                      bottom: -40,
-                      right: -10,
-                      child: Container(
-                        width: 160,
-                        height: 160,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              secondaryColor.withValues(alpha: 0.25),
-                              secondaryColor.withValues(alpha: 0),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Avatar + name at bottom
-                    Positioned(
-                      bottom: 24,
-                      left: 0,
-                      right: 0,
-                      child: Column(
-                        children: [
-                          // Avatar with camera badge
-                          Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              GestureDetector(
-                                onTap: _pickImage,
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 40),
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            GestureDetector(
+                              onTap: _pickImage,
+                              child: Hero(
+                                tag: 'profile_image',
                                 child: Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.5,
-                                      ),
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.25,
-                                        ),
-                                        blurRadius: 18,
-                                        offset: const Offset(0, 8),
-                                      ),
-                                      BoxShadow(
-                                        color: primaryColor.withValues(
-                                          alpha: 0.4,
-                                        ),
-                                        blurRadius: 12,
-                                        spreadRadius: 2,
-                                      ),
-                                    ],
+                                    border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5),
                                   ),
                                   child: CircleAvatar(
-                                    radius: 46,
-                                    backgroundColor: Colors.white.withValues(
-                                      alpha: 0.2,
-                                    ),
+                                    radius: 60,
+                                    backgroundColor: Colors.white10,
                                     backgroundImage: _imageFile != null
                                         ? FileImage(_imageFile!)
-                                        : (_profileImage != null &&
-                                                      _profileImage!.isNotEmpty
-                                                  ? NetworkImage(
-                                                      AppUrl.buildImageUrl(
-                                                        _profileImage!,
-                                                      ),
-                                                    )
-                                                  : null)
-                                              as ImageProvider?,
-                                    child:
-                                        (_profileImage == null &&
-                                            _imageFile == null)
-                                        ? const Icon(
-                                            Icons.person_rounded,
-                                            size: 50,
-                                            color: Colors.white,
-                                          )
+                                        : (_profileImage != null ? NetworkImage(AppUrl.buildImageUrl(_profileImage!)) : null),
+                                    child: (_profileImage == null && _imageFile == null)
+                                        ? const Icon(Remix.user_3_line, size: 50, color: Colors.white)
                                         : null,
                                   ),
                                 ),
                               ),
-                              Positioned(
-                                bottom: 1,
-                                right: 1,
-                                child: Container(
-                                  width: 32,
-                                  height: 32,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.15,
-                                        ),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                      BoxShadow(
-                                        color: primaryColor.withValues(
-                                          alpha: 0.35,
-                                        ),
-                                        blurRadius: 10,
-                                      ),
-                                    ],
-                                  ),
-                                  child: Icon(
-                                    Icons.camera_alt_rounded,
-                                    size: 15,
-                                    color: primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            _nameController.text.isNotEmpty
-                                ? _nameController.text
-                                : "Your Name",
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: -0.2,
                             ),
-                          ),
-                        ],
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Remix.camera_switch_line, size: 18, color: primary),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              // Collapsed title
-              title: Text(
-                "Edit Profile",
-                style: GoogleFonts.poppins(
-                  color: textColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
             ),
-
-            // ── Form body ────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(18, 28, 18, 0),
+                padding: const EdgeInsets.all(24),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Section label
-                      _sectionLabel("Personal Information", hintColor),
-                      const SizedBox(height: 12),
-
-                      // ── Fields card ─────────────────────────────────
+                      _sectionHeader("BASIC INFORMATION", primary),
+                      const SizedBox(height: 16),
                       Container(
                         decoration: BoxDecoration(
-                          color: cardColor,
+                          color: card,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: borderColor.withValues(alpha: 0.12),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 20,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
+                          border: Border.all(color: divider.withValues(alpha: 0.05)),
                         ),
                         child: Column(
                           children: [
-                            _buildField(
+                            _buildModernField(
                               label: "Full Name",
-                              icon: Icons.person_outline_rounded,
+                              icon: Remix.user_line,
                               controller: _nameController,
-                              hint: "Enter your name",
-                              validator: (v) => (v == null || v.trim().isEmpty)
-                                  ? "Name is required"
-                                  : null,
-                              primaryColor: primaryColor,
-                              textColor: textColor,
-                              hintColor: hintColor,
-                              dividerColor: dividerColor,
-                              effectiveDark: effectiveDark,
-                              isLast: false,
-                              onChanged: (_) => setState(() {}),
+                              hint: "Enter your full name",
+                              validator: (v) => v?.isEmpty == true ? "Required" : null,
+                              primary: primary,
+                              txt: txt,
+                              subTxt: subTxt,
+                              divider: divider,
                             ),
-                            _buildField(
-                              label: "Phone Number",
-                              icon: Icons.phone_outlined,
+                            _buildModernField(
+                              label: "Mobile Number",
+                              icon: Remix.smartphone_line,
                               controller: _phoneController,
-                              hint: "10-digit number",
+                              hint: "10-digit mobile number",
                               keyboardType: TextInputType.phone,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(10),
-                              ],
-                              validator: (v) {
-                                if (v == null || v.trim().isEmpty) {
-                                  return "Phone required";
-                                }
-                                if (!RegExp(r'^[0-9]{10}$').hasMatch(v)) {
-                                  return "Enter valid 10-digit number";
-                                }
-                                return null;
-                              },
-                              primaryColor: primaryColor,
-                              textColor: textColor,
-                              hintColor: hintColor,
-                              dividerColor: dividerColor,
-                              effectiveDark: effectiveDark,
-                              isLast: false,
+                              validator: (v) => v?.length != 10 ? "Invalid number" : null,
+                              primary: primary,
+                              txt: txt,
+                              subTxt: subTxt,
+                              divider: divider,
                             ),
-                            _buildField(
+                            _buildModernField(
                               label: "Email Address",
-                              icon: Icons.email_outlined,
+                              icon: Remix.mail_line,
                               controller: _emailController,
-                              hint: "abc@example.com",
+                              hint: "Enter your email address",
                               keyboardType: TextInputType.emailAddress,
-                              validator: (v) {
-                                if (v == null || v.trim().isEmpty) {
-                                  return "Email required";
-                                }
-                                if (!RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$',
-                                ).hasMatch(v)) {
-                                  return "Enter a valid email";
-                                }
-                                return null;
-                              },
-                              primaryColor: primaryColor,
-                              textColor: textColor,
-                              hintColor: hintColor,
-                              dividerColor: dividerColor,
-                              effectiveDark: effectiveDark,
+                              validator: (v) => v?.contains('@') == false ? "Invalid email" : null,
+                              primary: primary,
+                              txt: txt,
+                              subTxt: subTxt,
+                              divider: divider,
                               isLast: true,
                             ),
                           ],
                         ),
                       ),
-
-                      const SizedBox(height: 36),
-
-                      // ── Save Button ──────────────────────────────────
-                      GestureDetector(
-                        onTap: _isSaving
-                            ? null
-                            : () async {
-                                if (_formKey.currentState!.validate()) {
-                                  setState(() => _isSaving = true);
-                                  log(
-                                    '💾 Saving profile...',
-                                    name: 'EditProfileView',
-                                  );
-
-                                  bool success = await profileController
-                                      .updateProfile(
-                                        name: _nameController.text.trim(),
-                                        email: _emailController.text.trim(),
-                                        phone: _phoneController.text.trim(),
-                                        image: _imageFile,
-                                      );
-
-                                  setState(() => _isSaving = false);
-
-                                  if (success) {
-                                    Get.snackbar(
-                                      "✅ Success",
-                                      "Profile updated successfully",
-                                      backgroundColor: primaryColor,
-                                      colorText: Colors.white,
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      margin: const EdgeInsets.all(16),
-                                      borderRadius: 14,
-                                    );
-                                    Future.delayed(
-                                      const Duration(milliseconds: 600),
-                                      () => Get.back(),
-                                    );
-                                  }
-                                }
-                              },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: _isSaving
-                                  ? [hintColor, hintColor]
-                                  : [primaryColor, secondaryColor],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: _isSaving
-                                ? []
-                                : [
-                                    BoxShadow(
-                                      color: primaryColor.withValues(
-                                        alpha: 0.4,
-                                      ),
-                                      blurRadius: 16,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
-                          ),
-                          child: Center(
-                            child: _isSaving
-                                ? const _DotsLoading()
-                                : Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.check_rounded,
-                                        color: Colors.white,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        "Save Changes",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                          ),
-                        ),
+                      const SizedBox(height: 40),
+                      TacticalButton(
+                        label: "UPDATE PROFILE",
+                        onTap: () => _saveProfile(primary),
+                        isLoading: _isSaving,
+                        color: primary,
                       ),
-
-                      const SizedBox(height: 48),
+                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
               ),
             ),
           ],
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 
-  Widget _sectionLabel(String text, Color color) {
+  void _saveProfile(Color primary) async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isSaving = true);
+      bool success = await profileController.updateProfile(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+        image: _imageFile,
+      );
+      setState(() => _isSaving = false);
+      if (success) {
+        AppSnackbar.show(
+          title: "Profile Synchronized",
+          message: "Your tactical profile has been updated successfully.",
+          isSuccess: true,
+        );
+        Get.back();
+      }
+    }
+  }
+
+  Widget _sectionHeader(String title, Color color) {
     return Text(
-      text.toUpperCase(),
-      style: GoogleFonts.poppins(
+      title,
+      style: GoogleFonts.outfit(
         fontSize: 11,
-        fontWeight: FontWeight.w800,
-        color: color.withValues(alpha: 0.8),
+        fontWeight: FontWeight.w900,
         letterSpacing: 1.5,
+        color: color.withValues(alpha: 0.7),
       ),
     );
   }
 
-  Widget _buildField({
+  Widget _buildModernField({
     required String label,
     required IconData icon,
     required TextEditingController controller,
     required String hint,
     required String? Function(String?) validator,
-    required Color primaryColor,
-    required Color textColor,
-    required Color hintColor,
-    required Color dividerColor,
-    required bool effectiveDark,
-    required bool isLast,
+    required Color primary,
+    required Color txt,
+    required Color subTxt,
+    required Color divider,
+    bool isLast = false,
     TextInputType keyboardType = TextInputType.text,
-    List<TextInputFormatter>? inputFormatters,
-    ValueChanged<String>? onChanged,
   }) {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                width: 40,
-                height: 40,
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: primaryColor.withValues(alpha: 0.1),
+                  color: primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: primaryColor, size: 20),
+                child: Icon(icon, color: primary, size: 20),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: TextFormField(
-                  controller: controller,
-                  keyboardType: keyboardType,
-                  inputFormatters: inputFormatters,
-                  validator: validator,
-                  onChanged: onChanged,
-                  style: GoogleFonts.poppins(
-                    color: textColor,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: label,
-                    labelStyle: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: hintColor.withValues(alpha: 0.7),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: GoogleFonts.outfit(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: subTxt,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                    hintText: hint,
-                    hintStyle: GoogleFonts.poppins(
-                      color: hintColor.withValues(alpha: 0.5),
-                      fontSize: 14,
+                    TextFormField(
+                      controller: controller,
+                      validator: validator,
+                      keyboardType: keyboardType,
+                      style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: txt,
+                      ),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        hintText: hint,
+                        hintStyle: GoogleFonts.outfit(
+                          fontSize: 14,
+                          color: subTxt.withValues(alpha: 0.4),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                      ),
                     ),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    focusedErrorBorder: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                    floatingLabelStyle: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: primaryColor,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -691,65 +475,12 @@ class _EditProfileViewState extends State<EditProfileView> {
         ),
         if (!isLast)
           Divider(
-            height: 1,
-            indent: 76,
+            indent: 66,
             endIndent: 20,
-            color: dividerColor.withValues(alpha: 0.5),
+            color: divider.withValues(alpha: 0.08),
+            height: 1,
           ),
       ],
-    );
-  }
-}
-
-// ─── Dots Loading ─────────────────────────────────────────────────────────────
-class _DotsLoading extends StatefulWidget {
-  const _DotsLoading();
-
-  @override
-  State<_DotsLoading> createState() => _DotsLoadingState();
-}
-
-class _DotsLoadingState extends State<_DotsLoading>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(3, (i) {
-        return AnimatedBuilder(
-          animation: _ctrl,
-          builder: (_, _) {
-            final t = (_ctrl.value - i * 0.2).clamp(0.0, 1.0);
-            final scale = (t < 0.5 ? t * 2 : (1 - t) * 2).clamp(0.5, 1.0);
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              width: 8 * scale,
-              height: 8 * scale,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-            );
-          },
-        );
-      }),
     );
   }
 }

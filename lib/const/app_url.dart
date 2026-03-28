@@ -7,12 +7,16 @@ class AppUrl {
     if (path.isEmpty) return path;
 
     if (path.startsWith('http')) {
+      // If the URL already contains /storage/ or is from the host and NOT a broken reference, return it
+      if (path.contains('/storage/') || path.contains('/admin-assets/')) return path;
 
-      if (path.contains('/storage/')) return path;
-
-      final uri = Uri.tryParse(path);
-      if (uri != null && uri.pathSegments.isNotEmpty) {
-        return '$storageUrl/${uri.pathSegments.last}';
+      // Handle cases where the server might return an absolute URL from another source/IP 
+      // that we want to unify to our current host
+      if (!path.startsWith(host)) {
+         final uri = Uri.tryParse(path);
+         if (uri != null && uri.pathSegments.isNotEmpty) {
+           return '$storageUrl/${uri.pathSegments.last}';
+         }
       }
       return path;
     }

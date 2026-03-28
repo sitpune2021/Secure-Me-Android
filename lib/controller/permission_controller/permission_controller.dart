@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -9,88 +8,58 @@ class PermissionController extends GetxController {
   final isConnected = false.obs;
   final isPermissionGranted = false.obs; // <- important observable
 
+  @override
+  void onInit() {
+    super.onInit();
+    requestAllPermissions();
+    listenForInternet();
+  }
+
   /// Request/check all runtime permissions we care about and set the observable.
   Future<void> requestAllPermissions() async {
     try {
-      // Build list of permissions we want to ask
+      log('🛡️ Initiating security permission request...', name: 'PermissionController');
+      
       final permissions = <Permission>[
         Permission.location,
         Permission.locationWhenInUse,
-        // Permission.locationAlways sometimes not needed on all apps,
-        // add if your app truly requires it.
+        Permission.notification,
         Permission.phone,
-        // don't request systemAlertWindow (not supported by permission_handler for runtime)
+        Permission.contacts,
+        Permission.camera,
+        Permission.microphone,
       ];
 
-      // On iOS, add extra permissions
-      if (GetPlatform.isIOS) {
-        permissions.addAll([
-          Permission.camera,
-          Permission.microphone,
-          Permission.photos,
-          Permission.contacts,
-          Permission.bluetooth,
-        ]);
-      }
-
-      // Request them (this returns a map of statuses)
+      // Request bulk permissions
       final statuses = await permissions.request();
 
-      // Determine granted = at least location granted (or any other required permission)
-      final locationGranted =
-          (await Permission.location.status).isGranted ||
-          (await Permission.locationWhenInUse.status).isGranted;
-
-      // You can choose your own criteria for "granted".
-      isPermissionGranted.value = locationGranted;
-
-      // If permanently denied, inform user (do not force open settings)
-      final permanentlyDenied = statuses.values.any(
-        (s) => s.isPermanentlyDenied,
-      );
-      if (!isPermissionGranted.value && permanentlyDenied) {
-        // show a message once (UI layer can show dialog/snackbar)
-        // We avoid calling openAppSettings() automatically here.
-        // UI can call openAppSettings() if user clicks "Open settings".
+      // Background location request (handled separately as required by OS)
+      if (statuses[Permission.location]?.isGranted ?? false) {
+        await Permission.locationAlways.request();
       }
 
-      // Update internet connectivity too
+      // Determine granted status (essential for app operation)
+      isPermissionGranted.value = statuses[Permission.location]?.isGranted ?? false;
+
+      // Update internet connectivity
       await checkInternet();
     } catch (e, st) {
-      // if anything odd happens, set false and print for debugging
+      log('❌ Security permission error: $e', name: 'PermissionController', stackTrace: st);
       isPermissionGranted.value = false;
-      // debug print
-      if (kDebugMode) {
-        log(
-          'requestAllPermissions error: $e\n$st',
-          name: 'PermissionController',
-        );
-      }
     }
   }
 
   /// Check if device has real internet connection
   Future<void> checkInternet() async {
-    isConnected.value = await InternetConnectionChecker().hasConnection;
+    bool connected = await InternetConnectionChecker().hasConnection;
+    isConnected.value = connected;
+    log('🌐 Internet Connection: ${connected ? "ACTIVE" : "OFFLINE"}', name: 'PermissionController');
   }
 
   /// Listen for connectivity changes in real-time
   void listenForInternet() {
-    Connectivity().onConnectivityChanged.listen((_) async {
-      isConnected.value = await InternetConnectionChecker().hasConnection;
-      // if no internet and location denied, optionally prompt
-      if (!isConnected.value) {
-        final locDenied = await Permission.location.isDenied;
-        if (locDenied) {
-          // UI decide what to show; controller keeps state only
-        }
-      }
+    Connectivity().onConnectivityChanged.listen((result) async {
+      await checkInternet();
     });
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    listenForInternet();
   }
 }

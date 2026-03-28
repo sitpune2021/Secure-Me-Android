@@ -32,6 +32,8 @@ class AddContactController extends GetxController {
     required String phoneNo,
     required String email,
     required String userRole,
+    int priority = 1,
+    bool isNotifyOnSos = true,
   }) async {
     isLoading.value = true;
     try {
@@ -64,6 +66,8 @@ class AddContactController extends GetxController {
       request.fields['phone_no'] = phoneNo;
       request.fields['email'] = email;
       request.fields['user_role'] = userRole;
+      request.fields['priority'] = priority.toString();
+      request.fields['is_notify_on_sos'] = isNotifyOnSos ? "1" : "0";
 
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 30),

@@ -25,7 +25,7 @@ class AddFriendsView extends StatelessWidget {
           elevation: 0,
           title: Text(
             'Add Friends',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.outfit(
               fontSize: Get.width * 0.055,
               fontWeight: FontWeight.w600,
               color: isDark ? AppColors.pinkAccent : AppColors.pureBlack,
@@ -83,7 +83,7 @@ class AddFriendsView extends StatelessWidget {
                   child: TextField(
                     onChanged: (value) =>
                         controller.searchFriends(value), // ✅ call controller
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.outfit(
                       color: isDark ? AppColors.darkText : AppColors.lightText,
                     ),
                     decoration: InputDecoration(
@@ -92,7 +92,7 @@ class AddFriendsView extends StatelessWidget {
                           ? AppColors.darkSearchBg
                           : AppColors.lightSearchBg,
                       hintText: "Search by name or number",
-                      hintStyle: GoogleFonts.poppins(
+                      hintStyle: GoogleFonts.outfit(
                         color: isDark
                             ? AppColors.darkHint
                             : AppColors.lightHint,
@@ -162,7 +162,7 @@ class AddFriendsView extends StatelessWidget {
                             ),
                             title: Text(
                               friend["name"]!,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.outfit(
                                 fontSize: Get.width * 0.045,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.text(isDark),
@@ -170,7 +170,7 @@ class AddFriendsView extends StatelessWidget {
                             ),
                             subtitle: Text(
                               friend["phone"]!,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.outfit(
                                 fontSize: Get.width * 0.035,
                                 color: isDark
                                     ? AppColors.greyShade400

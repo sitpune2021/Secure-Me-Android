@@ -19,5 +19,9 @@ class AppRoutes {
   static const fakecall = '/fakecall';
   static const sosActivate = '/sos';
   static const shareLiveLocation = '/shareLiveLocation';
+  static const forgotPassword = '/forgotPassword';
   static const theme='/theme';
+  static const policeDashboard = '/policeDashboard';
+  static const helperDashboard = '/helperDashboard';
+  static const safetyRadar = '/safetyRadar';
 }

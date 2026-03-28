@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/fake_call_controller/fake_call_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
-import 'package:secure_me/core/components.dart';
+import 'package:remixicon/remixicon.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class FakeCallView extends StatelessWidget {
   FakeCallView({super.key});
@@ -13,242 +14,224 @@ class FakeCallView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final isDark = themeController.isDarkMode.value;
+    final primaryColor = Theme.of(context).primaryColor;
 
-      return Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0B0213) : Colors.white,
-        appBar: AppBar(
-          backgroundColor: isDark ? const Color(0xFF0B0213) : Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: AppBackIcon(color: isDark ? Colors.white : Colors.black),
-            onPressed: () => Get.back(),
-          ),
-          title: Text(
-            "Fake Call",
-            style: GoogleFonts.poppins(
-              fontSize: Get.height * 0.022,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : Colors.black,
-            ),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Remix.arrow_left_line),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          "Fake Incoming Call",
+          style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: Get.width * 0.05,
-            vertical: Get.height * 0.02,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Divider(
-                color: isDark ? Colors.white24 : Colors.grey.shade300,
-                thickness: 1,
-              ),
-              SizedBox(height: Get.height * 0.02),
-
-              /// Call Delay
-              Text(
-                "Set Call Delay",
-                style: GoogleFonts.poppins(
-                  fontSize: Get.height * 0.02,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white : Colors.black,
+        centerTitle: true,
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Illustration/Icon
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Remix.phone_find_line, size: 48, color: primaryColor),
+                  ).animate().scale(delay: const Duration(milliseconds: 200)),
                 ),
-              ),
-              SizedBox(height: Get.height * 0.015),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildDelayButton("5 Sec", isDark),
-                  _buildDelayButton("30 Sec", isDark),
-                  _buildDelayButton("1 Min", isDark),
-                ],
-              ),
+                const SizedBox(height: 32),
 
-              SizedBox(height: Get.height * 0.03),
-
-              /// Caller Selection
-              Text(
-                "Choose Caller",
-                style: GoogleFonts.poppins(
-                  fontSize: Get.height * 0.02,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white : Colors.black,
+                // Section: Delay
+                _buildSectionHeader(context, "SET CALL DELAY"),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildDelayOption(context, "5 Sec", controller),
+                      _buildDelayOption(context, "30 Sec", controller),
+                      _buildDelayOption(context, "1 Min", controller),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: Get.height * 0.015),
-              _buildCallerItem("assets/images/mom.png", "Mom", isDark),
-              _buildCallerItem("assets/images/police.png", "Police", isDark),
-              _buildCallerItem("assets/images/boss.png", "Boss", isDark),
 
-              const Spacer(),
+                const SizedBox(height: 32),
 
-              /// Countdown Text
-              Obx(() {
-                if (controller.countdownText.value.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-                return Padding(
-                  padding: EdgeInsets.only(bottom: Get.height * 0.015),
-                  child: Center(
-                    child: Text(
-                      controller.countdownText.value,
-                      style: GoogleFonts.poppins(
-                        fontSize: Get.height * 0.018,
-                        fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.white70 : Colors.black87,
+                // Section: Caller
+                _buildSectionHeader(context, "CHOOSE CALLER IDENTITY"),
+                const SizedBox(height: 16),
+                _buildCallerList(context, controller),
+
+                const SizedBox(height: 40),
+
+                // Countdown Display
+                Obx(() {
+                  if (controller.countdownText.value.isEmpty) return const SizedBox.shrink();
+                  return Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Text(
+                        controller.countdownText.value,
+                        style: GoogleFonts.outfit(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }),
+                  ).animate().fadeIn().slideY(begin: 0.2);
+                }),
 
-              /// Start Fake Call Button
-              Padding(
-                padding: EdgeInsets.only(
-                  bottom: GetPlatform.isAndroid ? 0 : Get.height * .015,
-                ),
-                child: SizedBox(
+                const SizedBox(height: 16),
+
+                // Action Button
+                SizedBox(
                   width: double.infinity,
-                  height: Get.height * 0.07,
+                  height: 64,
                   child: Obx(() {
-                    bool isDisabled = controller.countdownText.value.isNotEmpty;
+                    bool isCounting = controller.countdownText.value.isNotEmpty;
                     return ElevatedButton(
-                      onPressed: isDisabled
-                          ? null
-                          : () async {
-                              controller.startCustomFakeCall();
-                            },
+                      onPressed: isCounting ? null : () => controller.startCustomFakeCall(),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        disabledBackgroundColor: Colors.grey,
+                        backgroundColor: isCounting ? Colors.grey.withValues(alpha: 0.2) : primaryColor,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
                       ),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          gradient: isDisabled
-                              ? null
-                              : (isDark
-                                    ? const LinearGradient(
-                                        colors: [
-                                          Color(0xFF9C27B0),
-                                          Color(0xFFE040FB),
-                                        ],
-                                      )
-                                    : null),
-                          color: isDisabled
-                              ? Colors.grey
-                              : (!isDark ? Colors.purple : null),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Start Fake Call",
-                            style: GoogleFonts.poppins(
-                              fontSize: Get.height * 0.022,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                      child: Text(
+                        isCounting ? "Preparing Call..." : "Schedule Fake Call",
+                        style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     );
                   }),
                 ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Text(
+      title,
+      style: GoogleFonts.outfit(
+        fontSize: 11,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.5,
+        color: Theme.of(context).primaryColor,
+      ),
+    );
+  }
+
+  Widget _buildDelayOption(BuildContext context, String text, FakeCallController controller) {
+    return Obx(() {
+      bool isSelected = controller.selectedDelay.value == text;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => controller.setDelay(text),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              text,
+              style: GoogleFonts.outfit(
+                color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
-            ],
+            ),
           ),
         ),
       );
     });
   }
 
-  Widget _buildDelayButton(String text, bool isDark) {
-    final FakeCallController controller = Get.find();
-    return GestureDetector(
-      onTap: () => controller.setDelay(text),
-      child: Obx(() {
-        bool isSelected = controller.selectedDelay.value == text;
-        return Container(
-          width: Get.width * 0.25,
-          height: Get.height * 0.05,
-          decoration: BoxDecoration(
-            color: isSelected
-                ? (isDark ? Colors.white10 : Colors.purple.shade50)
-                : (isDark ? Colors.white12 : Colors.grey.shade200),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isSelected
-                  ? Colors.purpleAccent
-                  : (isDark ? Colors.white24 : Colors.grey.shade400),
-              width: 1.5,
-            ),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            text,
-            style: GoogleFonts.poppins(
-              color: isSelected
-                  ? Colors.purpleAccent
-                  : (isDark ? Colors.white70 : Colors.black),
-              fontWeight: FontWeight.w600,
-              fontSize: Get.height * 0.018,
-            ),
-          ),
-        );
-      }),
-    );
-  }
+  Widget _buildCallerList(BuildContext context, FakeCallController controller) {
+    final callers = [
+      {'name': 'Mom', 'icon': Remix.heart_fill, 'color': Colors.red},
+      {'name': 'Police', 'icon': Remix.government_fill, 'color': Colors.blue},
+      {'name': 'Boss', 'icon': Remix.briefcase_fill, 'color': Colors.amber},
+      {'name': 'Best Friend', 'icon': Remix.star_fill, 'color': Colors.green},
+    ];
 
-  Widget _buildCallerItem(String imgPath, String name, bool isDark) {
-    final FakeCallController controller = Get.find();
-    return GestureDetector(
-      onTap: () => controller.setCaller(name),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: Get.height * 0.01),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: Get.height * 0.035,
-              backgroundImage: AssetImage(imgPath),
-            ),
-            SizedBox(width: Get.width * 0.04),
-            Expanded(
-              child: Obx(() {
-                bool isSelected = controller.selectedCaller.value == name;
-                return Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "$name\nIncoming Call From $name",
-                        style: GoogleFonts.poppins(
-                          fontSize: Get.height * 0.018,
-                          fontWeight: FontWeight.w500,
-                          height: 1.2,
-                          color: isSelected
-                              ? Colors.purpleAccent
-                              : (isDark ? Colors.white : Colors.black),
-                        ),
-                      ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
+      ),
+      child: Column(
+        children: callers.map((caller) {
+          final isLast = callers.indexOf(caller) == callers.length - 1;
+          return Obx(() {
+            bool isSelected = controller.selectedCaller.value == caller['name'];
+            return Column(
+              children: [
+                ListTile(
+                  onTap: () => controller.setCaller(caller['name'] as String),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  leading: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: (caller['color'] as Color).withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
                     ),
-                    if (isSelected)
-                      Icon(
-                        Icons.check_circle,
-                        color: Colors.purpleAccent,
-                        size: Get.height * 0.03,
-                      ),
-                  ],
-                );
-              }),
-            ),
-          ],
-        ),
+                    child: Icon(caller['icon'] as IconData, color: caller['color'] as Color, size: 24),
+                  ),
+                  title: Text(
+                    caller['name'] as String,
+                    style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? Theme.of(context).primaryColor : null,
+                    ),
+                  ),
+                  subtitle: Text(
+                    "Incoming call from ${caller['name']}",
+                    style: GoogleFonts.outfit(fontSize: 12, color: Theme.of(context).hintColor),
+                  ),
+                  trailing: Radio<String>(
+                    value: caller['name'] as String,
+                    groupValue: controller.selectedCaller.value,
+                    activeColor: Theme.of(context).primaryColor,
+                    onChanged: (val) => controller.setCaller(val!),
+                  ),
+                ),
+                if (!isLast) Divider(indent: 70, endIndent: 20, color: Theme.of(context).dividerColor.withValues(alpha: 0.05), height: 1),
+              ],
+            );
+          });
+        }).toList(),
       ),
     );
   }

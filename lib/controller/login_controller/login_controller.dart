@@ -1,14 +1,15 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/main.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/utils/error_helper.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
 
 class LoginController extends GetxController {
   var mobileNumber = ''.obs;
@@ -16,7 +17,7 @@ class LoginController extends GetxController {
   var password = ''.obs;
   var isEmailLogin = true.obs;
   var isLoading = false.obs;
-  var selectedRole = UserRole.user.obs;
+  var selectedRole = UserRole.Manager.obs;
 
   Future<void> login() async {
     if (isEmailLogin.value) {
@@ -28,11 +29,10 @@ class LoginController extends GetxController {
 
   Future<void> _loginWithEmail() async {
     if (email.value.trim().isEmpty || password.value.trim().isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Please enter email and password",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.show(
+        title: "Input Required",
+        message: "Please enter email and password",
+        isError: true,
       );
       return;
     }
@@ -148,17 +148,24 @@ class LoginController extends GetxController {
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
               profileImage: user['profile_image'],
-              userRole: user['role'] ?? 'user',
+              userRole: user['user_role'] ?? user['role'] ?? 'user',
             );
 
             // Notify global AuthController
             if (Get.isRegistered<AuthController>()) {
               final authController = Get.find<AuthController>();
               
-              UserRole role = UserRole.user;
-              final roleStr = user['role'] ?? 'user';
-              if (roleStr == 'helper') role = UserRole.helper;
-              if (roleStr == 'police') role = UserRole.police;
+              UserRole role = UserRole.Manager;
+              final roleStr = (user['user_role'] ?? user['role'])?.toString() ?? 'Manager';
+              final normalizedRole = roleStr.toLowerCase();
+              
+              if (normalizedRole.contains('gym')) {
+                role = UserRole.Gym_Person;
+              } else if (normalizedRole.contains('police')) {
+                role = UserRole.police;
+              } else {
+                role = UserRole.Manager;
+              }
 
               authController.setUser(UserModel(
                  id: user['id']?.toString() ?? '',
@@ -166,6 +173,7 @@ class LoginController extends GetxController {
                  email: user['email'] ?? '',
                  phone: (user['phone_no'] ?? user['phone']) ?? '',
                  role: role,
+                 roleString: roleStr,
                  profileImage: user['profile_image'],
               ));
             }
@@ -207,76 +215,69 @@ class LoginController extends GetxController {
                 '❌ Cannot proceed without token!',
                 name: 'LoginController',
               );
-              Get.snackbar(
-                "Error",
-                "Login response is missing required data. Please contact support.",
-                backgroundColor: Colors.red,
-                colorText: Colors.white,
+              AppSnackbar.show(
+                title: "Data Error",
+                message: "Login response is missing required data. Please contact support.",
+                isError: true,
               );
               return;
             }
           }
 
-          Get.snackbar(
-            "Success",
-            data['message'] ?? "Login successful",
-            backgroundColor: AppColors.lightPrimary,
-            colorText: Colors.white,
+          AppSnackbar.show(
+            title: "Welcome Back",
+            message: data['message'] ?? "Login successful",
+            isSuccess: true,
           );
 
-          dev.log('🚀 Navigating to home screen', name: 'LoginController');
-          Get.offAllNamed(AppRoutes.homeView);
+          dev.log('🚀 Navigating via AppRouter', name: 'OtpController');
+          Get.offAll(() => AppRouter());
         } else {
           dev.log(
             '❌ Login failed: ${data['message']}',
             name: 'LoginController',
           );
-          Get.snackbar(
-            "Error",
-            data['message'] ?? "Login failed",
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
+          AppSnackbar.show(
+            title: "Login Failed",
+            message: data['message'] ?? "Login failed",
+            isError: true,
           );
         }
       } else if (response.statusCode == 401) {
         dev.log('❌ Unauthorized: Invalid credentials', name: 'LoginController');
-        Get.snackbar(
-          "Error",
-          "Invalid email or password",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        AppSnackbar.show(
+          title: "Invalid Credentials",
+          message: "The email or password you entered is incorrect.",
+          isError: true,
         );
       } else {
         dev.log(
           '❌ Login failed with status: ${response.statusCode}',
           name: 'LoginController',
         );
-        Get.snackbar(
-          "Error",
-          data['message'] ?? "Login failed with status ${response.statusCode}",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        AppSnackbar.show(
+          title: ErrorHelper.getErrorTitle(response.statusCode),
+          message: ErrorHelper.getFriendlyMessage(response),
+          isError: true,
         );
       }
     } catch (e) {
       isLoading.value = false;
       dev.log("❌ Login Error: $e", name: 'LoginController');
-      Get.snackbar(
-        "Error",
-        "Network error. Please check your connection and try again.",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.show(
+        title: "Connection Error",
+        message: "Please check your network and try again.",
+        isError: true,
       );
     }
   }
 
   Future<void> _loginWithMobile() async {
     if (email.value.trim().isEmpty || !email.value.contains('@')) {
-      Get.snackbar(
-        "Error",
-        "Please enter a valid email address",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.show(
+        title: "Invalid Email",
+        message: "Please enter a valid email address",
+        isError: true,
       );
       return;
     }
@@ -315,11 +316,10 @@ class LoginController extends GetxController {
             '✅ OTP sent successfully to: ${email.value}',
             name: 'LoginController',
           );
-          Get.snackbar(
-            "Success",
-            data['message'] ?? "OTP sent successfully",
-            backgroundColor: AppColors.lightPrimary,
-            colorText: Colors.white,
+          AppSnackbar.show(
+            title: "OTP Dispatched",
+            message: data['message'] ?? "OTP sent successfully to your email",
+            isSuccess: true,
           );
 
           // Navigate to OTP screen
@@ -332,11 +332,10 @@ class LoginController extends GetxController {
             '❌ Failed to send OTP: ${data['message']}',
             name: 'LoginController',
           );
-          Get.snackbar(
-            "Error",
-            data['message'] ?? "Failed to send OTP",
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
+          AppSnackbar.show(
+            title: "Dispatch Failed",
+            message: data['message'] ?? "Could not send OTP code",
+            isError: true,
           );
         }
       } else {
@@ -344,22 +343,19 @@ class LoginController extends GetxController {
           '❌ Send OTP failed with status: ${response.statusCode}',
           name: 'LoginController',
         );
-        Get.snackbar(
-          "Error",
-          data['message'] ??
-              "Failed to send OTP with status ${response.statusCode}",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        AppSnackbar.show(
+          title: ErrorHelper.getErrorTitle(response.statusCode),
+          message: ErrorHelper.getFriendlyMessage(response),
+          isError: true,
         );
       }
     } catch (e) {
       isLoading.value = false;
       dev.log("Send OTP Error: $e", name: 'LoginController');
-      Get.snackbar(
-        "Error",
-        "Network error. Please check your connection and try again.",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.show(
+        title: "Connection Error",
+        message: "Please check your network and try again.",
+        isError: true,
       );
     }
   }

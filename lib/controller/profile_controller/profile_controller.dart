@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
+import 'package:secure_me/controller/auth_controller.dart';
+import 'package:secure_me/model/user_model.dart';
 
 class ProfileController extends GetxController {
   var isLoading = false.obs;
@@ -103,6 +104,16 @@ class ProfileController extends GetxController {
         if (userData['created_at'] != null) {
           await PreferenceHelper.saveUserCreatedAt(userData['created_at']);
         }
+
+        // --- Sync with global AuthController ---
+        if (Get.isRegistered<AuthController>()) {
+          Get.find<AuthController>().updateUserData(
+            name: userData['name'],
+            email: userData['email'],
+            phone: userData['phone_no'],
+            profileImage: userData['profile_image'],
+          );
+        }
       } else {
         dev.log(
           '❌ Failed to retrieve profile: ${data['message']}',
@@ -112,12 +123,10 @@ class ProfileController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       dev.log('❌ Error fetching profile: $e', name: 'ProfileController');
-      Get.snackbar(
-        "Connection Error",
-        "Failed to load profile. Please check your network connection.",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+      AppSnackbar.show(
+        title: "Connection Error",
+        message: "Failed to load profile. Please check your network connection.",
+        isError: true,
       );
     }
   }
@@ -230,24 +239,20 @@ class ProfileController extends GetxController {
           '❌ Failed to update profile: ${data['message']}',
           name: 'ProfileController',
         );
-        Get.snackbar(
-          "Error",
-          data['message'] ?? "Failed to update profile",
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
+        AppSnackbar.show(
+          title: "Error",
+          message: data['message'] ?? "Failed to update profile",
+          isError: true,
         );
         return false;
       }
     } catch (e) {
       isLoading.value = false;
       dev.log('❌ Error updating profile: $e', name: 'ProfileController');
-      Get.snackbar(
-        "Error",
-        "Could not connect to the server",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+      AppSnackbar.show(
+        title: "Error",
+        message: "Could not connect to the server",
+        isError: true,
       );
       return false;
     }
@@ -277,12 +282,10 @@ class ProfileController extends GetxController {
       isLoading.value = false;
       dev.log('✅ Logout successful', name: 'ProfileController');
 
-      Get.snackbar(
-        "Logout",
-        "Successfully logged out from current session.",
-        backgroundColor: AppColors.lightPrimary,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+      AppSnackbar.show(
+        title: "Logout",
+        message: "Successfully logged out from current session.",
+        isSuccess: true,
       );
 
       Get.offAllNamed(AppRoutes.loginView);

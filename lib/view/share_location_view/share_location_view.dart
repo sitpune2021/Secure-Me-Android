@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:secure_me/controller/location_controller.dart/location_controller.dart';
+import 'package:secure_me/controller/location_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 
 class ShareLocationView extends StatelessWidget {
@@ -25,7 +25,7 @@ class ShareLocationView extends StatelessWidget {
           elevation: 0,
           title: Text(
             "Share My Live Location",
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.outfit(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.onSurface,
@@ -55,7 +55,7 @@ class ShareLocationView extends StatelessWidget {
             return Center(
               child: Text(
                 "Unable to fetch location",
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.outfit(
                   fontSize: 16,
                   color: theme.colorScheme.onSurface,
                 ),
@@ -95,7 +95,7 @@ class ShareLocationView extends StatelessWidget {
           icon: Icon(Icons.share, color: theme.colorScheme.onPrimary),
           label: Text(
             "Share Live Location",
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.outfit(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.onPrimary,

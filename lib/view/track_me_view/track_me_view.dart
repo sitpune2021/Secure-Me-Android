@@ -1,200 +1,211 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:secure_me/controller/track_me_controller.dart/track_me_controller.dart';
-import 'package:secure_me/controller/theme_controller/theme_controller.dart';
+import 'package:secure_me/controller/track_me_controller.dart';
+import 'package:remixicon/remixicon.dart';
 
-class TrackMeView extends StatelessWidget {
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class TrackMeView extends StatefulWidget {
   const TrackMeView({super.key});
 
   @override
+  State<TrackMeView> createState() => _TrackMeViewState();
+}
+
+class _TrackMeViewState extends State<TrackMeView> {
+  final TrackMeController controller = Get.put(TrackMeController());
+  late GoogleMapController mapController;
+
+  static const _pGooglePlex = CameraPosition(
+    target: LatLng(18.5204, 73.8567), // Pune Coordinate
+    zoom: 14.4746,
+  );
+
+  // MOCK SAFETY ZONES
+  final Set<Circle> _safetyZones = {
+    Circle(
+      circleId: const CircleId("safe_zone_1"),
+      center: const LatLng(18.5244, 73.8587),
+      radius: 300,
+      fillColor: Colors.green.withValues(alpha: 0.25),
+      strokeColor: Colors.green,
+      strokeWidth: 2,
+    ),
+    Circle(
+      circleId: const CircleId("danger_zone_1"),
+      center: const LatLng(18.5144, 73.8487),
+      radius: 400,
+      fillColor: Colors.red.withValues(alpha: 0.25),
+      strokeColor: Colors.red,
+      strokeWidth: 2,
+    ),
+  };
+
+  @override
   Widget build(BuildContext context) {
-    final TrackMeController controller = Get.put(TrackMeController());
-    final ThemeController themeController = Get.find();
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    return Obx(() {
-      final isDark = themeController.isDarkMode.value;
-      final theme = themeController.theme;
-
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Track Me",
-            style: GoogleFonts.poppins(
-              color: theme.colorScheme.onSurface,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(
+          "TRACK ME",
+          style: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2,
+          ),
+        ),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          // ── Map Header Area (Indicators) ──────────────────────────────
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Row(
+              children: [
+                _indicatorChip("Safe Areas", Colors.green),
+                const SizedBox(width: 12),
+                _indicatorChip("High Caution", Colors.red),
+              ],
             ),
           ),
-          backgroundColor: theme.colorScheme.surface,
-          elevation: 0,
-          iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
-        ),
-        backgroundColor: theme.colorScheme.surface,
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Your Location",
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+
+          // ── Interactive Map Section ──────────────────────────────────
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(32),
+                child: GoogleMap(
+                  onMapCreated: (c) {
+                    mapController = c;
+                  },
+                  style: isDark ? _darkMapStyle : null,
+                  initialCameraPosition: _pGooglePlex,
+                  circles: _safetyZones,
+                  myLocationEnabled: true,
+                  zoomControlsEnabled: false,
                 ),
               ),
-              const SizedBox(height: 12),
+            ),
+          ),
 
-              // Current/Destination + Transport Options Card
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isDark ? Colors.white24 : Colors.grey.shade400,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  color: theme.colorScheme.surface,
+          // ── Bottom Controls ──────────────────────────────────────────
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              color: theme.colorScheme.primary,
-                            ),
-                            Container(
-                              height: 30,
-                              width: 2,
-                              color: isDark
-                                  ? Colors.white24
-                                  : Colors.grey.shade400,
-                            ),
-                            Icon(
-                              Icons.radio_button_checked,
-                              color: Colors.red.shade400,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Current Location",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                "Destination",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Transport Options
-                    Obx(
-                      () => Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    _buildStepIcon(Remix.map_pin_2_fill, theme.primaryColor),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildTransportOption(
-                            Icons.directions_bus,
-                            "Bus",
-                            controller,
-                            0,
-                            theme,
-                          ),
-                          _buildTransportOption(
-                            Icons.directions_car,
-                            "Car",
-                            controller,
-                            1,
-                            theme,
-                          ),
-                          _buildTransportOption(
-                            Icons.pedal_bike,
-                            "Bike",
-                            controller,
-                            2,
-                            theme,
-                          ),
-                          _buildTransportOption(
-                            Icons.directions_walk,
-                            "Walk",
-                            controller,
-                            3,
-                            theme,
-                          ),
+                          Text("Current Safe Sentinel", style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+                          Text("Pulse Active • 123 Safety St.", style: GoogleFonts.outfit(fontSize: 12, color: theme.hintColor)),
                         ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                _buildTransportModes(),
+              ],
+            ),
           ),
-        ),
-      );
-    });
-  }
-
-  Widget _buildTransportOption(
-    IconData icon,
-    String label,
-    TrackMeController controller,
-    int index,
-    ThemeData theme,
-  ) {
-    final bool isSelected = controller.selectedTransport.value == index;
-
-    return GestureDetector(
-      onTap: () => controller.selectTransport(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: isSelected
-              ? theme.colorScheme.primary.withValues(alpha: 0.15)
-              : Colors.transparent,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? theme.colorScheme.primary
-                  : theme.iconTheme.color?.withValues(alpha: 0.6),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
+
+  Widget _indicatorChip(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          const SizedBox(width: 8),
+          Text(label, style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.w800, color: color)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStepIcon(IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+      child: Icon(icon, color: color, size: 20),
+    );
+  }
+
+  Widget _buildTransportModes() {
+    final modes = [
+      {'icon': Remix.bus_line, 'id': 0},
+      {'icon': Remix.car_line, 'id': 1},
+      {'icon': Remix.bike_line, 'id': 2},
+      {'icon': Remix.walk_line, 'id': 3},
+    ];
+
+    return Obx(() => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: modes.map((m) {
+            final isSelected = controller.selectedTransport.value == m['id'];
+            return GestureDetector(
+              onTap: () => controller.selectTransport(m['id'] as int),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).dividerColor.withValues(alpha: 0.05),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(m['icon'] as IconData, color: isSelected ? Colors.white : Theme.of(context).hintColor),
+              ),
+            );
+          }).toList(),
+        ));
+  }
+
+  static const String _darkMapStyle = '''
+[
+  { "elementType": "geometry", "stylers": [{ "color": "#212121" }] },
+  { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
+  { "elementType": "labels.text.fill", "stylers": [{ "color": "#757575" }] },
+  { "elementType": "labels.text.stroke", "stylers": [{ "color": "#212121" }] },
+  { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#757575" }] },
+  { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#181818" }] },
+  { "featureType": "road", "elementType": "geometry.fill", "stylers": [{ "color": "#2c2c2c" }] },
+  { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#000000" }] }
+]
+''';
 }

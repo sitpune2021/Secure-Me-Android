@@ -17,6 +17,9 @@ class ContactController extends GetxController {
   var currentPage = 1.obs;
   var hasMore = true.obs;
   var isPhoneLoading = false.obs;
+  
+  // Tactical Priority & Notification Logic
+  var isSyncing = false.obs;
 
   @override
   void onInit() {
@@ -202,5 +205,37 @@ class ContactController extends GetxController {
 
   void updateSearch(String query) {
     searchQuery.value = query;
+  }
+
+  // ── Tactical Sentinel Management ──────────────────────────────
+
+  Future<void> updatePriority(int contactId, int newPriority) async {
+    final index = contacts.indexWhere((c) => c.id == contactId);
+    if (index != -1) {
+      contacts[index] = contacts[index].copyWith(priority: newPriority);
+      contacts.sort((a, b) => a.priority.compareTo(b.priority));
+      // In a real app, send to API here
+      dev.log("✅ Sentinel priority updated for ID: $contactId to $newPriority", name: "ContactController");
+    }
+  }
+
+  Future<void> toggleNotification(int contactId) async {
+    final index = contacts.indexWhere((c) => c.id == contactId);
+    if (index != -1) {
+      contacts[index] = contacts[index].copyWith(isNotifyOnSos: !contacts[index].isNotifyOnSos);
+      dev.log("✅ Notification status toggled for ID: $contactId", name: "ContactController");
+    }
+  }
+
+  Future<void> reorderSentinels(int oldIndex, int newIndex) async {
+    if (newIndex > oldIndex) newIndex--;
+    final item = contacts.removeAt(oldIndex);
+    contacts.insert(newIndex, item);
+    
+    // Update priorities based on new list position
+    for (int i = 0; i < contacts.length; i++) {
+      contacts[i] = contacts[i].copyWith(priority: i + 1);
+    }
+    dev.log("✅ Sentinels reordered and priorities synced.", name: "ContactController");
   }
 }

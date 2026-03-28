@@ -241,4 +241,13 @@ class AppColors {
         return grey;
     }
   }
+
+  // ---------------- CYBERPUNK THEME ----------------
+  static const Color cyberBackground = Color(0xFF0A0A0B);
+  static const Color cyberCard = Color(0xFF141417);
+  static const Color cyberPink = Color(0xFFFF00FF);
+  static const Color cyberPurple = Color(0xFFA020F0);
+  static const Color cyberCyan = Color(0xFF00FFFF);
+  static const Color cyberRed = Color(0xFFFF2D55);
+  static const Color cyberBlue = Color(0xFF007AFF);
 }

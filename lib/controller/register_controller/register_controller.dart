@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/main.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/utils/error_helper.dart';
 
 class RegisterController extends GetxController {
   var isLoading = false.obs;
@@ -30,10 +31,10 @@ class RegisterController extends GetxController {
       }
     } catch (e) {
       dev.log("❌ Error picking image: $e", name: 'RegisterController');
-      Get.snackbar(
-        "Error",
-        "Failed to pick image",
-        snackPosition: SnackPosition.BOTTOM,
+      AppSnackbar.show(
+        title: "Selection Failed",
+        message: "Failed to pick image from source.",
+        isError: true,
       );
     }
   }
@@ -44,6 +45,8 @@ class RegisterController extends GetxController {
     required String phone,
     required String password,
     required String role,
+    double? latitude,
+    double? longitude,
   }) async {
     isLoading.value = true;
     try {
@@ -60,6 +63,9 @@ class RegisterController extends GetxController {
       request.fields['phone_no'] = phone;
       request.fields['password'] = password;
       request.fields['user_role'] = role;
+      
+      if (latitude != null) request.fields['latitude'] = latitude.toString();
+      if (longitude != null) request.fields['longitude'] = longitude.toString();
 
       // Add image if selected
       if (selectedImage.value != null) {
@@ -126,16 +132,23 @@ class RegisterController extends GetxController {
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
               profileImage: user['profile_image'],
-              userRole: user['role'] ?? 'user',
+              userRole: user['user_role'] ?? user['role'] ?? 'user',
             );
 
             // Notify global AuthController
             if (Get.isRegistered<AuthController>()) {
               final authController = Get.find<AuthController>();
-              UserRole role = UserRole.user;
-              final roleStr = user['role'] ?? 'user';
-              if (roleStr == 'helper') role = UserRole.helper;
-              if (roleStr == 'police') role = UserRole.police;
+              UserRole role;
+              final roleStr = (user['user_role'] ?? user['role'])?.toString() ?? 'Manager';
+              final normalizedRole = roleStr.toLowerCase();
+              
+              if (normalizedRole.contains('gym')) {
+                role = UserRole.Gym_Person;
+              } else if (normalizedRole.contains('police')) {
+                role = UserRole.police;
+              } else {
+                role = UserRole.Manager;
+              }
 
               authController.setUser(UserModel(
                  id: user['id']?.toString() ?? '',
@@ -143,6 +156,7 @@ class RegisterController extends GetxController {
                  email: user['email'] ?? '',
                  phone: (user['phone_no'] ?? user['phone']) ?? '',
                  role: role,
+                 roleString: roleStr,
                  profileImage: user['profile_image'],
               ));
             }
@@ -151,53 +165,41 @@ class RegisterController extends GetxController {
             await PreferenceHelper.saveLoginStatus(true);
           }
 
-          Get.snackbar(
-            "Success",
-            data['message'] ?? "Account created successfully",
-            backgroundColor: AppColors.lightPrimary,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
+          AppSnackbar.show(
+            title: "Identity Secured",
+            message: data['message'] ?? "Account created successfully",
+            isSuccess: true,
           );
 
           if (token != null) {
-            Get.offAllNamed(AppRoutes.homeView);
+            Get.offAll(() => AppRouter());
           } else {
             Get.offAllNamed(AppRoutes.loginView);
           }
         } else {
-          Get.snackbar(
-            "Registration Failed",
-            data['message'] ?? "Please check your details",
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
+          AppSnackbar.show(
+            title: "Registry Failed",
+            message: data['message'] ?? "Please check your details",
+            isError: true,
           );
         }
       } else {
-        String errorMessage = "Registration failed";
-        if (data is Map && data.containsKey('message')) {
-          errorMessage = data['message'];
-        } else if (data is Map && data.containsKey('errors')) {
-          // Handle validation errors from Laravel if present
-          errorMessage = data['errors'].toString();
-        }
-
-        Get.snackbar(
-          "Error ${response.statusCode}",
-          errorMessage,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
+        dev.log(
+          '❌ Registration failed with status: ${response.statusCode}',
+          name: 'RegisterController',
+        );
+        AppSnackbar.show(
+          title: ErrorHelper.getErrorTitle(response.statusCode),
+          message: ErrorHelper.getFriendlyMessage(response),
+          isError: true,
         );
       }
     } catch (e) {
       dev.log("❌ Connection Error: $e", name: 'RegisterController');
-      Get.snackbar(
-        "Connection Error",
-        "Could not reach server. Please check your internet.",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
+      AppSnackbar.show(
+        title: "Connection Error",
+        message: "Could not reach server. Please check your internet.",
+        isError: true,
       );
     } finally {
       isLoading.value = false;

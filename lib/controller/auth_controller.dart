@@ -1,22 +1,25 @@
+import 'dart:developer' as dev;
 import 'package:get/get.dart';
+import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/model/user_model.dart';
-import 'package:secure_me/core/theme.dart';
+import 'package:secure_me/theme/app_theme.dart';
 import 'package:secure_me/utils/preference_helper.dart';
-import 'package:flutter/material.dart'; // Added for TextEditingController
+import 'package:flutter/material.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AuthController extends GetxController {
   final Rx<UserModel?> user = Rx<UserModel?>(null);
   final RxBool isLoading = false.obs;
 
   // New fields for managing login/registration state
-  UserRole _selectedRole = UserRole.user; // Default role
+  final Rx<UserRole> selectedRole = UserRole.Manager.obs;
   bool _isPhoneLogin = false; // Tracks if the user is trying to login with phone
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   // Getters for the new fields
-  UserRole get selectedRole => _selectedRole;
   bool get isPhoneLogin => _isPhoneLogin;
   TextEditingController get emailController => _emailController;
   TextEditingController get phoneController => _phoneController;
@@ -24,8 +27,7 @@ class AuthController extends GetxController {
 
   // Setters for the new fields
   void setSelectedRole(UserRole role) {
-    _selectedRole = role;
-    update(); // Notify listeners if this controller is used in a GetBuilder
+    selectedRole.value = role;
   }
 
   void toggleLoginMethod() {
@@ -37,6 +39,8 @@ class AuthController extends GetxController {
   void onInit() {
     super.onInit();
     _loadUserSession();
+    // Proactively request core permissions on startup
+    requestInitialPermissions();
   }
 
   void _loadUserSession() async {
@@ -51,16 +55,23 @@ class AuthController extends GetxController {
        final roleStr = await PreferenceHelper.getUserRole() ?? 'user';
        final profileImage = await PreferenceHelper.getUserProfileImage();
        
-       UserRole role = UserRole.user;
-       if (roleStr == 'helper') role = UserRole.helper;
-       if (roleStr == 'police') role = UserRole.police;
+        UserRole role = UserRole.Manager;
+        final normalizedRole = roleStr.toLowerCase();
+        if (normalizedRole.contains('gym')) {
+          role = UserRole.Gym_Person;
+        } else if (normalizedRole.contains('police')) {
+          role = UserRole.police;
+        } else {
+          role = UserRole.Manager;
+        }
 
-       user.value = UserModel(
+        user.value = UserModel(
          id: id,
          name: name,
          email: email,
          phone: phone,
          role: role,
+         roleString: roleStr,
          profileImage: profileImage,
        );
     }
@@ -68,72 +79,77 @@ class AuthController extends GetxController {
 
   void setUser(UserModel? newUser) {
     user.value = newUser;
+    if (newUser != null) {
+      // Sync theme when user is set (e.g., after login or session load)
+      Get.changeTheme(AppTheme.getThemeForRole(newUser.roleString));
+    }
   }
 
-  @override
-  void onClose() {
-    _emailController.dispose();
-    _phoneController.dispose();
-    _passwordController.dispose();
-    super.onClose();
+  void updateUserData({String? name, String? email, String? phone, String? profileImage}) {
+    if (user.value != null) {
+      user.value = user.value!.copyWith(
+        name: name,
+        email: email,
+        phone: phone,
+        profileImage: profileImage,
+      );
+    }
   }
 
-  void login(String email, String password, UserRole role) async {
+  void forgotPassword(String email) async {
     isLoading.value = true;
-    // Mock Login delay
-    await Future.delayed(const Duration(seconds: 1));
-    
-    user.value = UserModel(
-      id: '1',
-      name: 'Mock ${role.name.toUpperCase()}',
-      email: email,
-      phone: '1234567890',
-      role: role,
-    );
-    
-    // Switch theme for the role
-    Get.changeTheme(AppTheme.getThemeForRole(role.name));
-    isLoading.value = false;
-  }
-
-  void sendPhoneOtp(String phone, UserRole role) async {
-    isLoading.value = true;
-    // Mock OTP sending delay
+    // Mock Forgot Password delay
     await Future.delayed(const Duration(seconds: 1));
     Get.snackbar(
-      "OTP Sent", 
-      "A verification code has been sent to $phone",
-      backgroundColor: Colors.green.withValues(alpha: 0.7),
+      "Reset Link Sent", 
+      "A password reset link has been sent to $email",
+      backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.7),
       colorText: Colors.white,
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
     );
     isLoading.value = false;
-    
-    // Navigate to OTP Screen
-    Get.toNamed('/otp', arguments: {'phone': phone, 'role': role});
-  }
-
-  void verifyPhoneOtp(String otp, String phone, UserRole role) async {
-    isLoading.value = true;
-    // Mock OTP verification delay
-    await Future.delayed(const Duration(seconds: 1));
-    
-    // Simulate successful verification
-    user.value = UserModel(
-      id: '2',
-      name: 'User $phone',
-      email: 'verified@secureme.com',
-      phone: phone,
-      role: role,
-    );
-    
-    Get.changeTheme(AppTheme.getThemeForRole(role.name));
-    isLoading.value = false;
-    Get.offAllNamed('/'); // Navigate to home
+    Get.back();
   }
 
   void logout() async {
-    await PreferenceHelper.clearUserData();
-    user.value = null;
-    Get.changeTheme(AppTheme.getThemeForRole('user'));
+    try {
+      isLoading.value = true;
+      await PreferenceHelper.clearUserData();
+      user.value = null;
+      Get.offAllNamed('/login'); // Fixed logout route
+    } catch (e) {
+      dev.log("❌ Logout Error: $e", name: 'AuthController');
+      // Fallback navigation even if clearing data fails slightly
+      Get.offAllNamed(AppRoutes.loginView);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // --- Early Permission Onboarding ---
+  Future<void> requestInitialPermissions() async {
+    dev.log("🔐 Checking initial safety permissions...", name: 'AuthController');
+    
+    // Core permissions required for the app to function properly
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.locationWhenInUse,
+      Permission.microphone,
+      Permission.contacts,
+    ].request();
+
+    if (statuses[Permission.locationWhenInUse] != PermissionStatus.granted) {
+      dev.log("⚠️ Location permission not granted initially.");
+    }
+    
+    if (statuses[Permission.microphone] != PermissionStatus.granted) {
+      dev.log("⚠️ Microphone permission not granted initially.");
+    }
+    
+    // Check if background location is needed for persistent SOS
+    if (statuses[Permission.locationWhenInUse] == PermissionStatus.granted) {
+      await Permission.locationAlways.request();
+    }
   }
 }

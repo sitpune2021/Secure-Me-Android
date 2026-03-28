@@ -1,207 +1,185 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:secure_me/controller/theme_controller/theme_controller.dart';
-import 'package:secure_me/theme/app_color.dart';
-import 'package:secure_me/core/components.dart';
+import 'package:remixicon/remixicon.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class LocationView extends StatelessWidget {
   LocationView({super.key});
 
-  final ThemeController themeController = Get.find<ThemeController>();
   final RxBool autoCallLocation = false.obs;
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final isDark = themeController.isDarkMode.value;
-
-      return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-          statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-        ),
-        child: Scaffold(
-          backgroundColor: isDark
-              ? AppColors.darkBackground
-              : AppColors.lightBackground,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 120,
+            pinned: true,
             elevation: 0,
-            surfaceTintColor: Colors.transparent,
-            systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarIconBrightness: isDark
-                  ? Brightness.light
-                  : Brightness.dark, // Android
-              statusBarBrightness: isDark
-                  ? Brightness.dark
-                  : Brightness.light, // iOS
-            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             leading: IconButton(
-            icon: AppBackIcon(color: isDark ? AppColors.darkText : AppColors.lightText),
+              icon: const Icon(Remix.arrow_left_line),
               onPressed: () => Get.back(),
             ),
-            centerTitle: GetPlatform.isAndroid ? false : true,
+            centerTitle: true,
             title: Text(
-              "Location",
-              style: GoogleFonts.poppins(
-                fontSize: Get.width * 0.05,
-                color: isDark ? AppColors.darkText : AppColors.lightText,
-                fontWeight: FontWeight.w600,
+              "LOCATION",
+              style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                letterSpacing: 2,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "SIGNAL PREFERENCES",
+                    style: GoogleFonts.outfit(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildPremiumSwitchCard(
+                    context,
+                    "Background Tracking",
+                    "Ensure sentinel connectivity always",
+                    Remix.radar_fill,
+                    Colors.blue,
+                    autoCallLocation,
+                  ),
+                  const SizedBox(height: 32),
+                  Text(
+                    "TACTICAL TOOLS",
+                    style: GoogleFonts.outfit(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildActionCard(
+                    context,
+                    "Satellite View",
+                    "View real-world terrain and markers",
+                    Remix.earth_fill,
+                    Colors.green,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildActionCard(
+                    context,
+                    "Safe Zones",
+                    "Manage active protection boundaries",
+                    Remix.shield_user_fill,
+                    Colors.orange,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-          body: Stack(
-            children: [
-              // Top glow
-              if (isDark)
-                Positioned(
-                  top: Get.height * 0.15,
-                  left: -Get.width * 0.15,
-                  child: Container(
-                    width: Get.width * 0.75,
-                    height: Get.height * 0.25,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [AppColors.glowPurple, Colors.transparent],
-                        radius: 1,
-                      ),
-                    ),
-                  ),
+  Widget _buildPremiumSwitchCard(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+    RxBool value,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(subtitle, style: GoogleFonts.outfit(fontSize: 12, color: Theme.of(context).hintColor)),
+              ],
+            ),
+          ),
+          Obx(() => Switch(
+                value: value.value,
+                onChanged: (v) => value.value = v,
+                activeThumbColor: Theme.of(context).primaryColor,
+              )),
+        ],
+      ),
+    ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1);
+  }
+
+  Widget _buildActionCard(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(28),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
+                  child: Icon(icon, color: color, size: 24),
                 ),
-              // Bottom glow
-              if (isDark)
-                Positioned(
-                  bottom: -Get.height * 0.12,
-                  right: -Get.width * 0.18,
-                  child: Container(
-                    width: Get.width * 0.6,
-                    height: Get.width * 0.6,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          AppColors.glowPurple.withValues(alpha: 0.3),
-                          Colors.transparent,
-                        ],
-                        radius: 0.8,
-                      ),
-                    ),
-                  ),
-                ),
-              SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Get.width * 0.05,
-                    vertical: Get.height * 0.015,
-                  ),
+                const SizedBox(width: 16),
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Divider(
-                        color: isDark
-                            ? AppColors.darkDivider
-                            : AppColors.lightDivider,
-                        thickness: 0.8,
-                      ),
-                      SizedBox(height: Get.height * 0.02),
-
-                      // Auto Call Location Switch
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Auto Call Location On SOS",
-                            style: GoogleFonts.poppins(
-                              fontSize: Get.width * 0.045,
-                              color: isDark
-                                  ? AppColors.darkText
-                                  : AppColors.lightText,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Obx(
-                            () => Switch(
-                              value: autoCallLocation.value,
-                              onChanged: (val) => autoCallLocation.value = val,
-                              activeThumbColor: isDark
-                                  ? AppColors.glowPurple
-                                  : AppColors.lightPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: Get.height * 0.02),
-
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(
-                          Icons.location_on,
-                          color: isDark
-                              ? AppColors.darkText
-                              : AppColors.lightPrimary,
-                        ),
-                        title: Text(
-                          "Share Live Location",
-                          style: GoogleFonts.poppins(
-                            fontSize: Get.width * 0.045,
-                            color: isDark
-                                ? AppColors.darkText
-                                : AppColors.lightText,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          size: Get.width * 0.04,
-                          color: isDark
-                              ? AppColors.darkText
-                              : AppColors.lightText,
-                        ),
-                        onTap: () {},
-                      ),
-                      SizedBox(height: Get.height * 0.015),
-
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(
-                          Icons.people_alt,
-                          color: isDark
-                              ? AppColors.darkText
-                              : AppColors.lightPrimary,
-                        ),
-                        title: Text(
-                          "View Nearby Friends",
-                          style: GoogleFonts.poppins(
-                            fontSize: Get.width * 0.045,
-                            color: isDark
-                                ? AppColors.darkText
-                                : AppColors.lightText,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          size: Get.width * 0.04,
-                          color: isDark
-                              ? AppColors.darkText
-                              : AppColors.lightText,
-                        ),
-                        onTap: () {},
-                      ),
+                      Text(title, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(subtitle, style: GoogleFonts.outfit(fontSize: 12, color: Theme.of(context).hintColor)),
                     ],
                   ),
                 ),
-              ),
-            ],
+                Icon(Remix.arrow_right_s_line, color: Theme.of(context).hintColor, size: 20),
+              ],
+            ),
           ),
         ),
-      );
-    });
+      ),
+    ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1);
   }
 }

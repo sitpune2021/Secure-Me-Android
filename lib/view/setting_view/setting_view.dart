@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -5,8 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/setting_controller/setting_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/theme/app_color.dart';
-import 'package:secure_me/core/components.dart';
+import 'package:remixicon/remixicon.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -17,436 +18,392 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   final SettingsController controller = Get.put(SettingsController());
-  final ThemeController themeController = Get.find();
-
-  bool get effectiveDark {
-    final isDark = themeController.isDarkMode.value;
-    final userOverride = themeController.userOverride.value;
-    return userOverride
-        ? isDark
-        : WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-              Brightness.dark;
-  }
+  final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final dark = effectiveDark;
-      final bg = AppColors.background(dark);
-      final textColor = AppColors.text(dark);
-      final subText = AppColors.hint(dark);
-      final cardColor = AppColors.card(dark);
-      final primary = AppColors.primary(dark);
-      final secondary = AppColors.secondary(dark);
-      final divider = AppColors.divider(dark);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final primaryColor = theme.primaryColor;
+    final scaffoldBg = theme.scaffoldBackgroundColor;
+    final textColor = theme.textTheme.bodyLarge?.color ?? (isDark ? Colors.white : Colors.black87);
+    const criticalRed = Colors.redAccent;
 
-      return Scaffold(
-        backgroundColor: bg,
-        appBar: AppBar(
-          backgroundColor: bg,
-          elevation: 0,
-          surfaceTintColor: Colors.transparent,
-          systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
-            statusBarBrightness: dark ? Brightness.dark : Brightness.light,
-          ),
-          centerTitle: GetPlatform.isAndroid ? false : true,
-          leading: IconButton(
-            icon: AppBackIcon(color: textColor),
-            onPressed: () => Get.back(),
-          ),
-          title: Text(
-            'Settings',
-            style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: textColor,
-              letterSpacing: -0.3,
+    return Scaffold(
+      backgroundColor: scaffoldBg,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // ── Premium Tactical Header ───────────────────────────────────────
+          SliverAppBar(
+            expandedHeight: 220,
+            pinned: true,
+            elevation: 0,
+            backgroundColor: scaffoldBg,
+            leading: IconButton(
+              icon: Icon(Remix.arrow_left_s_line, color: textColor),
+              onPressed: () => Get.back(),
             ),
-          ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Top Mesh Glow ──
-              Stack(
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              titlePadding: const EdgeInsets.only(bottom: 24),
+              title: Text(
+                "SYSTEM PARAMETERS",
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  letterSpacing: 4,
+                  color: textColor,
+                ),
+              ),
+              background: Stack(
+                fit: StackFit.expand,
                 children: [
+                  // Gradient Glow
                   Positioned(
-                    top: -40,
-                    right: -20,
+                    top: -50, right: -50,
                     child: Container(
-                      width: 150,
-                      height: 150,
+                      width: 250, height: 250,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            primary.withValues(alpha: 0.12),
-                            primary.withValues(alpha: 0),
-                          ],
-                        ),
+                        color: primaryColor.withValues(alpha: 0.1),
                       ),
+                      child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80), child: Container()),
                     ),
+                  ),
+                  
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
+                      ),
+                      child: Icon(Remix.shield_keyhole_fill, size: 60, color: primaryColor),
+                    ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(duration: const Duration(seconds: 2)),
+
                   ),
                 ],
               ),
-              // ── Section: Safety ────────────────────────────────────────────
-              _SectionLabel(label: 'Safety', color: subText),
-              _SettingsCard(
-                cardColor: cardColor,
-                dividerColor: divider,
-                dark: dark,
-                primaryColor: primary,
+            ),
+          ),
+
+          // ── Settings Body ────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _SettingsTile(
-                    icon: Icons.contacts_rounded,
-                    iconBg: primary.withValues(alpha: 0.12),
-                    iconColor: primary,
-                    title: 'Emergency Contacts',
-                    subtitle: 'Add or edit emergency contacts',
-                    trailing: Icon(Icons.chevron_right_rounded, color: subText),
-                    onTap: () => Get.toNamed(AppRoutes.contactList),
-                    textColor: textColor,
-                    subText: subText,
-                  ),
-                  Divider(color: divider, height: 1, indent: 58),
-                  Obx(
-                    () => _SettingsSwitchTile(
-                      icon: Icons.phone_in_talk_rounded,
-                      iconBg: const Color(0xFF00C783).withValues(alpha: 0.12),
-                      iconColor: const Color(0xFF00C783),
-                      title: 'Auto Call on SOS',
-                      subtitle: 'Automatically call when SOS is triggered',
+                  _buildSectionLabel("MISSION CONTROL", primaryColor, textColor),
+                  const SizedBox(height: 16),
+                  _buildTacticalSection(isDark, textColor, [
+                    _buildSettingsTile(
+                      icon: Remix.shield_user_fill,
+                      title: "Guardian Network",
+                      subtitle: "Manage emergency sentinels & priority logs",
+                      color: primaryColor,
+                      textColor: textColor,
+                      onTap: () => Get.toNamed(AppRoutes.contactList),
+                    ),
+                    _buildSwitchTile(
+                      icon: Remix.alarm_warning_fill,
+                      title: "Auto-Panic Protocol",
+                      subtitle: "Immediate emergency line activation on SOS",
                       value: controller.autoCallOnSos.value,
                       onChanged: controller.toggleAutoCall,
+                      color: Colors.greenAccent,
                       textColor: textColor,
-                      subText: subText,
-                      activeColor: primary,
+                      primaryColor: primaryColor,
                     ),
+                    _buildSettingsTile(
+                      icon: Remix.ghost_fill,
+                      title: "Fake Call Protocol",
+                      subtitle: "Deploy a diversionary rescue call",
+                      color: Colors.orangeAccent,
+                      textColor: textColor,
+                      onTap: () => Get.toNamed(AppRoutes.fakecall),
+                    ),
+                  ]),
+
+                  const SizedBox(height: 32),
+                  _buildSectionLabel("UNIT PREFERENCES", primaryColor, textColor),
+                  const SizedBox(height: 16),
+                  _buildTacticalSection(isDark, textColor, [
+                    _buildSettingsTile(
+                      icon: Remix.palette_fill,
+                      title: "Tactical Appearance",
+                      subtitle: "Current: Active Strategy Mode",
+                      color: primaryColor,
+                      textColor: textColor,
+                      onTap: () => Get.toNamed(AppRoutes.theme),
+                    ),
+                    _buildSettingsTile(
+                      icon: Remix.notification_badge_fill,
+                      title: "Alert Signalling",
+                      subtitle: "Configure haptic & visual alert channels",
+                      color: Colors.blueAccent,
+                      textColor: textColor,
+                      onTap: () => Get.toNamed(AppRoutes.pushnotification),
+                    ),
+                  ]),
+
+                  const SizedBox(height: 32),
+                  _buildSectionLabel("SUPPORT & INTEL", primaryColor, textColor),
+                  const SizedBox(height: 16),
+                  _buildTacticalSection(isDark, textColor, [
+                    _buildSettingsTile(
+                      icon: Remix.book_read_fill,
+                      title: "Mission Briefing",
+                      subtitle: "How to use tactical features",
+                      color: Colors.tealAccent,
+                      textColor: textColor,
+                      onTap: () {},
+                    ),
+                  ]),
+
+                  const SizedBox(height: 48),
+                  
+                  // ── RED LOGOUT BUTTON (As requested) ─────────────────────
+                  _buildPrimaryDangerButton(
+                    "DECOMMISSION ACCOUNT", 
+                    Remix.logout_box_r_fill, 
+                    () => _showLogoutDialog(context, criticalRed, isDark),
                   ),
+
+                  const SizedBox(height: 80),
+                  _buildAppVersion(textColor),
                 ],
+              ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.1),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionLabel(String text, Color primaryColor, Color textColor) {
+    return Row(
+      children: [
+        Container(width: 4, height: 14, decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.circular(2))),
+        const SizedBox(width: 12),
+        Text(
+          text,
+          style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w900, color: textColor.withValues(alpha: 0.38), letterSpacing: 2),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTacticalSection(bool isDark, Color textColor, List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF111111) : Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: textColor.withValues(alpha: 0.05)),
+        boxShadow: isDark ? null : [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))
+        ],
+      ),
+      child: Column(children: children),
+    );
+  }
+
+  Widget _buildSettingsTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(28),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: color, size: 22),
               ),
-
-              const SizedBox(height: 8),
-
-              // ── Section: Appearance ────────────────────────────────────────
-              _SectionLabel(label: 'Appearance', color: subText),
-              _SettingsCard(
-                cardColor: cardColor,
-                dividerColor: divider,
-                dark: dark,
-                primaryColor: primary,
-                children: [
-                  _SettingsTile(
-                    icon: Icons.dark_mode_rounded,
-                    iconBg: secondary.withValues(alpha: 0.15),
-                    iconColor: secondary,
-                    title: 'Theme Mode',
-                    subtitle: 'Light, Dark or System default',
-                    trailing: Icon(Icons.chevron_right_rounded, color: subText),
-                    onTap: () => Get.toNamed(AppRoutes.theme),
-                    textColor: textColor,
-                    subText: subText,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 8),
-
-              // ── Section: Notifications ─────────────────────────────────────
-              _SectionLabel(label: 'Notifications', color: subText),
-              _SettingsCard(
-                cardColor: cardColor,
-                dividerColor: divider,
-                dark: dark,
-                primaryColor: primary,
-                children: [
-                  _SettingsTile(
-                    icon: Icons.notifications_rounded,
-                    iconBg: const Color(0xFFFF9500).withValues(alpha: 0.12),
-                    iconColor: const Color(0xFFFF9500),
-                    title: 'Notification Settings',
-                    subtitle: 'Manage alert preferences',
-                    trailing: Icon(Icons.chevron_right_rounded, color: subText),
-                    onTap: () => Get.toNamed(AppRoutes.notification),
-                    textColor: textColor,
-                    subText: subText,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 8),
-
-              // ── Section: About ─────────────────────────────────────────────
-              _SectionLabel(label: 'About', color: subText),
-              _SettingsCard(
-                cardColor: cardColor,
-                dividerColor: divider,
-                dark: dark,
-                primaryColor: primary,
-                children: [
-                  _SettingsTile(
-                    icon: Icons.info_outline_rounded,
-                    iconBg: const Color(0xFF5AC8FA).withValues(alpha: 0.12),
-                    iconColor: const Color(0xFF5AC8FA),
-                    title: 'About Us',
-                    subtitle: 'Learn more about Secure Me',
-                    trailing: Icon(Icons.chevron_right_rounded, color: subText),
-                    onTap: () {},
-                    textColor: textColor,
-                    subText: subText,
-                  ),
-                  Divider(color: divider, height: 1, indent: 58),
-                  _SettingsTile(
-                    icon: Icons.help_outline_rounded,
-                    iconBg: const Color(0xFF30D158).withValues(alpha: 0.12),
-                    iconColor: const Color(0xFF30D158),
-                    title: 'Help & Support',
-                    subtitle: 'FAQs and contact support',
-                    trailing: Icon(Icons.chevron_right_rounded, color: subText),
-                    onTap: () {},
-                    textColor: textColor,
-                    subText: subText,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 32),
-
-              // ── App version ────────────────────────────────────────────────
-              Center(
+              const SizedBox(width: 20),
+              Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ShaderMask(
-                      shaderCallback: (b) => LinearGradient(
-                        colors: [primary, secondary],
-                      ).createShader(b),
-                      child: Text(
-                        'Secure Me',
-                        style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
                     Text(
-                      'Version 1.0.0',
-                      style: GoogleFonts.poppins(fontSize: 11, color: subText),
+                      title,
+                      style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
+                    ),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.outfit(fontSize: 12, color: textColor.withValues(alpha: 0.38)),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              Icon(Remix.arrow_right_s_line, size: 20, color: textColor.withValues(alpha: 0.1)),
             ],
           ),
         ),
-      );
-    });
+      ),
+    );
   }
-}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Helper Widgets
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _SectionLabel extends StatelessWidget {
-  final String label;
-  final Color color;
-  const _SectionLabel({required this.label, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSwitchTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    required Color color,
+    required Color textColor,
+    required Color primaryColor,
+  }) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 16, 0, 8),
-      child: Text(
-        label.toUpperCase(),
-        style: GoogleFonts.poppins(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w700,
-          color: color,
-          letterSpacing: 1.4,
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsCard extends StatelessWidget {
-  final Color cardColor;
-  final Color dividerColor;
-  final bool dark;
-  final Color primaryColor;
-  final List<Widget> children;
-
-  const _SettingsCard({
-    required this.cardColor,
-    required this.dividerColor,
-    required this.dark,
-    required this.primaryColor,
-    required this.children,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: primaryColor.withValues(alpha: dark ? 0.12 : 0.06),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: dark ? 0.4 : 0.05),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
-            spreadRadius: -5,
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(children: children),
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-  final Widget trailing;
-  final VoidCallback onTap;
-  final Color textColor;
-  final Color subText;
-
-  const _SettingsTile({
-    required this.icon,
-    required this.iconBg,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-    required this.trailing,
-    required this.onTap,
-    required this.textColor,
-    required this.subText,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-        child: Row(
-          children: [
-            // Icon badge
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: BorderRadius.circular(11),
-              ),
-              child: Icon(icon, color: iconColor, size: 19),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: textColor,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.poppins(fontSize: 11.5, color: subText),
-                  ),
-                ],
-              ),
-            ),
-            trailing,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsSwitchTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-  final Color textColor;
-  final Color subText;
-  final Color activeColor;
-
-  const _SettingsSwitchTile({
-    required this.icon,
-    required this.iconBg,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-    required this.value,
-    required this.onChanged,
-    required this.textColor,
-    required this.subText,
-    required this.activeColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: Row(
         children: [
           Container(
-            width: 38,
-            height: 38,
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(11),
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: iconColor, size: 19),
+            child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
+                  style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
                 ),
                 Text(
                   subtitle,
-                  style: GoogleFonts.poppins(fontSize: 11.5, color: subText),
+                  style: GoogleFonts.outfit(fontSize: 12, color: textColor.withValues(alpha: 0.38)),
                 ),
               ],
             ),
           ),
-          Switch(value: value, onChanged: onChanged, activeThumbColor: activeColor),
+          Obx(() => Switch(
+            value: controller.autoCallOnSos.value,
+            onChanged: (val) {
+              HapticFeedback.heavyImpact();
+              onChanged(val);
+            },
+            activeThumbColor: primaryColor,
+          )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrimaryDangerButton(String label, IconData icon, VoidCallback onTap) {
+    return Container(
+      width: double.infinity,
+      height: 64,
+      decoration: BoxDecoration(
+        color: Colors.redAccent.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.redAccent, size: 20),
+              const SizedBox(width: 14),
+              Text(
+                label,
+                style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.redAccent, letterSpacing: 1),
+              ),
+            ],
+          ),
+        ),
+      ).animate(onPlay: (c) => c.repeat()).shimmer(duration: const Duration(seconds: 3), color: Colors.redAccent.withValues(alpha: 0.15)),
+
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context, Color criticalColor, bool isDark) {
+    Get.dialog(
+      BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF111111) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32), 
+            side: BorderSide(color: isDark ? Colors.white10 : Colors.black12),
+          ),
+          title: Center(child: Icon(Remix.error_warning_fill, color: criticalColor, size: 48)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "DECOMMISSION UNIT?",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87, letterSpacing: 1),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                "You are about to terminate the current session. Your safety protocols will remain inactive until you rejoin.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(fontSize: 13, color: isDark ? Colors.white60 : Colors.black54, height: 1.5),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text("CANCEL", style: GoogleFonts.outfit(color: isDark ? Colors.white30 : Colors.black26, fontWeight: FontWeight.bold)),
+            ),
+            TextButton(
+              onPressed: () {
+                Get.offAllNamed(AppRoutes.login);
+              },
+              child: Text("DECOMMISSION", style: GoogleFonts.outfit(color: criticalColor, fontWeight: FontWeight.w900)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppVersion(Color textColor) {
+    return Center(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: textColor.withValues(alpha: 0.05))),
+            child: Icon(Remix.shield_flash_fill, color: textColor.withValues(alpha: 0.12)),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "SECURE ME OS",
+            style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 5, color: textColor.withValues(alpha: 0.12)),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "VERSION 4.2.0-STABLE",
+            style: GoogleFonts.outfit(fontSize: 8, fontWeight: FontWeight.bold, color: textColor.withValues(alpha: 0.05)),
+          ),
         ],
       ),
     );

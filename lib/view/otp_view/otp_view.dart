@@ -5,6 +5,7 @@ import 'package:pinput/pinput.dart';
 import 'package:secure_me/controller/otp_controller/otp_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/view/common/tactical_button.dart';
 import 'package:secure_me/core/components.dart';
 
 class OtpView extends StatelessWidget {
@@ -33,7 +34,7 @@ class OtpView extends StatelessWidget {
                   // Title
                   Text(
                     "Verification",
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.outfit(
                       fontSize: Get.width * 0.07,
                       fontWeight: FontWeight.bold,
                       color: isDark ? AppColors.darkText : AppColors.lightText,
@@ -43,7 +44,7 @@ class OtpView extends StatelessWidget {
 
                   Text(
                     "We sent a code to your ${controller.isPhone.value ? 'phone' : 'email'}",
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.outfit(
                       fontSize: Get.width * 0.045,
                       color: (isDark ? AppColors.darkText : AppColors.lightText)
                           .withValues(alpha: 0.7),
@@ -52,7 +53,7 @@ class OtpView extends StatelessWidget {
                   Obx(
                     () => Text(
                       controller.identifier.value,
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.outfit(
                         fontSize: Get.width * 0.045,
                         fontWeight: FontWeight.bold,
                         color: isDark
@@ -81,7 +82,7 @@ class OtpView extends StatelessWidget {
                       defaultPinTheme: PinTheme(
                         width: Get.width * 0.12,
                         height: Get.width * 0.12,
-                        textStyle: GoogleFonts.poppins(
+                        textStyle: GoogleFonts.outfit(
                           fontSize: Get.width * 0.06,
                           fontWeight: FontWeight.bold,
                           color: isDark
@@ -103,35 +104,11 @@ class OtpView extends StatelessWidget {
                   SizedBox(height: Get.height * 0.05),
 
                   // Continue Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: Get.height * 0.07,
-                    child: Obx(
-                      () => ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark
-                              ? AppColors.glowPurpleTopLeft
-                              : AppColors.lightPrimary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: controller.isLoading.value
-                            ? null
-                            : controller.verifyOtp,
-                        child: controller.isLoading.value
-                            ? const _DotsLoading()
-                            : Text(
-                                "Continue",
-                                style: GoogleFonts.poppins(
-                                  fontSize: Get.width * 0.05,
-                                  color: isDark
-                                      ? AppColors.darkText
-                                      : AppColors.lightText,
-                                ),
-                              ),
-                      ),
-                    ),
+                  TacticalButton(
+                    label: "Continue",
+                    onTap: controller.verifyOtp,
+                    isLoading: controller.isLoading.value,
+                    color: isDark ? AppColors.glowPurpleTopLeft : AppColors.lightPrimary,
                   ),
 
                   SizedBox(height: Get.height * 0.02),
@@ -143,7 +120,7 @@ class OtpView extends StatelessWidget {
                       children: [
                         Text(
                           "Didn’t receive the code ? ",
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.outfit(
                             fontSize: Get.width * 0.04,
                             color: isDark
                                 ? AppColors.darkText
@@ -154,7 +131,7 @@ class OtpView extends StatelessWidget {
                           onTap: controller.resendOtp,
                           child: Text(
                             "Send Again",
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.outfit(
                               fontSize: Get.width * 0.04,
                               fontWeight: FontWeight.bold,
                               color: isDark
@@ -184,7 +161,7 @@ class OtpView extends StatelessWidget {
                         SizedBox(width: 5),
                         Text(
                           "Back to log in",
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.outfit(
                             fontSize: Get.width * 0.04,
                             color: isDark
                                 ? AppColors.darkText

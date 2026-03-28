@@ -16,6 +16,7 @@ class PreferenceHelper {
   static const String _keyLastLoginTime = 'last_login_time';
   static const String _keySessionStartTime = 'session_start_time';
   static const String _keyCommunities = 'local_communities';
+  static const String _keyEmergencyPin = 'emergency_pin';
 
   // Save token
   static Future<void> saveToken(String token) async {
@@ -192,24 +193,15 @@ class PreferenceHelper {
     return prefs.getBool(_keyIsLoggedIn) ?? false;
   }
 
-  // Alias for getLoginStatus (for consistency)
+  // Alias for getLoginStatus
   static Future<bool> getLoginStatus() async {
     return isLoggedIn();
   }
 
-  // Clear all user data (logout)
+  // Clear all user data
   static Future<void> clearUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_keyToken);
-    await prefs.remove(_keyUserId);
-    await prefs.remove(_keyUserName);
-    await prefs.remove(_keyUserEmail);
-    await prefs.remove(_keyUserPhone);
-    await prefs.remove(_keyUserProfileImage);
-    await prefs.remove(_keyUserRole);
-    await prefs.remove(_keyUserCreatedAt);
-    await prefs.setBool(_keyIsLoggedIn, false);
-    await clearSession();
+    await prefs.clear();
     log(
       '🗑️ All user data cleared from SharedPreferences',
       name: 'PreferenceHelper',
@@ -227,44 +219,19 @@ class PreferenceHelper {
     String? userRole,
     String? userCreatedAt,
   }) async {
-    log('💾 saveUserData called with:', name: 'PreferenceHelper');
-    log('  - Token: ${token.substring(0, 10)}...', name: 'PreferenceHelper');
-    log('  - User ID: $userId', name: 'PreferenceHelper');
-    log('  - Name: $name', name: 'PreferenceHelper');
-    log('  - Email: $email', name: 'PreferenceHelper');
-    log('  - Phone: $phone', name: 'PreferenceHelper');
-    log('  - Profile Image: $profileImage', name: 'PreferenceHelper');
-    log('  - Role: $userRole', name: 'PreferenceHelper');
-    log('  - CreatedAt: $userCreatedAt', name: 'PreferenceHelper');
-
     await saveToken(token);
     await saveUserId(userId);
-    if (name != null && name.isNotEmpty) {
-      await saveUserName(name);
-    }
-    if (email != null && email.isNotEmpty) {
-      await saveUserEmail(email);
-    }
-    if (phone != null && phone.isNotEmpty) {
-      await saveUserPhone(phone);
-    }
-    if (profileImage != null && profileImage.isNotEmpty) {
-      await saveUserProfileImage(profileImage);
-    }
-    if (userRole != null && userRole.isNotEmpty) {
-      await saveUserRole(userRole);
-    }
-    if (userCreatedAt != null && userCreatedAt.isNotEmpty) {
-      await saveUserCreatedAt(userCreatedAt);
-    }
+    if (name != null) await saveUserName(name);
+    if (email != null) await saveUserEmail(email);
+    if (phone != null) await saveUserPhone(phone);
+    if (profileImage != null) await saveUserProfileImage(profileImage);
+    if (userRole != null) await saveUserRole(userRole);
+    if (userCreatedAt != null) await saveUserCreatedAt(userCreatedAt);
     await saveLoginStatus(true);
     await _createSession();
-    log('✅ All user data saved successfully', name: 'PreferenceHelper');
   }
 
-  // Session Management Methods
-
-  // Create a new session
+  // Session Management
   static Future<void> _createSession() async {
     final prefs = await SharedPreferences.getInstance();
     final sessionId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -273,109 +240,65 @@ class PreferenceHelper {
     await prefs.setString(_keySessionId, sessionId);
     await prefs.setString(_keyLastLoginTime, currentTime);
     await prefs.setString(_keySessionStartTime, currentTime);
-
-    log(
-      '🔐 New session created: $sessionId at $currentTime',
-      name: 'PreferenceHelper',
-    );
   }
 
-  // Get session ID
   static Future<String?> getSessionId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keySessionId);
   }
 
-  // Get last login time
   static Future<String?> getLastLoginTime() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyLastLoginTime);
   }
 
-  // Get session start time
   static Future<String?> getSessionStartTime() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keySessionStartTime);
   }
 
-  // Update last login time
   static Future<void> updateLastLoginTime() async {
     final prefs = await SharedPreferences.getInstance();
     final currentTime = DateTime.now().toIso8601String();
     await prefs.setString(_keyLastLoginTime, currentTime);
-    log('🕐 Last login time updated: $currentTime', name: 'PreferenceHelper');
   }
 
-  // Check if session is valid (within 30 days)
   static Future<bool> isSessionValid() async {
     final lastLoginTime = await getLastLoginTime();
     if (lastLoginTime == null) return false;
-
     try {
       final lastLogin = DateTime.parse(lastLoginTime);
       final now = DateTime.now();
-      final difference = now.difference(lastLogin).inDays;
-
-      final isValid = difference <= 30;
-      log(
-        '🔍 Session validation: ${isValid ? "Valid" : "Expired"} ($difference days old)',
-        name: 'PreferenceHelper',
-      );
-      return isValid;
+      return now.difference(lastLogin).inDays <= 30;
     } catch (e) {
-      log('❌ Error parsing session time: $e', name: 'PreferenceHelper');
       return false;
     }
   }
 
-  // Get session duration in minutes
-  static Future<int> getSessionDuration() async {
-    final sessionStartTime = await getSessionStartTime();
-    if (sessionStartTime == null) return 0;
-
-    try {
-      final startTime = DateTime.parse(sessionStartTime);
-      final now = DateTime.now();
-      final duration = now.difference(startTime).inMinutes;
-      return duration;
-    } catch (e) {
-      log('❌ Error calculating session duration: $e', name: 'PreferenceHelper');
-      return 0;
-    }
-  }
-
-  // Clear session data
-  static Future<void> clearSession() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_keySessionId);
-    await prefs.remove(_keyLastLoginTime);
-    await prefs.remove(_keySessionStartTime);
-    log('🗑️ Session data cleared', name: 'PreferenceHelper');
-  }
-
-  // ── Community local persistence ──────────────────────────────────────────────
-  /// Saves a list of communities as a JSON string list.
-  static Future<void> saveCommunities(
-    List<Map<String, dynamic>> communities,
-  ) async {
+  // Community persistence
+  static Future<void> saveCommunities(List<Map<String, dynamic>> communities) async {
     final prefs = await SharedPreferences.getInstance();
     final encoded = communities.map((c) => jsonEncode(c)).toList();
     await prefs.setStringList(_keyCommunities, encoded);
-    log(
-      '💾 Saved ${communities.length} communities locally',
-      name: 'PreferenceHelper',
-    );
   }
 
-  /// Loads the locally saved communities list.
   static Future<List<Map<String, dynamic>>> loadCommunities() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getStringList(_keyCommunities) ?? [];
-    final list = raw.map((s) => jsonDecode(s) as Map<String, dynamic>).toList();
-    log(
-      '📖 Loaded ${list.length} communities from local storage',
-      name: 'PreferenceHelper',
-    );
-    return list;
+    return raw.map((s) => jsonDecode(s) as Map<String, dynamic>).toList();
+  }
+
+  // Emergency PIN methods
+  static Future<void> saveEmergencyPin(String pin) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyEmergencyPin, pin);
+    log('✅ Emergency PIN saved: $pin', name: 'PreferenceHelper');
+  }
+
+  static Future<String> getEmergencyPin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final pin = prefs.getString(_keyEmergencyPin) ?? "1234";
+    log('📖 Emergency PIN retrieved: $pin', name: 'PreferenceHelper');
+    return pin;
   }
 }

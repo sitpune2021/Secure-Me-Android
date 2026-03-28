@@ -1,141 +1,115 @@
 import 'package:flutter/material.dart';
-import 'package:secure_me/theme/app_color.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // ------------------ Light Theme ------------------
-  static final ThemeData light = ThemeData(
-    brightness: Brightness.light,
-    scaffoldBackgroundColor: AppColors.lightBackground,
-    primaryColor: AppColors.lightPrimary,
-    colorScheme: const ColorScheme.light(
-      primary: AppColors.lightPrimary,
-      secondary: AppColors.lightSecondary,
-      surface: AppColors.lightBackground,
-      onSurface: AppColors.lightText,
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.lightBackground,
-      elevation: 0,
-      iconTheme: IconThemeData(color: AppColors.lightText),
-      titleTextStyle: TextStyle(
-        color: AppColors.lightText,
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
+  // Brand Colors
+  static const primaryRed = Color(0xFFEB4335);
+  static const primaryPink = Color(0xFFFF2D78);
+  static const primaryGreen = Color(0xFF34A853);
+  static const primaryBlue = Color(0xFF4285F4);
+  static const primaryOrange = Color(0xFFFBBC05);
+  static const glassBackground = Color(0x1AFFFFFF);
+
+  // Surface Colors for Modes
+  static const lightBackground = Colors.white;
+  static const darkBackground = Color(0xFF0F0F14);
+  static const lightCard = Colors.white;
+  static const darkCard = Color(0xFF1A1A22);
+
+  static ThemeData getThemeForRole(String role, {bool isDark = false}) {
+    Color primaryColor;
+    switch (role) {
+      case 'Gym_Person':
+      case 'gymperson':
+      case 'gym_person':
+        primaryColor = primaryGreen;
+        break;
+      case 'police':
+        primaryColor = primaryBlue;
+        break;
+      case 'Manager':
+      case 'manager':
+      case 'user':
+        primaryColor = primaryPink;
+        break;
+      default:
+        primaryColor = primaryPink;
+    }
+
+    final brightness = isDark ? Brightness.dark : Brightness.light;
+    final scaffoldBg = isDark ? darkBackground : lightBackground;
+    final cardBg = isDark ? darkCard : lightCard;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final hintColor = isDark ? Colors.white38 : Colors.black38;
+    final dividerColor = isDark ? Colors.white10 : Colors.black12;
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: brightness,
+      scaffoldBackgroundColor: scaffoldBg,
+      primaryColor: primaryColor,
+      cardColor: cardBg,
+      dividerColor: dividerColor,
+      colorScheme: ColorScheme(
+        brightness: brightness,
+        primary: primaryColor,
+        onPrimary: Colors.white,
+        secondary: primaryColor.withValues(alpha: 0.8),
+        onSecondary: Colors.white,
+        error: Colors.redAccent,
+        onError: Colors.white,
+        surface: scaffoldBg,
+        onSurface: textColor,
+        surfaceContainerHighest: cardBg,
+        onSurfaceVariant: hintColor,
       ),
-    ),
-    iconTheme: const IconThemeData(color: AppColors.lightText),
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: AppColors.lightText),
-      bodyMedium: TextStyle(color: AppColors.lightText),
-    ),
-    dividerColor: AppColors.lightDivider,
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.lightBackground,
-      selectedItemColor: AppColors.lightPrimary,
-      unselectedItemColor: AppColors.lightUnselected,
-      showUnselectedLabels: true,
-    ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.lightPrimary,
-      foregroundColor: Colors.white,
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: Colors.black.withValues(alpha: 0.05),
-      hintStyle: const TextStyle(color: AppColors.lightHint),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(30)),
-        borderSide: BorderSide.none,
+      textTheme: GoogleFonts.outfitTextTheme(
+        (isDark ? ThemeData.dark() : ThemeData.light()).textTheme,
       ),
-    ),
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: AppColors.lightSecondary,
-      contentTextStyle: const TextStyle(color: Colors.white),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-    ),
-  );
-
-  // ------------------ Dark Theme ------------------
-  static final ThemeData dark = ThemeData(
-    brightness: Brightness.dark,
-
-    /// Instead of plain color, we will use gradient at screen level
-    scaffoldBackgroundColor: Colors.transparent,
-
-    primaryColor: AppColors.darkPrimary,
-    colorScheme: const ColorScheme.dark(
-      primary: AppColors.darkPrimary,
-      secondary: AppColors.darkSecondary,
-      surface: AppColors.darkBackground,
-      onSurface: AppColors.darkText,
-    ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.transparent, // let gradient show
-      elevation: 0,
-      iconTheme: IconThemeData(color: AppColors.darkText),
-      titleTextStyle: TextStyle(
-        color: AppColors.darkText,
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
+      appBarTheme: AppBarTheme(
+        backgroundColor: scaffoldBg,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: textColor),
+        titleTextStyle: GoogleFonts.outfit(
+          color: textColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-    ),
-    iconTheme: const IconThemeData(color: AppColors.darkText),
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: AppColors.darkText),
-      bodyMedium: TextStyle(color: AppColors.darkHint),
-    ),
-    dividerColor: AppColors.darkDivider,
-
-    /// Bottom navigation styled like screenshot
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Colors.transparent, // gradient container will handle
-      selectedItemColor: AppColors.lightPrimary,
-      unselectedItemColor: AppColors.darkUnselected,
-      showUnselectedLabels: true,
-    ),
-
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.lightPrimary,
-      foregroundColor: Colors.white,
-    ),
-
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.08),
-      hintStyle: const TextStyle(color: AppColors.darkHint),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(30)),
-        borderSide: BorderSide.none,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.outfit(fontWeight: FontWeight.w700),
+        ),
       ),
-    ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+        hintStyle: GoogleFonts.outfit(color: hintColor),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: primaryColor, width: 2),
+        ),
+      ),
+    );
+  }
 
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: AppColors.darkSecondary,
-      contentTextStyle: const TextStyle(color: Colors.white),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-    ),
-  );
+  // Pre-built themes (backward compatibility)
+  static ThemeData lightTheme = getThemeForRole('manager');
+  static ThemeData darkTheme = getThemeForRole('manager', isDark: true);
 
-  // ------------------ SCREEN-SPECIFIC HELPERS ------------------
-  // Login Screen
-  static Color loginButtonBackground(bool isDark) =>
-      isDark ? AppColors.glowPurpleTopLeft : AppColors.lightPrimary;
-
-  static Color loginTextColor(bool isDark) =>
-      isDark ? AppColors.darkText : AppColors.lightText;
-
-  static Color loginHintTextColor(bool isDark) =>
-      isDark ? AppColors.darkHint : AppColors.lightHint;
-
-  static Color loginTextFieldBg(bool isDark) =>
-      isDark ? AppColors.darkSearchBg : AppColors.lightSearchBg;
-
-  // Register Screen
-  static Color registerAvatarGlow(bool isDark) =>
-      isDark ? AppColors.darkRadialGlow : Colors.transparent;
-
-  static Gradient registerAvatarGlowGradient(bool isDark) =>
-      isDark ? AppColors.darkGlowGradient : AppColors.lightGlowGradient;
+  static ThemeData get light => lightTheme;
+  static ThemeData get dark => darkTheme;
 }

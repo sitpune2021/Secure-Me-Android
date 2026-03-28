@@ -15,8 +15,9 @@ class LocationModel extends Equatable {
   List<Object?> get props => [latitude, longitude, address];
 }
 
-enum SignalStatus { pending, sent, active, resolved }
-enum SignalStage { stage1, stage2 }
+enum SignalStatus { inactive, pending, accepted, inProgress, resolved }
+
+enum SignalStage { stage1, stage2, stage3 }
 
 class EmergencySignalModel extends Equatable {
   final String id;
@@ -26,6 +27,8 @@ class EmergencySignalModel extends Equatable {
   final SignalStatus status;
   final SignalStage stage;
   final List<String> responderIds;
+  final double radius;
+  final String? chatGroupId;
 
   const EmergencySignalModel({
     required this.id,
@@ -35,8 +38,31 @@ class EmergencySignalModel extends Equatable {
     required this.status,
     required this.stage,
     required this.responderIds,
+    this.radius = 50.0,
+    this.chatGroupId,
   });
 
   @override
-  List<Object?> get props => [id, victimId, location, timestamp, status, stage, responderIds];
+  List<Object?> get props => [id, victimId, location, timestamp, status, stage, responderIds, radius, chatGroupId];
+
+  EmergencySignalModel copyWith({
+    SignalStatus? status,
+    SignalStage? stage,
+    double? radius,
+    List<String>? responderIds,
+    String? chatGroupId,
+  }) {
+    return EmergencySignalModel(
+      id: id,
+      victimId: victimId,
+      location: location,
+      timestamp: timestamp,
+      status: status ?? this.status,
+      stage: stage ?? this.stage,
+      responderIds: responderIds ?? this.responderIds,
+      radius: radius ?? this.radius,
+      chatGroupId: chatGroupId ?? this.chatGroupId,
+    );
+  }
 }
+

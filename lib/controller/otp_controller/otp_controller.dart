@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:secure_me/const/app_url.dart';
-import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/theme/app_color.dart';
+import 'package:secure_me/main.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/model/user_model.dart';
+import 'package:secure_me/utils/error_helper.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
 
 class OtpController extends GetxController {
   var otp = "".obs;
@@ -38,7 +38,7 @@ class OtpController extends GetxController {
 
   Future<void> verifyOtp() async {
     if (otp.value.length < 6) {
-      Get.snackbar("Error", "Please enter 6 digit OTP", backgroundColor: Colors.red, colorText: Colors.white);
+      AppSnackbar.show(title: "Error", message: "Please enter 6 digit OTP", isError: true);
       return;
     }
 
@@ -127,16 +127,23 @@ class OtpController extends GetxController {
               email: user['email'],
               phone: user['phone_no'] ?? user['phone'],
               profileImage: user['profile_image'],
-              userRole: user['role'] ?? 'user',
+              userRole: user['user_role'] ?? user['role'] ?? 'user',
             );
 
              // Update AuthController state
              if (Get.isRegistered<AuthController>()) {
                 final auth = Get.find<AuthController>();
-                UserRole role = UserRole.user;
-                final roleStr = user['role'] ?? 'user';
-                if (roleStr == 'helper') role = UserRole.helper;
-                if (roleStr == 'police') role = UserRole.police;
+                 final roleStr = (user['user_role'] ?? user['role'])?.toString() ?? 'Manager';
+                 final normalizedRole = roleStr.toLowerCase();
+                 UserRole role;
+                 
+                 if (normalizedRole.contains('gym')) {
+                   role = UserRole.Gym_Person;
+                 } else if (normalizedRole.contains('police')) {
+                   role = UserRole.police;
+                 } else {
+                   role = UserRole.Manager;
+                 }
 
                 auth.user.value = UserModel(
                   id: user['id']?.toString() ?? '',
@@ -144,6 +151,7 @@ class OtpController extends GetxController {
                   email: user['email'] ?? '',
                   phone: (user['phone_no'] ?? user['phone']) ?? '',
                   role: role,
+                  roleString: roleStr,
                   profileImage: user['profile_image'],
                 );
              }
@@ -166,25 +174,23 @@ class OtpController extends GetxController {
             }
           }
 
-          Get.snackbar(
-            "Success",
-            data['message'] ?? "OTP verified successfully",
-            backgroundColor: AppColors.lightPrimary,
-            colorText: Colors.white,
+          AppSnackbar.show(
+            title: "Success",
+            message: data['message'] ?? "OTP verified successfully",
+            isSuccess: true,
           );
 
-          dev.log('🚀 Navigating to home screen', name: 'OtpController');
-          Get.offAllNamed(AppRoutes.homeView);
+          dev.log('🚀 Navigating via AppRouter', name: 'OtpController');
+          Get.offAll(() => AppRouter());
         } else {
           dev.log(
             '❌ OTP verification failed: ${data['message']}',
             name: 'OtpController',
           );
-          Get.snackbar(
-            "Error",
-            data['message'] ?? "Invalid OTP",
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
+          AppSnackbar.show(
+            title: "Error",
+            message: data['message'] ?? "Invalid OTP",
+            isError: true,
           );
         }
       } else if (response.statusCode == 401) {
@@ -192,44 +198,39 @@ class OtpController extends GetxController {
           '❌ Unauthorized: Invalid or expired OTP',
           name: 'OtpController',
         );
-        Get.snackbar(
-          "Error",
-          "Invalid or expired OTP",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        AppSnackbar.show(
+          title: "Error",
+          message: "Invalid or expired OTP",
+          isError: true,
         );
       } else {
         dev.log(
           '❌ Verification failed with status: ${response.statusCode}',
           name: 'OtpController',
         );
-        Get.snackbar(
-          "Error",
-          data['message'] ??
-              "Verification failed with status ${response.statusCode}",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        AppSnackbar.show(
+          title: ErrorHelper.getErrorTitle(response.statusCode),
+          message: ErrorHelper.getFriendlyMessage(response),
+          isError: true,
         );
       }
     } catch (e) {
       isLoading.value = false;
       dev.log("❌ Verify OTP Error: $e", name: 'OtpController');
-      Get.snackbar(
-        "Error",
-        "Network error. Please check your connection and try again.",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.show(
+        title: "Error",
+        message: "Network error. Please check your connection and try again.",
+        isError: true,
       );
     }
   }
 
   Future<void> resendOtp() async {
     if (identifier.value.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "${isPhone.value ? 'Phone' : 'Email'} not found",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.show(
+        title: "Error",
+        message: "${isPhone.value ? 'Phone' : 'Email'} not found",
+        isError: true,
       );
       return;
     }
@@ -267,22 +268,20 @@ class OtpController extends GetxController {
             name: 'OtpController',
           );
 
-          Get.snackbar(
-            "Success",
-            data['message'] ?? "OTP sent successfully",
-            backgroundColor: AppColors.lightPrimary,
-            colorText: Colors.white,
+          AppSnackbar.show(
+            title: "Success",
+            message: data['message'] ?? "OTP sent successfully",
+            isSuccess: true,
           );
         } else {
           dev.log(
             '❌ Failed to resend OTP: ${data['message']}',
             name: 'OtpController',
           );
-          Get.snackbar(
-            "Error",
-            data['message'] ?? "Failed to resend OTP",
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
+          AppSnackbar.show(
+            title: "Error",
+            message: data['message'] ?? "Failed to resend OTP",
+            isError: true,
           );
         }
       } else {
@@ -290,22 +289,19 @@ class OtpController extends GetxController {
           '❌ Resend OTP failed with status: ${response.statusCode}',
           name: 'OtpController',
         );
-        Get.snackbar(
-          "Error",
-          data['message'] ??
-              "Failed to resend OTP with status ${response.statusCode}",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        AppSnackbar.show(
+          title: ErrorHelper.getErrorTitle(response.statusCode),
+          message: ErrorHelper.getFriendlyMessage(response),
+          isError: true,
         );
       }
     } catch (e) {
       isLoading.value = false;
       dev.log("❌ Resend OTP Error: $e", name: 'OtpController');
-      Get.snackbar(
-        "Error",
-        "Network error. Please check your connection and try again.",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      AppSnackbar.show(
+        title: "Error",
+        message: "Network error. Please check your connection and try again.",
+        isError: true,
       );
     }
   }
