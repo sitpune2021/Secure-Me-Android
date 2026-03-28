@@ -145,7 +145,7 @@ class RegisterController extends GetxController {
               if (normalizedRole.contains('gym')) {
                 role = UserRole.Gym_Person;
               } else if (normalizedRole.contains('police')) {
-                role = UserRole.police;
+                role = UserRole.Police;
               } else {
                 role = UserRole.Manager;
               }

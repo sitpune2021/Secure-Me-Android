@@ -5,6 +5,7 @@ import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/community_safety_controller.dart';
 import 'package:secure_me/controller/incident_controller.dart';
 import 'package:secure_me/controller/auth_controller.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 
 class UserDashboard extends StatelessWidget {
   const UserDashboard({super.key});
@@ -67,6 +68,16 @@ class UserDashboard extends StatelessWidget {
         ),
       ),
       actions: [
+        Obx(() {
+          final isDark = Get.find<ThemeController>().isDarkMode.value;
+          return IconButton(
+            onPressed: () => Get.find<ThemeController>().setThemeMode(!isDark),
+            icon: Icon(
+              isDark ? Remix.sun_fill : Remix.moon_fill, 
+              color: isDark ? Colors.amber : Colors.indigo,
+            ),
+          );
+        }),
         IconButton(
           onPressed: () => Get.find<AuthController>().logout(), 
           icon: const Icon(Remix.logout_box_r_line, color: Colors.redAccent)

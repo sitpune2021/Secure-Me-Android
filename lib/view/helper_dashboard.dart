@@ -6,6 +6,7 @@ import 'package:remixicon/remixicon.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:secure_me/controller/helper_controller/helper_controller.dart';
 import 'package:secure_me/controller/auth_controller.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/view/helper_dashboard/helper_alert_view.dart';
 import 'package:secure_me/view/helper_dashboard/helper_active_view.dart';
@@ -700,6 +701,15 @@ class HelperProfileSector extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildSettingsToggle(
                     context, 
+                    Remix.moon_clear_fill, 
+                    "Dark Appearance", 
+                    "Sleek tactical interface", 
+                    Get.find<ThemeController>().isDarkMode.value, 
+                    Colors.deepPurple,
+                    onChanged: (v) => Get.find<ThemeController>().setThemeMode(v),
+                  ),
+                  _buildSettingsToggle(
+                    context, 
                     Remix.notification_4_fill, 
                     "Crisis Alerts", 
                     "Priority emergency notifications", 
@@ -851,7 +861,7 @@ class HelperProfileSector extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingsToggle(BuildContext context, IconData icon, String title, String subtitle, bool value, Color color) {
+  Widget _buildSettingsToggle(BuildContext context, IconData icon, String title, String subtitle, bool value, Color color, {Function(bool)? onChanged}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -877,7 +887,12 @@ class HelperProfileSector extends StatelessWidget {
               ],
             ),
           ),
-          Switch.adaptive(value: value, onChanged: (v) {}, activeThumbColor: color),
+          Switch.adaptive(
+            value: value, 
+            onChanged: onChanged ?? (v) {}, 
+            activeThumbColor: color,
+            activeTrackColor: color.withValues(alpha: 0.3),
+          ),
         ],
       ),
     );

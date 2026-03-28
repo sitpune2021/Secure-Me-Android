@@ -255,8 +255,8 @@ class _LoginScreenState extends State<LoginScreen> {
             
             String getRoleDisplayName(UserRole role) {
               switch (role) {
-                case UserRole.police:
-                  return "police";
+                case UserRole.Police:
+                  return "Police";
                 case UserRole.Manager:
                   return "Manager";
                 case UserRole.Gym_Person:

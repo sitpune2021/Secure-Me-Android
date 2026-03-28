@@ -7,6 +7,7 @@ import 'package:secure_me/controller/auth_controller.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:secure_me/theme/app_theme.dart';
+import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/view/police/police_dashboard/active_case_view.dart';
 
 class PoliceDashboard extends StatefulWidget {
@@ -544,6 +545,14 @@ class _PoliceDashboardState extends State<PoliceDashboard> {
           
           // Tactical Settings
           _buildSettingsHeader(context, 'COMMAND PREFERENCES'),
+          const SizedBox(height: 12),
+          _buildTacticalToggle(
+            label: 'DARK APPEARANCE',
+            subLabel: 'Switch to tactical night vision',
+            value: Get.find<ThemeController>().isDarkMode.value,
+            onChanged: (v) => Get.find<ThemeController>().setThemeMode(v),
+            primaryColor: primaryColor,
+          ),
           const SizedBox(height: 12),
           _buildTacticalToggle(
             label: 'AVAILABILITY STATUS',

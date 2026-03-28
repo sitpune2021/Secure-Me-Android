@@ -96,7 +96,7 @@ class AppRouter extends StatelessWidget {
               return const HomeView();
             case UserRole.Gym_Person:
               return const HelperDashboard();
-            case UserRole.police:
+            case UserRole.Police:
               return const PoliceDashboard();
           }
        }

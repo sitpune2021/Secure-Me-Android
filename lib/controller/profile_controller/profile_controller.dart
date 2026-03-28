@@ -115,7 +115,7 @@ class ProfileController extends GetxController {
           if (rawRole != null) {
             final norm = rawRole.toLowerCase();
             if (norm.contains('gym')) roleEnum = UserRole.Gym_Person;
-            else if (norm.contains('police')) roleEnum = UserRole.police;
+            else if (norm.contains('police')) roleEnum = UserRole.Police;
           }
 
           auth.updateUserData(

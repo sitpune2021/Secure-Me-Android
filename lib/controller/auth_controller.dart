@@ -59,7 +59,7 @@ class AuthController extends GetxController {
         if (normalizedRole.contains('gym')) {
           role = UserRole.Gym_Person;
         } else if (normalizedRole.contains('police')) {
-          role = UserRole.police;
+          role = UserRole.Police;
         } else {
           role = UserRole.Manager;
         }
@@ -78,10 +78,6 @@ class AuthController extends GetxController {
 
   void setUser(UserModel? newUser) {
     user.value = newUser;
-    if (newUser != null) {
-      // Sync theme when user is set (e.g., after login or session load)
-      Get.changeTheme(AppTheme.getThemeForRole(newUser.roleString));
-    }
   }
 
   void updateUserData({
@@ -101,9 +97,6 @@ class AuthController extends GetxController {
         roleString: roleString,
         role: role,
       );
-      if (roleString != null) {
-        Get.changeTheme(AppTheme.getThemeForRole(roleString));
-      }
     }
   }
 
