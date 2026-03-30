@@ -11,6 +11,7 @@ import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/location_controller.dart';
 import 'package:secure_me/view/common/tactical_button.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -453,6 +454,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _handleRegister() {
     final pos = _locationController.currentPosition.value;
+    
+    if (_passwordController.text.trim() != _confirmPasswordController.text.trim()) {
+      AppSnackbar.show(
+        title: "Password Mismatch",
+        message: "Passwords do not match. Please try again.",
+        isError: true,
+      );
+      return;
+    }
     
     _registerController.registerUser(
       name: _nameController.text.trim(),

@@ -12,6 +12,7 @@ import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/theme/app_theme.dart';
 import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/utils/validator.dart';
 import 'package:secure_me/view/common/tactical_button.dart';
 import 'package:secure_me/view/common/app_snackbar.dart';
 
@@ -325,7 +326,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                               icon: Remix.user_line,
                               controller: _nameController,
                               hint: "Enter your full name",
-                              validator: (v) => v?.isEmpty == true ? "Required" : null,
+                              validator: Validator.validateName,
                               primary: primary,
                               txt: txt,
                               subTxt: subTxt,
@@ -337,7 +338,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                               controller: _phoneController,
                               hint: "10-digit mobile number",
                               keyboardType: TextInputType.phone,
-                              validator: (v) => v?.length != 10 ? "Invalid number" : null,
+                              validator: Validator.validatePhone,
                               primary: primary,
                               txt: txt,
                               subTxt: subTxt,
@@ -349,7 +350,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                               controller: _emailController,
                               hint: "Enter your email address",
                               keyboardType: TextInputType.emailAddress,
-                              validator: (v) => v?.contains('@') == false ? "Invalid email" : null,
+                              validator: Validator.validateEmail,
                               primary: primary,
                               txt: txt,
                               subTxt: subTxt,

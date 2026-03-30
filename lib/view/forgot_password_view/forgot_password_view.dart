@@ -7,7 +7,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/view/common/tactical_button.dart';
-import 'package:secure_me/view/common/app_snackbar.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
@@ -247,14 +246,6 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   void _handleReset() {
     final email = _emailController.text.trim();
-    if (email.isEmpty || !GetUtils.isEmail(email)) {
-      AppSnackbar.show(
-        title: "Invalid Email", 
-        message: "Please enter a valid email address",
-        isError: true,
-      );
-      return;
-    }
     _authController.forgotPassword(email);
   }
 }

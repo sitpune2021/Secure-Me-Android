@@ -6,6 +6,7 @@ import 'package:secure_me/theme/app_theme.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:secure_me/utils/validator.dart';
 
 class AuthController extends GetxController {
   final Rx<UserModel?> user = Rx<UserModel?>(null);
@@ -101,6 +102,20 @@ class AuthController extends GetxController {
   }
 
   void forgotPassword(String email) async {
+    final emailError = Validator.validateEmail(email);
+    if (emailError != null) {
+      Get.snackbar(
+        "Invalid Email",
+        emailError,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+      return;
+    }
+
     isLoading.value = true;
     // Mock Forgot Password delay
     await Future.delayed(const Duration(seconds: 1));

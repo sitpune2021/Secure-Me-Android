@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/model/community_model.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/utils/validator.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
 
 class CommunityController extends GetxController {
   var communities = <CommunityModel>[].obs;
@@ -51,6 +52,16 @@ class CommunityController extends GetxController {
 
   // ── Create community ────────────────────────────────────────────────────────
   Future<void> createCommunity(String communityName) async {
+    final nameError = Validator.validateName(communityName);
+    if (nameError != null) {
+      AppSnackbar.show(
+        title: "Validation Error",
+        message: nameError,
+        isError: true,
+      );
+      return;
+    }
+
     isCreating.value = true;
     dev.log(
       'Creating community: $communityName...',
@@ -153,15 +164,10 @@ class CommunityController extends GetxController {
             '⚠️ Could not extract community id. Full body: ${response.body}',
             name: 'CommunityController',
           );
-          Get.snackbar(
-            "⚠️ Community Created",
-            "Community was created but could not retrieve its ID. "
-                "Please delete it and re-create.",
-            backgroundColor: Colors.orange,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 5),
-            margin: const EdgeInsets.all(16),
+          AppSnackbar.show(
+            title: "⚠️ Community Created",
+            message: "Community was created but could not retrieve its ID. Please delete it and re-create.",
+            isWarning: true,
           );
           isCreating.value = false;
           return;
@@ -187,35 +193,25 @@ class CommunityController extends GetxController {
           name: 'CommunityController',
         );
 
-        Get.snackbar(
-          "✅ Community Created",
-          data['message'] ??
-              "Community \"${newCommunity.name}\" created successfully.",
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
+        AppSnackbar.show(
+          title: "✅ Community Created",
+          message: data['message'] ?? "Community \"${newCommunity.name}\" created successfully.",
+          isError: false,
         );
       } else {
         final msg = data['message'] ?? "Failed to create community";
-        Get.snackbar(
-          "Error",
-          msg,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
+        AppSnackbar.show(
+          title: "Error",
+          message: msg,
+          isError: true,
         );
       }
     } catch (e) {
       dev.log('❌ Error creating community: $e', name: 'CommunityController');
-      Get.snackbar(
-        "Network Error",
-        "Error connecting to server",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
+      AppSnackbar.show(
+        title: "Network Error",
+        message: "Error connecting to server",
+        isError: true,
       );
     } finally {
       isCreating.value = false;
@@ -241,6 +237,18 @@ class CommunityController extends GetxController {
     required String phoneNo,
     required String communityId,
   }) async {
+    final nameError = Validator.validateName(name);
+    final phoneError = Validator.validatePhone(phoneNo);
+
+    if (nameError != null || phoneError != null) {
+      AppSnackbar.show(
+        title: "Validation Error",
+        message: nameError ?? phoneError!,
+        isError: true,
+      );
+      return;
+    }
+
     isAddingContact.value = true;
     dev.log(
       '📤 Sending add-contact: community_id=$communityId  name=$name  phone=$phoneNo',
@@ -257,15 +265,10 @@ class CommunityController extends GetxController {
     if (isFakeId) {
       isAddingContact.value = false;
       Get.back(); // close the sheet
-      Get.snackbar(
-        "⚠️ Invalid Community",
-        "This community was saved with a temporary ID. "
-            "Please swipe left to delete it, then re-create it.",
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 5),
-        margin: const EdgeInsets.all(16),
+      AppSnackbar.show(
+        title: "⚠️ Invalid Community",
+        message: "This community was saved with a temporary ID. Please swipe left to delete it, then re-create it.",
+        isWarning: true,
       );
       return;
     }
@@ -341,14 +344,10 @@ class CommunityController extends GetxController {
         }
 
         Get.back(); // Close bottom sheet
-        Get.snackbar(
-          "✅ Contact Added",
-          data['message'] ?? "Contact added to community successfully.",
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 14,
+        AppSnackbar.show(
+          title: "✅ Contact Added",
+          message: data['message'] ?? "Contact added to community successfully.",
+          isError: false,
         );
       } else {
         final msg = data['message'] ?? "Failed to add contact.";
@@ -356,19 +355,12 @@ class CommunityController extends GetxController {
         final isInvalidId =
             msg.toLowerCase().contains('community id is invalid') ||
             msg.toLowerCase().contains('invalid');
-        Get.snackbar(
-          "Error",
-          isInvalidId
-              ? "Community ID not recognised by server. "
-                    "Swipe left to delete this community and re-create it."
+        AppSnackbar.show(
+          title: "Error",
+          message: isInvalidId
+              ? "Community ID not recognised by server. Swipe left to delete this community and re-create it."
               : msg,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: isInvalidId
-              ? const Duration(seconds: 5)
-              : const Duration(seconds: 3),
-          margin: const EdgeInsets.all(16),
+          isError: true,
         );
       }
     } catch (e) {
@@ -376,13 +368,10 @@ class CommunityController extends GetxController {
         '❌ Error adding community contact: $e',
         name: 'CommunityController',
       );
-      Get.snackbar(
-        "Network Error",
-        "Error connecting to server. Please try again.",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
+      AppSnackbar.show(
+        title: "Network Error",
+        message: "Error connecting to server. Please try again.",
+        isError: true,
       );
     } finally {
       isAddingContact.value = false;

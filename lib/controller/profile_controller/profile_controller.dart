@@ -9,6 +9,7 @@ import 'package:secure_me/utils/preference_helper.dart';
 import 'package:secure_me/view/common/app_snackbar.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/model/user_model.dart';
+import 'package:secure_me/utils/validator.dart';
 
 class ProfileController extends GetxController {
   var isLoading = false.obs;
@@ -191,6 +192,19 @@ class ProfileController extends GetxController {
     required String phone,
     File? image,
   }) async {
+    final nameError = Validator.validateName(name);
+    final emailError = Validator.validateEmail(email);
+    final phoneError = Validator.validatePhone(phone);
+
+    if (nameError != null || emailError != null || phoneError != null) {
+      AppSnackbar.show(
+        title: "Validation Error",
+        message: nameError ?? emailError ?? phoneError!,
+        isError: true,
+      );
+      return false;
+    }
+
     isLoading.value = true;
     dev.log('🔄 Updating user profile...', name: 'ProfileController');
 

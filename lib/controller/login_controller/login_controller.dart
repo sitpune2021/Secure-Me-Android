@@ -10,6 +10,7 @@ import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 import 'package:secure_me/utils/error_helper.dart';
 import 'package:secure_me/view/common/app_snackbar.dart';
+import 'package:secure_me/utils/validator.dart';
 
 class LoginController extends GetxController {
   var mobileNumber = ''.obs;
@@ -28,10 +29,13 @@ class LoginController extends GetxController {
   }
 
   Future<void> _loginWithEmail() async {
-    if (email.value.trim().isEmpty || password.value.trim().isEmpty) {
+    final emailError = Validator.validateEmail(email.value);
+    final passwordError = Validator.validatePassword(password.value);
+
+    if (emailError != null || passwordError != null) {
       AppSnackbar.show(
         title: "Input Required",
-        message: "Please enter email and password",
+        message: emailError ?? passwordError!,
         isError: true,
       );
       return;
@@ -273,10 +277,11 @@ class LoginController extends GetxController {
   }
 
   Future<void> _loginWithMobile() async {
-    if (email.value.trim().isEmpty || !email.value.contains('@')) {
+    final emailError = Validator.validateEmail(email.value);
+    if (emailError != null) {
       AppSnackbar.show(
         title: "Invalid Email",
-        message: "Please enter a valid email address",
+        message: emailError,
         isError: true,
       );
       return;

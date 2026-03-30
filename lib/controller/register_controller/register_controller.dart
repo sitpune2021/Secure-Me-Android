@@ -12,6 +12,7 @@ import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/utils/preference_helper.dart';
 import 'package:secure_me/utils/error_helper.dart';
+import 'package:secure_me/utils/validator.dart';
 
 class RegisterController extends GetxController {
   var isLoading = false.obs;
@@ -49,6 +50,22 @@ class RegisterController extends GetxController {
     double? longitude,
   }) async {
     isLoading.value = true;
+
+    final nameError = Validator.validateName(name);
+    final emailError = Validator.validateEmail(email);
+    final phoneError = Validator.validatePhone(phone);
+    final passwordError = Validator.validatePassword(password);
+
+    if (nameError != null || emailError != null || phoneError != null || passwordError != null) {
+      isLoading.value = false;
+      AppSnackbar.show(
+        title: "Validation Error",
+        message: nameError ?? emailError ?? phoneError ?? passwordError!,
+        isError: true,
+      );
+      return;
+    }
+
     try {
       dev.log(
         "🚀 Starting Registration for: $email",

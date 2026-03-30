@@ -7,6 +7,8 @@ import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/controller/contact_controller/contact_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/utils/validator.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
 
 class AddContactController extends GetxController {
   var isLoading = false.obs;
@@ -35,6 +37,20 @@ class AddContactController extends GetxController {
     int priority = 1,
     bool isNotifyOnSos = true,
   }) async {
+    final nameError = Validator.validateName(name);
+    final phoneError = Validator.validatePhone(phoneNo);
+    // Email may be optional for contacts, but if provided, validate it.
+    final emailError = (email.isNotEmpty) ? Validator.validateEmail(email) : null;
+
+    if (nameError != null || phoneError != null || emailError != null) {
+      AppSnackbar.show(
+        title: "Validation Error",
+        message: nameError ?? phoneError ?? emailError!,
+        isError: true,
+      );
+      return;
+    }
+
     isLoading.value = true;
     try {
       if (_token == null || _token!.isEmpty) {

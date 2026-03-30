@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/add_contact_controller/add_contact_controller.dart';
+import 'package:secure_me/utils/validator.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -108,7 +109,7 @@ class _AddContactViewState extends State<AddContactView> {
                   controller: _firstnameController,
                   label: "First Name",
                   icon: Remix.user_line,
-                  validator: (v) => v!.isEmpty ? "Required" : null,
+                  validator: Validator.validateName,
                 ),
                 const SizedBox(height: 16),
                 _buildModernField(
@@ -123,7 +124,7 @@ class _AddContactViewState extends State<AddContactView> {
                   icon: Remix.phone_line,
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(10)],
-                  validator: (v) => (v?.length ?? 0) < 10 ? "Enter valid 10-digit number" : null,
+                  validator: Validator.validatePhone,
                 ),
                 const SizedBox(height: 16),
                 _buildModernField(
@@ -131,7 +132,7 @@ class _AddContactViewState extends State<AddContactView> {
                   label: "Email Address",
                   icon: Remix.mail_line,
                   keyboardType: TextInputType.emailAddress,
-                  validator: (v) => (v != null && v.isNotEmpty && !GetUtils.isEmail(v)) ? "Invalid email" : null,
+                  validator: (v) => (v == null || v.trim().isEmpty) ? null : Validator.validateEmail(v),
                 ),
                 
                 const SizedBox(height: 32),

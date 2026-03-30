@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/community_controller/community_controller.dart';
 import 'package:secure_me/model/community_model.dart';
+import 'package:secure_me/utils/validator.dart';
 import 'package:remixicon/remixicon.dart';
 
 class CommunityView extends StatelessWidget {
@@ -73,7 +74,7 @@ class CommunityView extends StatelessWidget {
                 controller: nameCtrl,
                 label: "Full Name",
                 icon: Remix.user_line,
-                validator: (v) => (v == null || v.trim().isEmpty) ? "Name is required" : null,
+                validator: Validator.validateName,
               ),
               const SizedBox(height: 20),
               // Phone Field
@@ -87,11 +88,7 @@ class CommunityView extends StatelessWidget {
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(10),
                 ],
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return "Phone is required";
-                  if (v.length < 10) return "Enter valid 10-digit number";
-                  return null;
-                },
+                validator: Validator.validatePhone,
               ),
               const SizedBox(height: 32),
               // Submit Button
@@ -197,7 +194,7 @@ class CommunityView extends StatelessWidget {
                 label: "Community Name",
                 icon: Remix.group_line,
                 autofocus: true,
-                validator: (v) => (v == null || v.trim().isEmpty) ? "Community name is required" : null,
+                validator: Validator.validateName,
               ),
               const SizedBox(height: 32),
               Obx(
