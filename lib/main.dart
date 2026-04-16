@@ -55,6 +55,25 @@ class SecureMeApp extends StatelessWidget {
       // Use Obx only for the values that actually change
       theme: Get.find<ThemeController>().currentTheme.value,
       themeMode: Get.find<ThemeController>().isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
+      // Make font size smaller and responsive across the whole app
+      builder: (context, child) {
+        final mediaQueryData = MediaQuery.of(context);
+        final screenWidth = mediaQueryData.size.width;
+        // Calculate responsive scale based on a standard mobile width (e.g., 390px)
+        double responsiveScale = screenWidth / 390.0;
+        // Clamp it to prevent overly giant or minuscule text on extreme screen sizes
+        responsiveScale = responsiveScale.clamp(0.8, 1.2);
+        // Apply a base reduction to make the overall font size smaller
+        double smallFactor = 0.85;
+        double finalScale = responsiveScale * smallFactor;
+
+        return MediaQuery(
+          data: mediaQueryData.copyWith(
+            textScaler: TextScaler.linear(finalScale),
+          ),
+          child: child!,
+        );
+      },
       // home: AppRouter(), // We will use a wrapper that ensures controllers are found
       home: const AppRouterWrapper(),
       getPages: AppPages.pages,

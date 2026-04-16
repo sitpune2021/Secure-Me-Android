@@ -24,6 +24,7 @@ class AppTheme {
       case 'gym_person':
         primaryColor = primaryGreen;
         break;
+      case 'Police':
       case 'police':
         primaryColor = primaryBlue;
         break;
@@ -67,7 +68,8 @@ class AppTheme {
         (isDark ? ThemeData.dark() : ThemeData.light()).textTheme,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: scaffoldBg,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         iconTheme: IconThemeData(color: textColor),

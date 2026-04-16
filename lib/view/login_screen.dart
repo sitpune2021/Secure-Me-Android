@@ -35,10 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
         final subTextColor = isDark ? Colors.white70 : const Color(0xFF7D7D7D);
 
         return CustomScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
-              expandedHeight: 220,
+              expandedHeight: 160,
               pinned: true,
               stretch: true,
               elevation: 0,
@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   Text(
                     'WELCOME BACK',
                     style: GoogleFonts.outfit(
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ).animate().fadeIn(delay: const Duration(milliseconds: 300)).slideX(begin: -0.1),
                   
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   
                   Text(
                     'Access your tactical safety network',
@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ).animate().fadeIn(delay: const Duration(milliseconds: 400)),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 24),
                   
                   // Role Selection Label
                   Text(
@@ -147,12 +147,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   
                   // Roles Grid
                   _buildRoleSelector(roleColor, isDark),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   
                   // Input Fields
                   _buildInputField(
@@ -165,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onChanged: (val) => _loginController.email.value = val,
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   
                   _buildInputField(
                     label: 'PASSWORD',
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onChanged: (val) => _loginController.password.value = val,
                   ),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 24),
                   
                   // Log In Button
                   TacticalButton(
@@ -190,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: roleColor,
                   ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 24),
                   
                   // Footer
                   Center(
@@ -221,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 24),
                   
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -232,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ).animate().fadeIn(delay: const Duration(milliseconds: 600)),
                   
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 24),
                 ]),
               ),
             ),
@@ -243,65 +243,73 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildRoleSelector(Color roleColor, bool isDark) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = (constraints.maxWidth - 12) / 2;
-        return Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: UserRole.values.map((role) {
-            final isSelected = _loginController.selectedRole.value == role;
-            final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
-            
-            String getRoleDisplayName(UserRole role) {
-              switch (role) {
-                case UserRole.Police:
-                  return "Police";
-                case UserRole.Manager:
-                  return "Manager";
-                case UserRole.Gym_Person:
-                  return "Gym_Person";
-              }
-            }
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: UserRole.values.map((role) {
+        final isSelected = _loginController.selectedRole.value == role;
+        final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
+        
+        String getRoleDisplayName(UserRole role) {
+          switch (role) {
+            case UserRole.Police:
+              return "Police";
+            case UserRole.Manager:
+              return "Manager";
+            case UserRole.Gym_Person:
+              return "Gym";
+          }
+        }
 
-            return GestureDetector(
-              onTap: () => _loginController.selectedRole.value = role,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: width,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: isSelected ? thisColor.withValues(alpha: 0.12) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03)),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isSelected ? thisColor : (isDark ? Colors.white10 : Colors.black12),
-                    width: isSelected ? 2 : 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      isSelected ? Remix.checkbox_circle_fill : Remix.checkbox_blank_circle_line, 
-                      size: 18, 
-                      color: isSelected ? thisColor : (isDark ? Colors.white24 : Colors.black26)
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      getRoleDisplayName(role),
-                      style: GoogleFonts.outfit(
-                        fontSize: 15,
-                        fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                        color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45),
-                      ),
-                    ),
-                  ],
+        IconData getRoleIcon(UserRole role) {
+          switch (role) {
+            case UserRole.Police:
+              return Remix.shield_star_fill;
+            case UserRole.Manager:
+              return Remix.briefcase_4_fill;
+            case UserRole.Gym_Person:
+              return Remix.user_smile_fill;
+          }
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(right: 0),
+          child: GestureDetector(
+            onTap: () => _loginController.selectedRole.value = role,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isSelected ? thisColor.withValues(alpha: 0.12) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03)),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: isSelected ? thisColor : (isDark ? Colors.white10 : Colors.black12),
+                  width: isSelected ? 1.5 : 1,
                 ),
               ),
-            );
-          }).toList(),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    getRoleIcon(role), 
+                    size: 16, 
+                    color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45)
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    getRoleDisplayName(role),
+                    style: GoogleFonts.outfit(
+                      fontSize: 13,
+                      fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                      color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
-      }
+      }).toList(),
     );
   }
 
@@ -365,7 +373,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
             color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
@@ -406,7 +414,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: BorderRadius.circular(18),
                 borderSide: BorderSide(color: color, width: 2),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),
           ),
         ),

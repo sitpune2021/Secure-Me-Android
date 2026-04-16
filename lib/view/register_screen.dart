@@ -49,7 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
-              expandedHeight: 200,
+              expandedHeight: 140,
               pinned: true,
               stretch: true,
               elevation: 0,
@@ -119,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   Text(
                     'CREATE ACCOUNT',
                     style: GoogleFonts.outfit(
@@ -130,7 +130,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ).animate().fadeIn(delay: const Duration(milliseconds: 300)).slideX(begin: -0.1),
                   
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   
                   Text(
                     'Join the tactical safety network',
@@ -140,7 +140,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ).animate().fadeIn(delay: const Duration(milliseconds: 400)),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
                   
                   // Profile Image Picker
                   Center(
@@ -195,9 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ).animate().fadeIn(delay: const Duration(milliseconds: 500)).scale(),
                   ),
 
-                  const SizedBox(height: 40),
-                  
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 16),
                   
                   // Role Selection Label
                   Text(
@@ -210,12 +208,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   
                   // Roles Grid
                   _buildRoleSelector(roleColor, isDark),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
                   
                   // Input Fields
                   _buildInputField(
@@ -227,7 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: roleColor,
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   _buildInputField(
                     label: 'EMAIL ADDRESS',
@@ -238,7 +236,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: roleColor,
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   _buildInputField(
                     label: 'PHONE NUMBER',
@@ -249,7 +247,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: roleColor,
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   _buildInputField(
                     label: 'PASSWORD',
@@ -263,7 +261,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: roleColor,
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   _buildInputField(
                     label: 'CONFIRM PASSWORD',
@@ -277,7 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: roleColor,
                   ),
                   
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 24),
                   
                   // Create Account Button
                   TacticalButton(
@@ -288,7 +286,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: roleColor,
                   ),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 24),
                   
                   // Footer
                   Center(
@@ -319,7 +317,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 24),
                 ]),
               ),
             ),
@@ -330,54 +328,70 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildRoleSelector(Color roleColor, bool isDark) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = (constraints.maxWidth - 12) / 2;
-        return Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: UserRole.values.map((role) {
-            final isSelected = _authController.selectedRole.value == role;
-            final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
-            
-            return GestureDetector(
-              onTap: () => _authController.setSelectedRole(role),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: width,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: isSelected ? thisColor.withValues(alpha: 0.12) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03)),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isSelected ? thisColor : (isDark ? Colors.white10 : Colors.black12),
-                    width: isSelected ? 2 : 1,
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: UserRole.values.map((role) {
+        final isSelected = _authController.selectedRole.value == role;
+        final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
+        
+        String getRoleDisplayName(UserRole role) {
+          switch (role) {
+            case UserRole.Police:
+              return "Police";
+            case UserRole.Manager:
+              return "Manager";
+            case UserRole.Gym_Person:
+              return "Gym";
+          }
+        }
+
+        IconData getRoleIcon(UserRole role) {
+          switch (role) {
+            case UserRole.Police:
+              return Remix.shield_star_fill;
+            case UserRole.Manager:
+              return Remix.briefcase_4_fill;
+            case UserRole.Gym_Person:
+              return Remix.user_smile_fill;
+          }
+        }
+
+        return GestureDetector(
+          onTap: () => _authController.setSelectedRole(role),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: isSelected ? thisColor.withValues(alpha: 0.12) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03)),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isSelected ? thisColor : (isDark ? Colors.white10 : Colors.black12),
+                width: isSelected ? 1.5 : 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  getRoleIcon(role), 
+                  size: 16, 
+                  color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45)
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  getRoleDisplayName(role),
+                  style: GoogleFonts.outfit(
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                    color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45),
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      isSelected ? Remix.checkbox_circle_fill : Remix.checkbox_blank_circle_line, 
-                      size: 18, 
-                      color: isSelected ? thisColor : (isDark ? Colors.white24 : Colors.black26)
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      role.name,
-                      style: GoogleFonts.outfit(
-                        fontSize: 15,
-                        fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                        color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+              ],
+            ),
+          ),
         );
-      }
+      }).toList(),
     );
   }
 
@@ -404,7 +418,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             color: isDark ? Colors.white38 : Colors.black38,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
             color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
@@ -444,7 +458,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 borderRadius: BorderRadius.circular(18),
                 borderSide: BorderSide(color: color, width: 2),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),
           ),
         ),
