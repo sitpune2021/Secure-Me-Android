@@ -218,23 +218,24 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           ),
           child: TextField(
             controller: controller,
+            cursorColor: color,
             style: GoogleFonts.outfit(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : const Color(0xFF1E1E1E),
+              color: isDark ? Colors.white : color.withValues(alpha: 0.9),
             ),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: GoogleFonts.outfit(
-                color: isDark ? Colors.white24 : Colors.black26,
+                color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.2),
                 fontWeight: FontWeight.w500,
               ),
-              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.6), size: 20),
+              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.5), size: 20),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: color, width: 2),
+                borderSide: BorderSide(color: color.withValues(alpha: 0.8), width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             ),

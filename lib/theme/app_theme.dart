@@ -19,6 +19,10 @@ class AppTheme {
   static ThemeData getThemeForRole(String role, {bool isDark = false}) {
     Color primaryColor;
     switch (role) {
+      case 'None':
+      case 'none':
+        primaryColor = Colors.grey;
+        break;
       case 'Gym_Person':
       case 'gymperson':
       case 'gym_person':

@@ -18,7 +18,7 @@ class LoginController extends GetxController {
   var password = ''.obs;
   var isEmailLogin = true.obs;
   var isLoading = false.obs;
-  var selectedRole = UserRole.Manager.obs;
+  var selectedRole = UserRole.None.obs;
 
   Future<void> login() async {
     if (isEmailLogin.value) {

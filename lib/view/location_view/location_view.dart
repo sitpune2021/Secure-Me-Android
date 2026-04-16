@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:secure_me/view_model/location_view_model.dart';
+import 'package:get/get.dart'; // Keeping Get for navigation if needed, but reducing its footprint
 
-class LocationView extends StatelessWidget {
-  LocationView({super.key});
-
-  final RxBool autoCallLocation = false.obs;
+class LocationView extends ConsumerWidget {
+  const LocationView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isBackgroundTrackingEnabled = ref.watch(locationViewModelProvider);
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
@@ -54,11 +56,12 @@ class LocationView extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildPremiumSwitchCard(
                     context,
+                    ref,
                     "Background Tracking",
                     "Ensure sentinel connectivity always",
                     Remix.radar_fill,
                     Colors.blue,
-                    autoCallLocation,
+                    isBackgroundTrackingEnabled,
                   ),
                   const SizedBox(height: 32),
                   Text(
@@ -97,11 +100,12 @@ class LocationView extends StatelessWidget {
 
   Widget _buildPremiumSwitchCard(
     BuildContext context,
+    WidgetRef ref,
     String title,
     String subtitle,
     IconData icon,
     Color color,
-    RxBool value,
+    bool value,
   ) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -127,11 +131,11 @@ class LocationView extends StatelessWidget {
               ],
             ),
           ),
-          Obx(() => Switch(
-                value: value.value,
-                onChanged: (v) => value.value = v,
-                activeThumbColor: Theme.of(context).primaryColor,
-              )),
+          Switch(
+            value: value,
+            onChanged: (v) => ref.read(locationViewModelProvider.notifier).toggleBackgroundTracking(v),
+            activeThumbColor: Theme.of(context).primaryColor,
+          ),
         ],
       ),
     ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1);

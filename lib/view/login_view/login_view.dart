@@ -153,175 +153,198 @@ class _LoginViewState extends State<LoginView> {
                   
                   const SizedBox(height: 32),
 
-                  // Method Switcher
-                  Container(
-                    height: 54,
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: isDark ? Colors.white10 : Colors.black12,
-                        width: 1,
+                  // Mode/Input visibility conditional
+                  if (controller.selectedRole.value != UserRole.None) ...[
+                    // Method Switcher
+                    Container(
+                      height: 54,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: isDark ? Colors.white10 : Colors.black12,
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _buildToggleBtn(
+                              "Email Login",
+                              controller.isEmailLogin.value,
+                              roleColor,
+                              () => controller.isEmailLogin.value = true,
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildToggleBtn(
+                              "OTP Login",
+                              !controller.isEmailLogin.value,
+                              roleColor,
+                              () => controller.isEmailLogin.value = false,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
+
+                    const SizedBox(height: 32),
+
+                    // Input Fields
+                    if (controller.isEmailLogin.value) ...[
+                      _buildField(
+                        controller: emailController,
+                        hint: "Email Address",
+                        icon: Remix.mail_fill,
+                        color: roleColor,
+                        isDark: isDark,
+                        onChanged: (v) => controller.email.value = v,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildField(
+                        controller: passwordController,
+                        hint: "Password",
+                        icon: Remix.lock_2_fill,
+                        color: roleColor,
+                        isDark: isDark,
+                        obscure: obscurePassword,
+                        onChanged: (v) => controller.password.value = v,
+                        suffix: IconButton(
+                          icon: Icon(
+                            obscurePassword ? Remix.eye_off_line : Remix.eye_line,
+                            color: subTextColor.withValues(alpha: 0.5),
+                            size: 20,
+                          ),
+                          onPressed: () => setState(() => obscurePassword = !obscurePassword),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
+                          child: Text(
+                            "Forgot Password?",
+                            style: GoogleFonts.outfit(
+                              color: roleColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      _buildField(
+                        controller: emailController,
+                        hint: "Email ID for OTP",
+                        icon: Remix.mail_send_fill,
+                        color: roleColor,
+                        isDark: isDark,
+                        onChanged: (v) => controller.email.value = v,
+                      ),
+                    ],
+
+                    const SizedBox(height: 40),
+
+                    // Tactical Login Button
+                    ElevatedButton(
+                      onPressed: controller.isLoading.value ? null : () => controller.login(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: roleColor,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        elevation: 10,
+                        shadowColor: roleColor.withValues(alpha: 0.4),
+                      ),
+                      child: controller.isLoading.value 
+                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                controller.isEmailLogin.value ? 'INITIATE LOGIN' : 'RECOVERY ACCESS',
+                                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                              ),
+                              const SizedBox(width: 12),
+                              const Icon(Remix.arrow_right_line, size: 20),
+                            ],
+                          ),
+                    ),
+
+                    const SizedBox(height: 48),
+
+                    // Divider with premium OR
+                    Row(
                       children: [
-                        Expanded(
-                          child: _buildToggleBtn(
-                            "Email Login",
-                            controller.isEmailLogin.value,
-                            roleColor,
-                            () => controller.isEmailLogin.value = true,
+                        Expanded(child: Divider(color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05))),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            'CONTINUE WITH',
+                            style: GoogleFonts.outfit(
+                              fontSize: 10,
+                              color: subTextColor.withValues(alpha: 0.4),
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2,
+                            ),
                           ),
                         ),
-                        Expanded(
-                          child: _buildToggleBtn(
-                            "OTP Login",
-                            !controller.isEmailLogin.value,
-                            roleColor,
-                            () => controller.isEmailLogin.value = false,
-                          ),
-                        ),
+                        Expanded(child: Divider(color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05))),
                       ],
                     ),
-                  ),
 
-                  const SizedBox(height: 32),
+                    const SizedBox(height: 48),
 
-                  // Input Fields - Replacing IndexedStack with simple conditional build to avoid hit test errors
-                  if (controller.isEmailLogin.value) ...[
-                    _buildField(
-                      controller: emailController,
-                      hint: "Email Address",
-                      icon: Remix.mail_fill,
-                      color: roleColor,
-                      isDark: isDark,
-                      onChanged: (v) => controller.email.value = v,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildField(
-                      controller: passwordController,
-                      hint: "Password",
-                      icon: Remix.lock_2_fill,
-                      color: roleColor,
-                      isDark: isDark,
-                      obscure: obscurePassword,
-                      onChanged: (v) => controller.password.value = v,
-                      suffix: IconButton(
-                        icon: Icon(
-                          obscurePassword ? Remix.eye_off_line : Remix.eye_line,
-                          color: subTextColor.withValues(alpha: 0.5),
-                          size: 20,
-                        ),
-                        onPressed: () => setState(() => obscurePassword = !obscurePassword),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
-                        child: Text(
-                          "Forgot Password?",
-                          style: GoogleFonts.outfit(
-                            color: roleColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
+                    // Social / Register Link
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.registerView),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                          ),
+                          child: RichText(
+                            text: TextSpan(
+                              text: "NEW MEMBER? ",
+                              style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
+                              children: [
+                                TextSpan(
+                                  text: "CREATE ACCOUNT",
+                                  style: GoogleFonts.outfit(
+                                    color: roleColor,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ] else ...[
-                    _buildField(
-                      controller: emailController,
-                      hint: "Email ID for OTP",
-                      icon: Remix.mail_send_fill,
-                      color: roleColor,
-                      isDark: isDark,
-                      onChanged: (v) => controller.email.value = v,
+                    const SizedBox(height: 60),
+                    Center(
+                      child: Column(
+                        children: [
+                          Icon(Remix.shield_user_line, size: 48, color: subTextColor.withValues(alpha: 0.2)),
+                          const SizedBox(height: 16),
+                          Text(
+                            "PLEASE SELECT YOUR ROLE TO PROCEED",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.outfit(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2,
+                              color: subTextColor.withValues(alpha: 0.3),
+                            ),
+                          ),
+                        ],
+                      ).animate().fadeIn().scale(begin: const Offset(0.9, 0.9)),
                     ),
                   ],
-
-                  const SizedBox(height: 40),
-
-                  // Tactical Login Button
-                  ElevatedButton(
-                    onPressed: controller.isLoading.value ? null : () => controller.login(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: roleColor,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      elevation: 10,
-                      shadowColor: roleColor.withValues(alpha: 0.4),
-                    ),
-                    child: controller.isLoading.value 
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              controller.isEmailLogin.value ? 'INITIATE LOGIN' : 'RECOVERY ACCESS',
-                              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.5),
-                            ),
-                            const SizedBox(width: 12),
-                            const Icon(Remix.arrow_right_line, size: 20),
-                          ],
-                        ),
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // Divider with premium OR
-                  Row(
-                    children: [
-                      Expanded(child: Divider(color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05))),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'CONTINUE WITH',
-                          style: GoogleFonts.outfit(
-                            fontSize: 10,
-                            color: subTextColor.withValues(alpha: 0.4),
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                      ),
-                      Expanded(child: Divider(color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05))),
-                    ],
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // Social / Register Link
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => Get.toNamed(AppRoutes.registerView),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: roleColor.withValues(alpha: 0.3)),
-                        ),
-                        child: RichText(
-                          text: TextSpan(
-                            text: "NEW MEMBER? ",
-                            style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
-                            children: [
-                              TextSpan(
-                                text: "CREATE ACCOUNT",
-                                style: GoogleFonts.outfit(
-                                  color: roleColor,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 60),
                 ]),
               ),
@@ -336,7 +359,7 @@ class _LoginViewState extends State<LoginView> {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: UserRole.values.map((role) {
+      children: UserRole.values.where((role) => role != UserRole.None).map((role) {
         final isSelected = controller.selectedRole.value == role;
         final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
         
@@ -433,21 +456,25 @@ class _LoginViewState extends State<LoginView> {
             controller: controller,
             obscureText: obscure,
             onChanged: onChanged,
+            cursorColor: color,
             style: GoogleFonts.outfit(
               fontSize: 16,
-              color: isDark ? Colors.white : const Color(0xFF1E1E1E),
+              color: isDark ? Colors.white : color.withValues(alpha: 0.9), // Keep white in dark mode for readability, or use lightened role color? Actually, user said change as per role.
               fontWeight: FontWeight.w600,
             ),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.outfit(color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.3), fontWeight: FontWeight.w500),
-              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.6), size: 22),
+              hintStyle: GoogleFonts.outfit(
+                color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.2), 
+                fontWeight: FontWeight.w500
+              ),
+              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.5), size: 22),
               suffixIcon: suffix,
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(color: color, width: 2),
+                borderSide: BorderSide(color: color.withValues(alpha: 0.8), width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             ),

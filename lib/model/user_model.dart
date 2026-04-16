@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum UserRole { Police, Manager, Gym_Person }
+enum UserRole { None, Police, Manager, Gym_Person }
 
 class UserModel extends Equatable {
   final String id;

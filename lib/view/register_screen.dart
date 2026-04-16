@@ -215,107 +215,130 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   
                   const SizedBox(height: 16),
                   
-                  // Input Fields
-                  _buildInputField(
-                    label: 'FULL NAME',
-                    hintText: 'Johnathan Doe',
-                    controller: _nameController,
-                    icon: Remix.user_3_fill,
-                    isDark: isDark,
-                    color: roleColor,
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  _buildInputField(
-                    label: 'EMAIL ADDRESS',
-                    hintText: 'name@example.com',
-                    controller: _emailController,
-                    icon: Remix.mail_fill,
-                    isDark: isDark,
-                    color: roleColor,
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  _buildInputField(
-                    label: 'PHONE NUMBER',
-                    hintText: '9823306798',
-                    controller: _phoneController,
-                    icon: Remix.phone_fill,
-                    isDark: isDark,
-                    color: roleColor,
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  _buildInputField(
-                    label: 'PASSWORD',
-                    hintText: '••••••••',
-                    controller: _passwordController,
-                    icon: Remix.lock_fill,
-                    isPassword: true,
-                    isPassObscured: _obscurePassword,
-                    onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
-                    isDark: isDark,
-                    color: roleColor,
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  _buildInputField(
-                    label: 'CONFIRM PASSWORD',
-                    hintText: '••••••••',
-                    controller: _confirmPasswordController,
-                    icon: Remix.shield_check_fill,
-                    isPassword: true,
-                    isPassObscured: _obscureConfirmPassword,
-                    onToggleObscure: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                    isDark: isDark,
-                    color: roleColor,
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Create Account Button
-                  TacticalButton(
-                    label: 'DEPLOY ACCOUNT',
-                    onTap: _handleRegister,
-                    icon: Remix.arrow_right_line,
-                    isLoading: _registerController.isLoading.value,
-                    color: roleColor,
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Footer
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: roleColor.withValues(alpha: 0.3)),
-                        ),
-                        child: RichText(
-                          text: TextSpan(
-                            text: "ALREADY A MEMBER? ",
-                            style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
-                            children: [
-                              TextSpan(
-                                text: "LOG IN",
-                                style: GoogleFonts.outfit(
-                                  color: roleColor,
-                                  fontWeight: FontWeight.w900,
+                  // Visibility conditional for fields
+                  if (_authController.selectedRole.value != UserRole.None) ...[
+                    // Input Fields
+                    _buildInputField(
+                      label: 'FULL NAME',
+                      hintText: 'Johnathan Doe',
+                      controller: _nameController,
+                      icon: Remix.user_3_fill,
+                      isDark: isDark,
+                      color: roleColor,
+                    ),
+                    
+                    const SizedBox(height: 12),
+                    
+                    _buildInputField(
+                      label: 'EMAIL ADDRESS',
+                      hintText: 'name@example.com',
+                      controller: _emailController,
+                      icon: Remix.mail_fill,
+                      isDark: isDark,
+                      color: roleColor,
+                    ),
+                    
+                    const SizedBox(height: 12),
+                    
+                    _buildInputField(
+                      label: 'PHONE NUMBER',
+                      hintText: '9823306798',
+                      controller: _phoneController,
+                      icon: Remix.phone_fill,
+                      isDark: isDark,
+                      color: roleColor,
+                    ),
+                    
+                    const SizedBox(height: 12),
+                    
+                    _buildInputField(
+                      label: 'PASSWORD',
+                      hintText: '••••••••',
+                      controller: _passwordController,
+                      icon: Remix.lock_fill,
+                      isPassword: true,
+                      isPassObscured: _obscurePassword,
+                      onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
+                      isDark: isDark,
+                      color: roleColor,
+                    ),
+                    
+                    const SizedBox(height: 12),
+                    
+                    _buildInputField(
+                      label: 'CONFIRM PASSWORD',
+                      hintText: '••••••••',
+                      controller: _confirmPasswordController,
+                      icon: Remix.shield_check_fill,
+                      isPassword: true,
+                      isPassObscured: _obscureConfirmPassword,
+                      onToggleObscure: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                      isDark: isDark,
+                      color: roleColor,
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Create Account Button
+                    TacticalButton(
+                      label: 'DEPLOY ACCOUNT',
+                      onTap: _handleRegister,
+                      icon: Remix.arrow_right_line,
+                      isLoading: _registerController.isLoading.value,
+                      color: roleColor,
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Footer
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                          ),
+                          child: RichText(
+                            text: TextSpan(
+                              text: "ALREADY A MEMBER? ",
+                              style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
+                              children: [
+                                TextSpan(
+                                  text: "LOG IN",
+                                  style: GoogleFonts.outfit(
+                                    color: roleColor,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ] else ...[
+                    const SizedBox(height: 60),
+                    Center(
+                      child: Column(
+                        children: [
+                          Icon(Remix.user_location_line, size: 48, color: subTextColor.withValues(alpha: 0.2)),
+                          const SizedBox(height: 16),
+                          Text(
+                            "CHOOSE YOUR OPERATIVE ROLE",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.outfit(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2,
+                              color: subTextColor.withValues(alpha: 0.3),
+                            ),
+                          ),
+                        ],
+                      ).animate().fadeIn().scale(begin: const Offset(0.9, 0.9)),
+                    ),
+                  ],
                   
                   const SizedBox(height: 24),
                 ]),
@@ -331,7 +354,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: UserRole.values.map((role) {
+      children: UserRole.values.where((role) => role != UserRole.None).map((role) {
         final isSelected = _authController.selectedRole.value == role;
         final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
         
@@ -343,6 +366,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               return "Manager";
             case UserRole.Gym_Person:
               return "Gym";
+            case UserRole.None:
+              return "None";
           }
         }
 
@@ -354,6 +379,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               return Remix.briefcase_4_fill;
             case UserRole.Gym_Person:
               return Remix.user_smile_fill;
+            case UserRole.None:
+              return Remix.question_line;
           }
         }
 
@@ -430,18 +457,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: TextField(
             controller: controller,
             obscureText: isPassword && isPassObscured,
+            cursorColor: color,
             style: GoogleFonts.outfit(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : const Color(0xFF1E1E1E),
+              color: isDark ? Colors.white : color.withValues(alpha: 0.9),
             ),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: GoogleFonts.outfit(
-                color: isDark ? Colors.white24 : Colors.black26,
+                color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.2),
                 fontWeight: FontWeight.w500,
               ),
-              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.6), size: 20),
+              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.5), size: 20),
               suffixIcon: isPassword 
                 ? IconButton(
                     icon: Icon(
@@ -456,7 +484,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               enabledBorder: InputBorder.none,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: color, width: 2),
+                borderSide: BorderSide(color: color.withValues(alpha: 0.8), width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),

@@ -154,72 +154,95 @@ class _LoginScreenState extends State<LoginScreen> {
                   
                   const SizedBox(height: 20),
                   
-                  // Input Fields
-                  _buildInputField(
-                    label: 'EMAIL ADDRESS',
-                    hintText: 'name@example.com',
-                    controller: _emailController,
-                    icon: Remix.mail_fill,
-                    isDark: isDark,
-                    color: roleColor,
-                    onChanged: (val) => _loginController.email.value = val,
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  _buildInputField(
-                    label: 'PASSWORD',
-                    hintText: '••••••••',
-                    controller: _passwordController,
-                    icon: Remix.lock_fill,
-                    isPassword: true,
-                    isDark: isDark,
-                    color: roleColor,
-                    showForgotPassword: true,
-                    onChanged: (val) => _loginController.password.value = val,
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Log In Button
-                  TacticalButton(
-                    label: 'INITIATE LOGIN',
-                    onTap: _handleLogin,
-                    icon: Remix.arrow_right_line,
-                    isLoading: _loginController.isLoading.value,
-                    color: roleColor,
-                  ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Footer
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => Get.toNamed(AppRoutes.registerView),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: roleColor.withValues(alpha: 0.3)),
-                        ),
-                        child: RichText(
-                          text: TextSpan(
-                            text: "NEW MEMBER? ",
-                            style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
-                            children: [
-                              TextSpan(
-                                text: "CREATE ACCOUNT",
-                                style: GoogleFonts.outfit(
-                                  color: roleColor,
-                                  fontWeight: FontWeight.w900,
+                  // Visibility conditional for fields
+                  if (_loginController.selectedRole.value != UserRole.None) ...[
+                    // Input Fields
+                    _buildInputField(
+                      label: 'EMAIL ADDRESS',
+                      hintText: 'name@example.com',
+                      controller: _emailController,
+                      icon: Remix.mail_fill,
+                      isDark: isDark,
+                      color: roleColor,
+                      onChanged: (val) => _loginController.email.value = val,
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    _buildInputField(
+                      label: 'PASSWORD',
+                      hintText: '••••••••',
+                      controller: _passwordController,
+                      icon: Remix.lock_fill,
+                      isPassword: true,
+                      isDark: isDark,
+                      color: roleColor,
+                      showForgotPassword: true,
+                      onChanged: (val) => _loginController.password.value = val,
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Log In Button
+                    TacticalButton(
+                      label: 'INITIATE LOGIN',
+                      onTap: _handleLogin,
+                      icon: Remix.arrow_right_line,
+                      isLoading: _loginController.isLoading.value,
+                      color: roleColor,
+                    ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Footer
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.registerView),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                          ),
+                          child: RichText(
+                            text: TextSpan(
+                              text: "NEW MEMBER? ",
+                              style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
+                              children: [
+                                TextSpan(
+                                  text: "CREATE ACCOUNT",
+                                  style: GoogleFonts.outfit(
+                                    color: roleColor,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ] else ...[
+                    const SizedBox(height: 48),
+                    Center(
+                      child: Column(
+                        children: [
+                          Icon(Remix.shield_keyhole_line, size: 48, color: subTextColor.withValues(alpha: 0.2)),
+                          const SizedBox(height: 16),
+                          Text(
+                            "AUTHORIZED ACCESS ONLY\nPLEASE SELECT YOUR ROLE",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.outfit(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2,
+                              color: subTextColor.withValues(alpha: 0.3),
+                            ),
+                          ),
+                        ],
+                      ).animate().fadeIn().scale(begin: const Offset(0.9, 0.9)),
+                    ),
+                  ],
                   
                   const SizedBox(height: 24),
                   
@@ -246,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: UserRole.values.map((role) {
+      children: UserRole.values.where((role) => role != UserRole.None).map((role) {
         final isSelected = _loginController.selectedRole.value == role;
         final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
         
@@ -258,6 +281,8 @@ class _LoginScreenState extends State<LoginScreen> {
               return "Manager";
             case UserRole.Gym_Person:
               return "Gym";
+            case UserRole.None:
+              return "None";
           }
         }
 
@@ -269,6 +294,8 @@ class _LoginScreenState extends State<LoginScreen> {
               return Remix.briefcase_4_fill;
             case UserRole.Gym_Person:
               return Remix.user_smile_fill;
+            case UserRole.None:
+              return Remix.question_line;
           }
         }
 
@@ -386,18 +413,19 @@ class _LoginScreenState extends State<LoginScreen> {
             controller: controller,
             onChanged: onChanged,
             obscureText: isPassword && _obscurePassword,
+            cursorColor: color,
             style: GoogleFonts.outfit(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : const Color(0xFF1E1E1E),
+              color: isDark ? Colors.white : color.withValues(alpha: 0.9),
             ),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: GoogleFonts.outfit(
-                color: isDark ? Colors.white24 : Colors.black26,
+                color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.2),
                 fontWeight: FontWeight.w500,
               ),
-              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.6), size: 20),
+              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.5), size: 20),
               suffixIcon: isPassword 
                 ? IconButton(
                     icon: Icon(
@@ -412,7 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
               enabledBorder: InputBorder.none,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: color, width: 2),
+                borderSide: BorderSide(color: color.withValues(alpha: 0.8), width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),

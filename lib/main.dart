@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'dart:developer' as dev;
 import 'package:secure_me/model/user_model.dart';
 import 'package:flutter/services.dart';
@@ -41,7 +43,11 @@ void main() async {
       statusBarBrightness: Brightness.dark,
     ),
   );
-  runApp(const SecureMeApp());
+  runApp(
+    const ProviderScope(
+      child: SecureMeApp(),
+    ),
+  );
 }
 
 class SecureMeApp extends StatelessWidget {
@@ -117,6 +123,8 @@ class AppRouter extends StatelessWidget {
               return const HelperDashboard();
             case UserRole.Police:
               return const PoliceDashboard();
+            case UserRole.None:
+              return const LoginScreen();
           }
        }
        

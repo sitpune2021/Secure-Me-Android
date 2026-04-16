@@ -13,7 +13,7 @@ class AuthController extends GetxController {
   final RxBool isLoading = false.obs;
 
   // New fields for managing login/registration state
-  final Rx<UserRole> selectedRole = UserRole.Manager.obs;
+  final Rx<UserRole> selectedRole = UserRole.None.obs;
   bool _isPhoneLogin = false; // Tracks if the user is trying to login with phone
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
