@@ -183,7 +183,7 @@ class UserHomeScreen extends StatelessWidget {
               right: 24,
               child: GestureDetector(
                 onHorizontalDragEnd: (details) {
-                  if (details.primaryVelocity! > 0) {
+                  if ((details.primaryVelocity ?? 0) > 0) {
                     _onToggleSignal();
                   }
                 },

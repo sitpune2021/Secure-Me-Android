@@ -16,7 +16,7 @@ class SafetyRadarView extends StatefulWidget {
 
 class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProviderStateMixin {
   late AnimationController _radarController;
-  final CommunitySafetyController controller = Get.find<CommunitySafetyController>();
+  CommunitySafetyController get controller => Get.find<CommunitySafetyController>();
 
   @override
   void initState() {
@@ -40,6 +40,20 @@ class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProv
     final primaryColor = theme.primaryColor;
     final scaffoldBg = theme.scaffoldBackgroundColor;
     final textColor = theme.textTheme.bodyLarge?.color ?? (isDark ? Colors.white : Colors.black87);
+    
+    // Safety check for controller
+    if (!Get.isRegistered<CommunitySafetyController>()) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final CommunitySafetyController? safeController = Get.isRegistered<CommunitySafetyController>() 
+        ? Get.find<CommunitySafetyController>() 
+        : null;
+
+    if (safeController == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       backgroundColor: scaffoldBg,
       body: CustomScrollView(
@@ -53,7 +67,13 @@ class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProv
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 24),
-                  Center(child: _buildRadarSection(isDark, primaryColor)),
+                  Center(
+                    child: SizedBox(
+                      width: 300,
+                      height: 300,
+                      child: _buildRadarSection(isDark, primaryColor),
+                    ),
+                  ),
                   const SizedBox(height: 48),
                   
                   // Tactical Mode Toggle / Info
@@ -194,20 +214,24 @@ class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProv
           ),
 
           // Scanned Dots
-          Obx(() => Stack(
-            clipBehavior: Clip.none,
-            children: controller.scannedResponders.map((r) {
-              final double rad = r.angle * (math.pi / 180);
-              final double dist = (r.distance / 600.0) * 150.0;
-              final double x = dist * math.cos(rad);
-              final double y = dist * math.sin(rad);
+          Obx(() => SizedBox(
+            width: 300,
+            height: 300,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: controller.scannedResponders.map((r) {
+                final double rad = r.angle * (math.pi / 180);
+                final double dist = (r.distance / 600.0) * 150.0;
+                final double x = dist * math.cos(rad);
+                final double y = dist * math.sin(rad);
 
-              return Positioned(
-                left: 150 + x - 6,
-                top: 150 + y - 6,
-                child: _buildResponderDot(r),
-              );
-            }).toList(),
+                return Positioned(
+                  left: 150 + x - 6,
+                  top: 150 + y - 6,
+                  child: _buildResponderDot(r),
+                );
+              }).toList(),
+            ),
           )),
         ],
       ),

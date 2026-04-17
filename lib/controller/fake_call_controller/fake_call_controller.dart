@@ -11,9 +11,9 @@ extension GetContext on GetxController {
 }
 
 class FakeCallController extends GetxController {
-  RxString selectedCaller = ''.obs;
-  RxString selectedDelay = ''.obs;
-  RxInt delayInSeconds = 0.obs;
+  RxString selectedCaller = 'Mom'.obs;
+  RxString selectedDelay = '5 Sec'.obs;
+  RxInt delayInSeconds = 5.obs;
 
   RxInt callDuration = 0.obs;
   Timer? _timer;

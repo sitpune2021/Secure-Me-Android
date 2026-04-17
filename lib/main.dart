@@ -77,7 +77,7 @@ class SecureMeApp extends StatelessWidget {
           data: mediaQueryData.copyWith(
             textScaler: TextScaler.linear(finalScale),
           ),
-          child: child!,
+          child: child ?? const SizedBox.shrink(),
         );
       },
       // home: AppRouter(), // We will use a wrapper that ensures controllers are found

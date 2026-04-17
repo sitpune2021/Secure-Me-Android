@@ -6,7 +6,7 @@ import 'package:secure_me/controller/profile_controller/profile_controller.dart'
 import 'package:secure_me/controller/home_controller/home_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/view/community_view/community_view.dart';
+import 'package:secure_me/view/fake_call_view/fake_call_view.dart';
 import 'package:secure_me/view/safety_radar_view.dart';
 import 'package:secure_me/view/profile/profile_view/profile_view.dart';
 import 'package:secure_me/controller/voice_controller/voice_controller.dart';
@@ -76,7 +76,7 @@ class _HomeViewState extends State<HomeView> {
       case 1:
         return const SafetyRadarView();
       case 2:
-        return const CommunityView();
+        return FakeCallView();
       case 3:
         return const ProfileView();
       default:
@@ -540,7 +540,7 @@ class _HomeViewState extends State<HomeView> {
     final navItems = [
       _NavItem(icon: Remix.dashboard_3_line, label: "HOME"),
       _NavItem(icon: Remix.radar_line, label: "RADAR"),
-      _NavItem(icon: Remix.community_line, label: "CIRCLE"),
+      _NavItem(icon: Remix.phone_fill, label: "FAKE CALL"),
       _NavItem(icon: Remix.user_6_line, label: "PROFILE"),
     ];
 
