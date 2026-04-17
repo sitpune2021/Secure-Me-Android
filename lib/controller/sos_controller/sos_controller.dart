@@ -276,6 +276,9 @@ class SosController extends GetxController {
     
     if (Get.isOverlaysOpen) Get.back();
     
+    // Explicitly return to the previous screen (Home/Dashboard)
+    Get.back();
+    
     Get.snackbar(
       "SOS Resolved",
       "Emergency alerts have been cancelled.",
