@@ -197,148 +197,113 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   const SizedBox(height: 16),
                   
-                  // Role Selection Label
-                  Text(
-                    'SELECT YOUR ROLE',
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                      color: subTextColor.withValues(alpha: 0.5),
-                    ),
+                  const SizedBox(height: 12),
+                  
+                  // Skip role selector as app is only for user role
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Always show fields
+                  _buildInputField(
+                    label: 'FULL NAME',
+                    hintText: 'Johnathan Doe',
+                    controller: _nameController,
+                    icon: Remix.user_3_fill,
+                    isDark: isDark,
+                    color: roleColor,
                   ),
                   
                   const SizedBox(height: 12),
                   
-                  // Roles Grid
-                  _buildRoleSelector(roleColor, isDark),
+                  _buildInputField(
+                    label: 'EMAIL ADDRESS',
+                    hintText: 'name@example.com',
+                    controller: _emailController,
+                    icon: Remix.mail_fill,
+                    isDark: isDark,
+                    color: roleColor,
+                  ),
                   
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   
-                  // Visibility conditional for fields
-                  if (_authController.selectedRole.value != UserRole.None) ...[
-                    // Input Fields
-                    _buildInputField(
-                      label: 'FULL NAME',
-                      hintText: 'Johnathan Doe',
-                      controller: _nameController,
-                      icon: Remix.user_3_fill,
-                      isDark: isDark,
-                      color: roleColor,
-                    ),
-                    
-                    const SizedBox(height: 12),
-                    
-                    _buildInputField(
-                      label: 'EMAIL ADDRESS',
-                      hintText: 'name@example.com',
-                      controller: _emailController,
-                      icon: Remix.mail_fill,
-                      isDark: isDark,
-                      color: roleColor,
-                    ),
-                    
-                    const SizedBox(height: 12),
-                    
-                    _buildInputField(
-                      label: 'PHONE NUMBER',
-                      hintText: '9823306798',
-                      controller: _phoneController,
-                      icon: Remix.phone_fill,
-                      isDark: isDark,
-                      color: roleColor,
-                    ),
-                    
-                    const SizedBox(height: 12),
-                    
-                    _buildInputField(
-                      label: 'PASSWORD',
-                      hintText: '••••••••',
-                      controller: _passwordController,
-                      icon: Remix.lock_fill,
-                      isPassword: true,
-                      isPassObscured: _obscurePassword,
-                      onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
-                      isDark: isDark,
-                      color: roleColor,
-                    ),
-                    
-                    const SizedBox(height: 12),
-                    
-                    _buildInputField(
-                      label: 'CONFIRM PASSWORD',
-                      hintText: '••••••••',
-                      controller: _confirmPasswordController,
-                      icon: Remix.shield_check_fill,
-                      isPassword: true,
-                      isPassObscured: _obscureConfirmPassword,
-                      onToggleObscure: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                      isDark: isDark,
-                      color: roleColor,
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Create Account Button
-                    TacticalButton(
-                      label: 'DEPLOY ACCOUNT',
-                      onTap: _handleRegister,
-                      icon: Remix.arrow_right_line,
-                      isLoading: _registerController.isLoading.value,
-                      color: roleColor,
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Footer
-                    Center(
-                      child: GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: roleColor.withValues(alpha: 0.3)),
-                          ),
-                          child: RichText(
-                            text: TextSpan(
-                              text: "ALREADY A MEMBER? ",
-                              style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
-                              children: [
-                                TextSpan(
-                                  text: "LOG IN",
-                                  style: GoogleFonts.outfit(
-                                    color: roleColor,
-                                    fontWeight: FontWeight.w900,
-                                  ),
+                  _buildInputField(
+                    label: 'PHONE NUMBER',
+                    hintText: '9823306798',
+                    controller: _phoneController,
+                    icon: Remix.phone_fill,
+                    isDark: isDark,
+                    color: roleColor,
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  _buildInputField(
+                    label: 'PASSWORD',
+                    hintText: '••••••••',
+                    controller: _passwordController,
+                    icon: Remix.lock_fill,
+                    isPassword: true,
+                    isPassObscured: _obscurePassword,
+                    onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
+                    isDark: isDark,
+                    color: roleColor,
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  _buildInputField(
+                    label: 'CONFIRM PASSWORD',
+                    hintText: '••••••••',
+                    controller: _confirmPasswordController,
+                    icon: Remix.shield_check_fill,
+                    isPassword: true,
+                    isPassObscured: _obscureConfirmPassword,
+                    onToggleObscure: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                    isDark: isDark,
+                    color: roleColor,
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Create Account Button
+                  TacticalButton(
+                    label: 'DEPLOY ACCOUNT',
+                    onTap: _handleRegister,
+                    icon: Remix.arrow_right_line,
+                    isLoading: _registerController.isLoading.value,
+                    color: roleColor,
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Footer
+                  Center(
+                    child: GestureDetector(
+                      onTap: () => Get.back(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                        ),
+                        child: RichText(
+                          text: TextSpan(
+                            text: "ALREADY A MEMBER? ",
+                            style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
+                            children: [
+                              TextSpan(
+                                text: "LOG IN",
+                                style: GoogleFonts.outfit(
+                                  color: roleColor,
+                                  fontWeight: FontWeight.w900,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                  ] else ...[
-                    const SizedBox(height: 60),
-                    Center(
-                      child: Column(
-                        children: [
-                          Icon(Remix.user_location_line, size: 48, color: subTextColor.withValues(alpha: 0.2)),
-                          const SizedBox(height: 16),
-                          Text(
-                            "CHOOSE YOUR OPERATIVE ROLE",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.outfit(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 2,
-                              color: subTextColor.withValues(alpha: 0.3),
-                            ),
-                          ),
-                        ],
-                      ).animate().fadeIn().scale(begin: const Offset(0.9, 0.9)),
-                    ),
-                  ],
+                  ),
                   
                   const SizedBox(height: 24),
                 ]),
@@ -350,77 +315,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildRoleSelector(Color roleColor, bool isDark) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: UserRole.values.where((role) => role != UserRole.None).map((role) {
-        final isSelected = _authController.selectedRole.value == role;
-        final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
-        
-        String getRoleDisplayName(UserRole role) {
-          switch (role) {
-            case UserRole.Police:
-              return "Police";
-            case UserRole.Manager:
-              return "Manager";
-            case UserRole.Gym_Person:
-              return "Gym";
-            case UserRole.None:
-              return "None";
-          }
-        }
 
-        IconData getRoleIcon(UserRole role) {
-          switch (role) {
-            case UserRole.Police:
-              return Remix.shield_star_fill;
-            case UserRole.Manager:
-              return Remix.briefcase_4_fill;
-            case UserRole.Gym_Person:
-              return Remix.user_smile_fill;
-            case UserRole.None:
-              return Remix.question_line;
-          }
-        }
-
-        return GestureDetector(
-          onTap: () => _authController.setSelectedRole(role),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: isSelected ? thisColor.withValues(alpha: 0.12) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03)),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isSelected ? thisColor : (isDark ? Colors.white10 : Colors.black12),
-                width: isSelected ? 1.5 : 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  getRoleIcon(role), 
-                  size: 16, 
-                  color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45)
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  getRoleDisplayName(role),
-                  style: GoogleFonts.outfit(
-                    fontSize: 13,
-                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                    color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
 
   Widget _buildInputField({
     required String label,

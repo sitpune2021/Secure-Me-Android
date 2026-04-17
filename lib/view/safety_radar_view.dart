@@ -59,7 +59,7 @@ class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProv
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          _buildRadarHeader(context, isDark, textColor, scaffoldBg),
+          _buildRadarHeader(context, isDark, primaryColor, textColor, scaffoldBg),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -99,16 +99,14 @@ class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProv
     );
   }
 
-  Widget _buildRadarHeader(BuildContext context, bool isDark, Color textColor, Color scaffoldBg) {
+  Widget _buildRadarHeader(BuildContext context, bool isDark, Color primaryColor, Color textColor, Color scaffoldBg) {
     return SliverAppBar(
       backgroundColor: scaffoldBg,
+      surfaceTintColor: Colors.transparent,
       expandedHeight: 140,
       pinned: true,
       elevation: 0,
-      leading: IconButton(
-        icon: Icon(Remix.arrow_left_s_line, color: textColor),
-        onPressed: () => Get.back(),
-      ),
+      automaticallyImplyLeading: false,
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: false,
         titlePadding: const EdgeInsets.only(left: 60, bottom: 20),
@@ -139,11 +137,176 @@ class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProv
       ),
       actions: [
         IconButton(
-          icon: Icon(Remix.equalizer_line, color: textColor.withValues(alpha: 0.5)),
-          onPressed: () {},
+          icon: Icon(Remix.equalizer_fill, color: textColor),
+          onPressed: () => _showFilterOptions(context, isDark, primaryColor, textColor),
         ),
         const SizedBox(width: 8),
       ],
+    );
+  }
+
+  void _showFilterOptions(BuildContext context, bool isDark, Color primaryColor, Color textColor) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF151515) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 40,
+              offset: const Offset(0, -10),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white10 : Colors.black12,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              "RADAR FILTERS",
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2,
+                color: textColor.withValues(alpha: 0.3),
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            _buildFilterOption(
+              label: "TACTICAL UNITS",
+              subtitle: "Police & Security Patrols",
+              icon: Remix.shield_star_fill,
+              color: Colors.blueAccent,
+              isActive: true,
+              isDark: isDark,
+              textColor: textColor,
+            ),
+            const SizedBox(height: 16),
+            _buildFilterOption(
+              label: "MEDICAL SUPPORT",
+              subtitle: "Ambulance & Registered Medics",
+              icon: Remix.heart_pulse_fill,
+              color: Colors.redAccent,
+              isActive: true,
+              isDark: isDark,
+              textColor: textColor,
+            ),
+            const SizedBox(height: 16),
+            _buildFilterOption(
+              label: "SAFE DEPLOYMENTS",
+              subtitle: "Active Safety Nodes & Hubs",
+              icon: Remix.home_gear_fill,
+              color: Colors.green,
+              isActive: false,
+              isDark: isDark,
+              textColor: textColor,
+            ),
+            
+            const SizedBox(height: 40),
+            
+            SizedBox(
+              width: double.infinity,
+              height: 60,
+              child: ElevatedButton(
+                onPressed: () => Get.back(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  elevation: 0,
+                ),
+                child: Text(
+                  "APPLY SCAN PARAMETERS",
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  Widget _buildFilterOption({
+    required String label,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required bool isActive,
+    required bool isDark,
+    required Color textColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isActive ? color.withValues(alpha: 0.3) : Colors.transparent,
+          width: 1.5,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    color: textColor.withValues(alpha: 0.4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: isActive,
+            onChanged: (v) {},
+            activeColor: color,
+            activeTrackColor: color.withValues(alpha: 0.2),
+          ),
+        ],
+      ),
     );
   }
 
@@ -252,7 +415,7 @@ class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProv
       ),
       child: const Icon(Remix.user_location_fill, size: 6, color: Colors.white),
     ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
-      begin: const Offset(1, 1), end: const Offset(1.4, 1.4), duration: 1000.ms,
+      begin: const Offset(1, 1), end: const Offset(1.4, 1.4), duration: const Duration(milliseconds: 1000),
     );
   }
 

@@ -15,6 +15,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:secure_me/model/contact_model.dart';
 import 'package:secure_me/model/emergency_message.dart';
 import 'package:secure_me/controller/auth_controller.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:secure_me/const/app_url.dart';
 
 class SosController extends GetxController {
   var isTriggering = false.obs;
@@ -105,6 +108,62 @@ class SosController extends GetxController {
     
     _startEscalationTimer();
     startLocationUpdates();
+    
+    // Trigger backend signal
+    triggerSignalApi();
+  }
+
+  Future<void> triggerSignalApi() async {
+    if (currentPosition == null) {
+      // Try to get current position if not available
+      try {
+        Position pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high)
+        );
+        currentPosition = pos;
+      } catch (e) {
+        dev.log("❌ Could not get location for signal trigger: $e", name: 'SosController');
+      }
+    }
+
+    if (currentPosition == null) return;
+
+    isTriggering.value = true;
+    final token = await PreferenceHelper.getToken();
+    
+    try {
+      final response = await http.post(
+        Uri.parse(AppUrl.signalTrigger),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "latitude": currentPosition!.latitude.toString(),
+          "longitude": currentPosition!.longitude.toString(),
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      dev.log("📡 Signal Trigger Response: ${response.body}", name: 'SosController');
+
+      if (response.statusCode == 200 && data['status'] == true) {
+        triggerMessage.value = data['message'] ?? "Signal activated. Helpers notified.";
+        sosStatus.value = 'accepted';
+        
+        // Update response groups if data is available
+        if (data['data'] != null && data['data']['helpers_found'] != null) {
+           _addSystemMessage("BACKEND: ${data['data']['helpers_found']} helpers notified via tactical hub.");
+        }
+      } else {
+        dev.log("⚠️ Signal Trigger Failed: ${data['message']}", name: 'SosController');
+      }
+    } catch (e) {
+      dev.log("❌ Signal Trigger Error: $e", name: 'SosController');
+    } finally {
+      isTriggering.value = false;
+    }
   }
 
   void _initializeEmergencyChat() {

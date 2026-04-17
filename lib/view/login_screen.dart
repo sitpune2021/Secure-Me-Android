@@ -136,113 +136,78 @@ class _LoginScreenState extends State<LoginScreen> {
                   
                   const SizedBox(height: 24),
                   
-                  // Role Selection Label
-                  Text(
-                    'LOGGING IN AS',
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                      color: subTextColor.withValues(alpha: 0.5),
-                    ),
-                  ),
-                  
                   const SizedBox(height: 12),
                   
-                  // Roles Grid
-                  _buildRoleSelector(roleColor, isDark),
+                  // Skip role selector as app is only for user role
                   
                   const SizedBox(height: 20),
                   
-                  // Visibility conditional for fields
-                  if (_loginController.selectedRole.value != UserRole.None) ...[
-                    // Input Fields
-                    _buildInputField(
-                      label: 'EMAIL ADDRESS',
-                      hintText: 'name@example.com',
-                      controller: _emailController,
-                      icon: Remix.mail_fill,
-                      isDark: isDark,
-                      color: roleColor,
-                      onChanged: (val) => _loginController.email.value = val,
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    _buildInputField(
-                      label: 'PASSWORD',
-                      hintText: '••••••••',
-                      controller: _passwordController,
-                      icon: Remix.lock_fill,
-                      isPassword: true,
-                      isDark: isDark,
-                      color: roleColor,
-                      showForgotPassword: true,
-                      onChanged: (val) => _loginController.password.value = val,
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Log In Button
-                    TacticalButton(
-                      label: 'INITIATE LOGIN',
-                      onTap: _handleLogin,
-                      icon: Remix.arrow_right_line,
-                      isLoading: _loginController.isLoading.value,
-                      color: roleColor,
-                    ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Footer
-                    Center(
-                      child: GestureDetector(
-                        onTap: () => Get.toNamed(AppRoutes.registerView),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: roleColor.withValues(alpha: 0.3)),
-                          ),
-                          child: RichText(
-                            text: TextSpan(
-                              text: "NEW MEMBER? ",
-                              style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
-                              children: [
-                                TextSpan(
-                                  text: "CREATE ACCOUNT",
-                                  style: GoogleFonts.outfit(
-                                    color: roleColor,
-                                    fontWeight: FontWeight.w900,
-                                  ),
+                  // Always show fields
+                  _buildInputField(
+                    label: 'EMAIL ADDRESS',
+                    hintText: 'name@example.com',
+                    controller: _emailController,
+                    icon: Remix.mail_fill,
+                    isDark: isDark,
+                    color: roleColor,
+                    onChanged: (val) => _loginController.email.value = val,
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  _buildInputField(
+                    label: 'PASSWORD',
+                    hintText: '••••••••',
+                    controller: _passwordController,
+                    icon: Remix.lock_fill,
+                    isPassword: true,
+                    isDark: isDark,
+                    color: roleColor,
+                    showForgotPassword: true,
+                    onChanged: (val) => _loginController.password.value = val,
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Log In Button
+                  TacticalButton(
+                    label: 'INITIATE LOGIN',
+                    onTap: _handleLogin,
+                    icon: Remix.arrow_right_line,
+                    isLoading: _loginController.isLoading.value,
+                    color: roleColor,
+                  ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Footer
+                  Center(
+                    child: GestureDetector(
+                      onTap: () => Get.toNamed(AppRoutes.registerView),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                        ),
+                        child: RichText(
+                          text: TextSpan(
+                            text: "NEW MEMBER? ",
+                            style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
+                            children: [
+                              TextSpan(
+                                text: "CREATE ACCOUNT",
+                                style: GoogleFonts.outfit(
+                                  color: roleColor,
+                                  fontWeight: FontWeight.w900,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                  ] else ...[
-                    const SizedBox(height: 48),
-                    Center(
-                      child: Column(
-                        children: [
-                          Icon(Remix.shield_keyhole_line, size: 48, color: subTextColor.withValues(alpha: 0.2)),
-                          const SizedBox(height: 16),
-                          Text(
-                            "AUTHORIZED ACCESS ONLY\nPLEASE SELECT YOUR ROLE",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.outfit(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 2,
-                              color: subTextColor.withValues(alpha: 0.3),
-                            ),
-                          ),
-                        ],
-                      ).animate().fadeIn().scale(begin: const Offset(0.9, 0.9)),
-                    ),
-                  ],
+                  ),
                   
                   const SizedBox(height: 24),
                   

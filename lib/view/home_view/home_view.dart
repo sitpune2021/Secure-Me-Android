@@ -7,6 +7,7 @@ import 'package:secure_me/controller/home_controller/home_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/routes/app_pages.dart';
 import 'package:secure_me/view/fake_call_view/fake_call_view.dart';
+import 'package:secure_me/view/manager_dashboard.dart';
 import 'package:secure_me/view/safety_radar_view.dart';
 import 'package:secure_me/view/profile/profile_view/profile_view.dart';
 import 'package:secure_me/controller/voice_controller/voice_controller.dart';
@@ -72,7 +73,7 @@ class _HomeViewState extends State<HomeView> {
   Widget _buildBody(int index) {
     switch (index) {
       case 0:
-        return _dashboardUI();
+        return const ManagerDashboard();
       case 1:
         return const SafetyRadarView();
       case 2:
@@ -538,39 +539,43 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _buildBottomNav() {
     final navItems = [
-      _NavItem(icon: Remix.dashboard_3_line, label: "HOME"),
+      _NavItem(icon: Remix.dashboard_3_line, label: "HQ"),
       _NavItem(icon: Remix.radar_line, label: "RADAR"),
-      _NavItem(icon: Remix.phone_fill, label: "FAKE CALL"),
-      _NavItem(icon: Remix.user_6_line, label: "PROFILE"),
+      _NavItem(icon: Remix.phone_find_fill, label: "FAKE"),
+      _NavItem(icon: Remix.user_6_line, label: "ADMIN"),
     ];
 
     return Container(
-      height: 90,
+      height: 100,
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 40,
+            offset: const Offset(0, -10),
           ),
         ],
       ),
-      child: Row(
+      child: Stack(
         children: [
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(2, (i) => _buildNavItem(navItems[i], i)),
-            ),
-          ),
-          const SizedBox(width: 80), // Space for SOS button
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(2, (i) => _buildNavItem(navItems[i + 2], i + 2)),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(2, (i) => _buildNavItem(navItems[i], i)),
+                ),
+              ),
+              const SizedBox(width: 80), // Space for SOS button
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(2, (i) => _buildNavItem(navItems[i + 2], i + 2)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -585,27 +590,33 @@ class _HomeViewState extends State<HomeView> {
       return GestureDetector(
         onTap: () => controller.changeTab(index),
         behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              item.icon,
-              color: active ? activeColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
-              size: 26,
-            ),
-            const SizedBox(height: 6),
-            if (active)
-              Container(
-                width: 4,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: activeColor,
-                  shape: BoxShape.circle,
-                ),
-              ).animate().scale(duration: const Duration(milliseconds: 200))
-            else
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: active ? activeColor.withValues(alpha: 0.1) : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                item.icon,
+                color: active ? activeColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                size: 24,
+              ),
               const SizedBox(height: 4),
-          ],
+              Text(
+                item.label,
+                style: GoogleFonts.outfit(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                  color: active ? activeColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });
@@ -616,82 +627,51 @@ class _HomeViewState extends State<HomeView> {
     return GestureDetector(
       onTap: () => Get.toNamed(AppRoutes.sosActivate),
       behavior: HitTestBehavior.opaque,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Pulse Layer 1
-          _buildPulse(90, 1.4, 1500),
-          // Pulse Layer 2
-          _buildPulse(90, 1.25, 1200),
-          // Pulse Layer 3
-          // _buildPulse(90, 1.15, 1000),
-
-          Container(
-            height: 80,
-            width: 80,
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [primaryColor, primaryColor.withValues(alpha: 0.9), primaryColor.withValues(alpha: 0.7)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: const [0.0, 0.4, 1.0],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: primaryColor.withValues(alpha: 0.5),
-                  blurRadius: 30,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Remix.error_warning_fill, color: Colors.white, size: 34)
-                      .animate(onPlay: (c) => c.repeat())
-                      .shimmer(duration: const Duration(seconds: 1), color: Colors.white70),
-                  const SizedBox(height: 1),
-                  Text(
-                    "SOS",
-                    style: GoogleFonts.outfit(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      child: Container(
+        height: 72,
+        width: 72,
+        margin: const EdgeInsets.only(bottom: 32),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            colors: [primaryColor, Color(0xFFD32F2F)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: primaryColor.withValues(alpha: 0.4),
+              blurRadius: 32,
+              spreadRadius: 4,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Remix.error_warning_fill, color: Colors.white, size: 28)
+                  .animate(onPlay: (c) => c.repeat())
+                  .shimmer(duration: const Duration(milliseconds: 1500), color: Colors.white70),
+              Text(
+                "SOS",
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 12,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ],
+          ),
+        ),
       ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
-            begin: const Offset(1, 1),
+            begin: const Offset(0.95, 0.95),
             end: const Offset(1.05, 1.05),
             duration: const Duration(milliseconds: 800),
           ),
     );
-  }
-
-  Widget _buildPulse(double size, double scale, int durationMs) {
-    return Container(
-      height: size,
-      width: size,
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryRed.withValues(alpha: 0.15),
-        shape: BoxShape.circle,
-      ),
-    ).animate(onPlay: (c) => c.repeat()).scale(
-          begin: const Offset(1, 1),
-          end: Offset(scale, scale),
-          duration: Duration(milliseconds: durationMs),
-          curve: Curves.easeOut,
-        ).fadeOut(duration: Duration(milliseconds: durationMs));
   }
 }
 

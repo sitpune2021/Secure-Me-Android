@@ -12,8 +12,8 @@ extension GetContext on GetxController {
 
 class FakeCallController extends GetxController {
   RxString selectedCaller = 'Mom'.obs;
-  RxString selectedDelay = '5 Sec'.obs;
-  RxInt delayInSeconds = 5.obs;
+  RxString selectedDelay = '2 Sec'.obs;
+  RxInt delayInSeconds = 2.obs;
 
   RxInt callDuration = 0.obs;
   Timer? _timer;
@@ -28,22 +28,7 @@ class FakeCallController extends GetxController {
 
   void setDelay(String delay) {
     selectedDelay.value = delay;
-    switch (delay) {
-      case "0 Sec":
-        delayInSeconds.value = 0;
-        break;
-      case "5 Sec":
-        delayInSeconds.value = 5;
-        break;
-      case "30 Sec":
-        delayInSeconds.value = 30;
-        break;
-      case "1 Min":
-        delayInSeconds.value = 60;
-        break;
-      default:
-        delayInSeconds.value = 0;
-    }
+    delayInSeconds.value = 2; // Always 2 seconds now
   }
 
   /// Start fake call after countdown

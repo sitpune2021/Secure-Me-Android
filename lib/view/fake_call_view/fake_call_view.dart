@@ -20,11 +20,9 @@ class FakeCallView extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Remix.arrow_left_line),
-          onPressed: () => Get.back(),
-        ),
+        automaticallyImplyLeading: false,
         title: Text(
           "Fake Incoming Call",
           style: GoogleFonts.outfit(
@@ -55,27 +53,6 @@ class FakeCallView extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
-                // Section: Delay
-                _buildSectionHeader(context, "SET CALL DELAY"),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildDelayOption(context, "5 Sec", controller),
-                      _buildDelayOption(context, "30 Sec", controller),
-                      _buildDelayOption(context, "1 Min", controller),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 32),
 
                 // Section: Caller
                 _buildSectionHeader(context, "CHOOSE CALLER IDENTITY"),
@@ -122,7 +99,7 @@ class FakeCallView extends StatelessWidget {
                         elevation: 0,
                       ),
                       child: Text(
-                        isCounting ? "Preparing Call..." : "Schedule Fake Call",
+                        isCounting ? "Triggering..." : "Trigger Tactical Call",
                         style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     );
@@ -148,33 +125,6 @@ class FakeCallView extends StatelessWidget {
     );
   }
 
-  Widget _buildDelayOption(BuildContext context, String text, FakeCallController controller) {
-    return Obx(() {
-      bool isSelected = controller.selectedDelay.value == text;
-      return Expanded(
-        child: GestureDetector(
-          onTap: () => controller.setDelay(text),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              text,
-              style: GoogleFonts.outfit(
-                color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ),
-        ),
-      );
-    });
-  }
 
   Widget _buildCallerList(BuildContext context, FakeCallController controller) {
     final callers = [

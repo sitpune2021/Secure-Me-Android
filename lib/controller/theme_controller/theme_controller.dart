@@ -16,14 +16,14 @@ class ThemeController extends GetxController {
   // State
   var isDarkMode = false.obs;
   var userOverride = false.obs;
-  late Rx<ThemeData> currentTheme;
+  final Rx<ThemeData> currentTheme = ThemeData.light().obs;
 
   @override
   void onInit() {
     super.onInit();
 
     log('🎨 ThemeController: Initializing...', name: 'ThemeController');
-    currentTheme = theme.obs;
+    currentTheme.value = theme;
 
     if (_storage.hasData(_key)) {
       isDarkMode.value = _storage.read(_key) as bool;
