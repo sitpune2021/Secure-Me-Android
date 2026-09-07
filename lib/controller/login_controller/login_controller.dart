@@ -3,14 +3,14 @@ import 'dart:developer' as dev;
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:secure_me/const/app_url.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:secure_me/main.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/model/user_model.dart';
-import 'package:secure_me/utils/preference_helper.dart';
-import 'package:secure_me/utils/error_helper.dart';
+import 'package:secure_me/core/utils/preference_helper.dart';
+import 'package:secure_me/core/utils/error_helper.dart';
 import 'package:secure_me/view/common/app_snackbar.dart';
-import 'package:secure_me/utils/validator.dart';
+import 'package:secure_me/core/utils/validator.dart';
 
 class LoginController extends GetxController {
   var mobileNumber = ''.obs;

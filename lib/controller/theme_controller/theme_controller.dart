@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter/services.dart';
-import 'package:secure_me/theme/app_theme.dart';
+import 'package:secure_me/app/theme/app_theme.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/model/user_model.dart';
 
@@ -34,21 +34,25 @@ class ThemeController extends GetxController {
     }
 
     // React to system brightness
-    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
-      if (!userOverride.value) {
-        _applySystemTheme();
-      }
-    };
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
+        () {
+          if (!userOverride.value) {
+            _applySystemTheme();
+          }
+        };
 
     // React to global changes that affect theme
     if (Get.isRegistered<AuthController>()) {
       final auth = Get.find<AuthController>();
-      
+
       // Update when user logs in/out or role selection changes
       ever(auth.user, (user) => _syncTheme(user?.role));
-      ever(auth.selectedRole, (role) => _syncTheme(auth.user.value?.role ?? role));
+      ever(
+        auth.selectedRole,
+        (role) => _syncTheme(auth.user.value?.role ?? role),
+      );
     }
-    
+
     // Initial sync
     _syncTheme();
     _updateStatusBar();
@@ -62,7 +66,8 @@ class ThemeController extends GetxController {
   }
 
   void _applySystemTheme() {
-    final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     isDarkMode.value = (brightness == Brightness.dark);
     Get.changeThemeMode(ThemeMode.system);
   }
@@ -88,7 +93,8 @@ class ThemeController extends GetxController {
 
   bool get effectiveDarkMode {
     if (!userOverride.value) {
-      return WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+      return WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+          Brightness.dark;
     }
     return isDarkMode.value;
   }
@@ -108,8 +114,12 @@ class ThemeController extends GetxController {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: effectiveDarkMode ? Brightness.light : Brightness.dark,
-        statusBarBrightness: effectiveDarkMode ? Brightness.dark : Brightness.light,
+        statusBarIconBrightness: effectiveDarkMode
+            ? Brightness.light
+            : Brightness.dark,
+        statusBarBrightness: effectiveDarkMode
+            ? Brightness.dark
+            : Brightness.light,
       ),
     );
   }

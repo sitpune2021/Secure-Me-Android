@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:secure_me/app/theme/app_theme.dart';
 import 'package:secure_me/controller/auth_controller.dart';
-import 'package:secure_me/theme/app_theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
@@ -32,7 +32,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Obx(() {
         final isDark = _themeController.isDarkMode.value;
-        final roleColor = AppTheme.primaryRed; // Using primary red for tactical recovery
+        final roleColor =
+            AppTheme.primaryRed; // Using primary red for tactical recovery
         final textColor = isDark ? Colors.white : const Color(0xFF1E1E1E);
         final subTextColor = isDark ? Colors.white70 : const Color(0xFF7D7D7D);
 
@@ -60,41 +61,50 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     Positioned(
                       top: -100,
                       right: -50,
-                      child: Container(
-                        width: 300,
-                        height: 300,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: roleColor.withValues(alpha: 0.1),
-                        ),
-                      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
-                            begin: const Offset(1, 1),
-                            end: const Offset(1.2, 1.2),
-                            duration: const Duration(seconds: 5),
-                          ),
+                      child:
+                          Container(
+                                width: 300,
+                                height: 300,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: roleColor.withValues(alpha: 0.1),
+                                ),
+                              )
+                              .animate(onPlay: (c) => c.repeat(reverse: true))
+                              .scale(
+                                begin: const Offset(1, 1),
+                                end: const Offset(1.2, 1.2),
+                                duration: const Duration(seconds: 5),
+                              ),
                     ),
                     Center(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: roleColor.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: roleColor.withValues(alpha: 0.3),
-                              blurRadius: 30,
-                              spreadRadius: 2,
+                          child: Container(
+                            height: 100,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: roleColor.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: roleColor.withValues(alpha: 0.3),
+                                  blurRadius: 30,
+                                  spreadRadius: 2,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Icon(
-                          Remix.lock_password_fill,
-                          size: 48,
-                          color: roleColor,
-                        ),
-                      ),
-                    ).animate().scale(duration: const Duration(milliseconds: 600), curve: Curves.easeOutBack).fade(),
+                            child: Icon(
+                              Remix.lock_password_fill,
+                              size: 48,
+                              color: roleColor,
+                            ),
+                          ),
+                        )
+                        .animate()
+                        .scale(
+                          duration: const Duration(milliseconds: 600),
+                          curve: Curves.easeOutBack,
+                        )
+                        .fade(),
                   ],
                 ),
               ),
@@ -105,17 +115,20 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 24),
                   Text(
-                    'RECOVER ACCOUNT',
-                    style: GoogleFonts.outfit(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                      letterSpacing: -1,
-                    ),
-                  ).animate().fadeIn(delay: const Duration(milliseconds: 200)).slideX(begin: -0.1),
-                  
+                        'RECOVER ACCOUNT',
+                        style: GoogleFonts.outfit(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                          letterSpacing: -1,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: const Duration(milliseconds: 200))
+                      .slideX(begin: -0.1),
+
                   const SizedBox(height: 12),
-                  
+
                   Text(
                     'Enter your tactical credentials to receive secure recovery instructions.',
                     style: GoogleFonts.outfit(
@@ -124,9 +137,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       height: 1.5,
                     ),
                   ).animate().fadeIn(delay: const Duration(milliseconds: 300)),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // Email Input
                   _buildInputField(
                     label: 'EMAIL ADDRESS',
@@ -136,9 +149,9 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     isDark: isDark,
                     color: roleColor,
                   ).animate().fadeIn(delay: const Duration(milliseconds: 400)),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   TacticalButton(
                     label: 'SEND RESET LINK',
                     onTap: _handleReset,
@@ -146,23 +159,32 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     isLoading: _authController.isLoading.value,
                     color: roleColor,
                   ),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // Back to Login Center
                   Center(
                     child: GestureDetector(
                       onTap: () => Get.back(),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 32,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: roleColor.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: RichText(
                           text: TextSpan(
                             text: "REMEMBERED? ",
-                            style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
+                            style: GoogleFonts.outfit(
+                              color: subTextColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
                             children: [
                               TextSpan(
                                 text: "LOG IN",
@@ -210,10 +232,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.03),
             ),
           ),
           child: TextField(
@@ -227,17 +253,29 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: GoogleFonts.outfit(
-                color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.2),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.2)
+                    : Colors.black.withValues(alpha: 0.2),
                 fontWeight: FontWeight.w500,
               ),
-              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.5), size: 20),
+              prefixIcon: Icon(
+                icon,
+                color: color.withValues(alpha: 0.5),
+                size: 20,
+              ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: color.withValues(alpha: 0.8), width: 2),
+                borderSide: BorderSide(
+                  color: color.withValues(alpha: 0.8),
+                  width: 2,
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 18,
+              ),
             ),
           ),
         ),

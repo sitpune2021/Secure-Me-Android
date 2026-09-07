@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:secure_me/view/incomming_call_view/incoming_call_screen.dart';
 
 /// Extension to get context from GetxController

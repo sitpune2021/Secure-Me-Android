@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:secure_me/app/theme/app_theme.dart';
 import 'package:secure_me/controller/login_controller/login_controller.dart';
 import 'package:secure_me/controller/permission_controller/permission_controller.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/model/user_model.dart';
-import 'package:secure_me/theme/app_theme.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

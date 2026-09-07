@@ -1,12 +1,12 @@
 import 'dart:developer' as dev;
 import 'package:get/get.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
+import 'package:secure_me/app/theme/app_theme.dart';
 import 'package:secure_me/model/user_model.dart';
-import 'package:secure_me/theme/app_theme.dart';
-import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/core/utils/preference_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:secure_me/utils/validator.dart';
+import 'package:secure_me/core/utils/validator.dart';
 
 class AuthController extends GetxController {
   final Rx<UserModel?> user = Rx<UserModel?>(null);

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
+import 'package:secure_me/app/theme/app_color.dart';
 import 'package:secure_me/controller/otp_controller/otp_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
-import 'package:secure_me/theme/app_color.dart';
 import 'package:secure_me/view/common/tactical_button.dart';
-import 'package:secure_me/core/components.dart';
+import 'package:secure_me/core/components/components.dart';
 
 class OtpView extends StatelessWidget {
   final OtpController controller = Get.put(OtpController());
@@ -108,7 +108,9 @@ class OtpView extends StatelessWidget {
                     label: "Continue",
                     onTap: controller.verifyOtp,
                     isLoading: controller.isLoading.value,
-                    color: isDark ? AppColors.glowPurpleTopLeft : AppColors.lightPrimary,
+                    color: isDark
+                        ? AppColors.glowPurpleTopLeft
+                        : AppColors.lightPrimary,
                   ),
 
                   SizedBox(height: Get.height * 0.02),

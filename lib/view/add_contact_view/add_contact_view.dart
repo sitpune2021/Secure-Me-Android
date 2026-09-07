@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/add_contact_controller/add_contact_controller.dart';
-import 'package:secure_me/utils/validator.dart';
+import 'package:secure_me/core/utils/validator.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 

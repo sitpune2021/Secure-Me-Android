@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/community_controller/community_controller.dart';
 import 'package:secure_me/model/community_model.dart';
-import 'package:secure_me/utils/validator.dart';
+import 'package:secure_me/core/utils/validator.dart';
 import 'package:remixicon/remixicon.dart';
 
 class CommunityView extends StatelessWidget {

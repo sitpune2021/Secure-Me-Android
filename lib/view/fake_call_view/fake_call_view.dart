@@ -25,10 +25,7 @@ class FakeCallView extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: Text(
           "Fake Incoming Call",
-          style: GoogleFonts.outfit(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -48,11 +45,14 @@ class FakeCallView extends StatelessWidget {
                       color: primaryColor.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Remix.phone_find_line, size: 48, color: primaryColor),
+                    child: Icon(
+                      Remix.phone_find_line,
+                      size: 48,
+                      color: primaryColor,
+                    ),
                   ).animate().scale(delay: const Duration(milliseconds: 200)),
                 ),
                 const SizedBox(height: 32),
-
 
                 // Section: Caller
                 _buildSectionHeader(context, "CHOOSE CALLER IDENTITY"),
@@ -63,10 +63,15 @@ class FakeCallView extends StatelessWidget {
 
                 // Countdown Display
                 Obx(() {
-                  if (controller.countdownText.value.isEmpty) return const SizedBox.shrink();
+                  if (controller.countdownText.value.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
                   return Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.orange.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(30),
@@ -92,15 +97,24 @@ class FakeCallView extends StatelessWidget {
                   child: Obx(() {
                     bool isCounting = controller.countdownText.value.isNotEmpty;
                     return ElevatedButton(
-                      onPressed: isCounting ? null : () => controller.startCustomFakeCall(),
+                      onPressed: isCounting
+                          ? null
+                          : () => controller.startCustomFakeCall(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isCounting ? Colors.grey.withValues(alpha: 0.2) : primaryColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        backgroundColor: isCounting
+                            ? Colors.grey.withValues(alpha: 0.2)
+                            : primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         elevation: 0,
                       ),
                       child: Text(
                         isCounting ? "Triggering..." : "Trigger Tactical Call",
-                        style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.outfit(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     );
                   }),
@@ -125,7 +139,6 @@ class FakeCallView extends StatelessWidget {
     );
   }
 
-
   Widget _buildCallerList(BuildContext context, FakeCallController controller) {
     final callers = [
       {'name': 'Mom', 'icon': Remix.heart_fill, 'color': Colors.red},
@@ -138,7 +151,9 @@ class FakeCallView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+        ),
       ),
       child: Column(
         children: callers.map((caller) {
@@ -149,14 +164,21 @@ class FakeCallView extends StatelessWidget {
               children: [
                 ListTile(
                   onTap: () => controller.setCaller(caller['name'] as String),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: (caller['color'] as Color).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(caller['icon'] as IconData, color: caller['color'] as Color, size: 24),
+                    child: Icon(
+                      caller['icon'] as IconData,
+                      color: caller['color'] as Color,
+                      size: 24,
+                    ),
                   ),
                   title: Text(
                     caller['name'] as String,
@@ -168,16 +190,35 @@ class FakeCallView extends StatelessWidget {
                   ),
                   subtitle: Text(
                     "Incoming call from ${caller['name']}",
-                    style: GoogleFonts.outfit(fontSize: 12, color: Theme.of(context).hintColor),
+                    style: GoogleFonts.outfit(
+                      fontSize: 12,
+                      color: Theme.of(context).hintColor,
+                    ),
                   ),
-                  trailing: Radio<String>(
-                    value: caller['name'] as String,
+                  trailing: RadioGroup<String>(
                     groupValue: controller.selectedCaller.value,
-                    activeColor: Theme.of(context).primaryColor,
                     onChanged: (val) => controller.setCaller(val!),
+                    child: Radio<String>(
+                      value: caller['name'] as String,
+                      activeColor: Theme.of(context).primaryColor,
+                    ),
                   ),
+                  // trailing: Radio<String>(
+                  //   value: caller['name'] as String,
+                  //   groupValue: controller.selectedCaller.value,
+                  //   activeColor: Theme.of(context).primaryColor,
+                  //   onChanged: (val) => controller.setCaller(val!),
+                  // ),
                 ),
-                if (!isLast) Divider(indent: 70, endIndent: 20, color: Theme.of(context).dividerColor.withValues(alpha: 0.05), height: 1),
+                if (!isLast)
+                  Divider(
+                    indent: 70,
+                    endIndent: 20,
+                    color: Theme.of(
+                      context,
+                    ).dividerColor.withValues(alpha: 0.05),
+                    height: 1,
+                  ),
               ],
             );
           });

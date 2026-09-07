@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/controller/contact_controller/contact_controller.dart';
 import 'package:secure_me/model/contact_model.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -239,7 +239,7 @@ class _ContactListViewState extends State<ContactListView> {
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
               sliver: SliverReorderableList(
                 itemCount: contactsList.length,
-                onReorder: (oldIndex, newIndex) =>
+                onReorderItem: (oldIndex, newIndex) =>
                     controller.reorderSentinels(oldIndex, newIndex),
                 itemBuilder: (context, index) {
                   return _buildReorderableContactCard(

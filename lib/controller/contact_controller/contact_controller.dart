@@ -6,8 +6,8 @@ import 'package:secure_me/const/app_url.dart';
 import 'package:fast_contacts/fast_contacts.dart' as fast;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:secure_me/model/contact_model.dart';
-import 'package:secure_me/routes/app_pages.dart';
-import 'package:secure_me/utils/preference_helper.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
+import 'package:secure_me/core/utils/preference_helper.dart';
 
 class ContactController extends GetxController {
   var isLoading = false.obs;

@@ -1,6 +1,6 @@
 
 import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:secure_me/view/add_contact_view/add_contact_view.dart';
 import 'package:secure_me/view/add_friend_view/add_friend_view.dart';
 import 'package:secure_me/view/contact_list_view/contact_list_view.dart';

@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
 
 class HomeController extends GetxController {
   var currentIndex = 0.obs;

@@ -302,7 +302,7 @@ class _SafetyRadarViewState extends State<SafetyRadarView> with SingleTickerProv
           Switch(
             value: isActive,
             onChanged: (v) {},
-            activeColor: color,
+            activeThumbColor: color,
             activeTrackColor: color.withValues(alpha: 0.2),
           ),
         ],

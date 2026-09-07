@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:secure_me/app/theme/app_theme.dart';
 import 'package:secure_me/controller/safety_controller.dart';
 import 'package:secure_me/model/signal_model.dart';
-import 'package:secure_me/theme/app_theme.dart';
 
 class UserHomeScreen extends StatelessWidget {
   UserHomeScreen({super.key});

@@ -7,7 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:secure_me/controller/helper_controller/helper_controller.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
-import 'package:secure_me/routes/app_pages.dart';
+import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:secure_me/view/helper_dashboard/helper_alert_view.dart';
 import 'package:secure_me/view/helper_dashboard/helper_active_view.dart';
 
