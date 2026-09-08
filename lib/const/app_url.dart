@@ -32,15 +32,18 @@ class AppUrl {
   static const String login = "$baseUrl/auth/login";
   static const String sendOtp = "$baseUrl/auth/send-otp";
   static const String verifyOtp = "$baseUrl/auth/verify-otp";
-  static const String resendOtp = "$baseUrl/auth/resend-otp";
+  static const String resendOtp = "$baseUrl/auth/resend-otp";  // missing 
   static const String logout = "$baseUrl/auth/logout";
+
   static const String profile = "$baseUrl/user/profile";
   static const String userRole = "$baseUrl/auth/user-role";
   static const String updateProfile = "$baseUrl/user/update/profile";
+  
   static const String contacts = "$baseUrl/contacts";
   static const String addContact = "$baseUrl/add/contacts";
   static const String updateContact = "$baseUrl/update/contacts";
   static const String deleteContact = "$baseUrl/delete/contacts";
+  
   static const String signalTrigger = "$baseUrl/signal/trigger";
   static const String signalRespond = "$baseUrl/signal/respond";
   static const String communities = "$baseUrl/community";

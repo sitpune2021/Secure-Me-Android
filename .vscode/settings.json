@@ -2,5 +2,6 @@
   "files.associations": {
     "*.gradle.kts": "plaintext"
   },
-  "cmake.ignoreCMakeListsMissing": true
+  "cmake.ignoreCMakeListsMissing": true,
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

@@ -25,7 +25,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.sit.secure_me"
-    compileSdk = 36       // Flutter defaults to 34; you can keep flutter.compileSdkVersion
+    compileSdk = 37      // Flutter defaults to 34; you can keep flutter.compileSdkVersion
 
     ndkVersion = flutter.ndkVersion
 
@@ -44,9 +44,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
+}
 
     // ✅ Signing configuration
     signingConfigs {
