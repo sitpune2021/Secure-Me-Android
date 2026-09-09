@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,12 +28,43 @@ class _LoginViewState extends State<LoginView> {
     PermissionController(),
   );
 
+  final _emailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+
   bool obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // 🔹 Auto-open keyboard on the email field when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _emailFocus.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    mobileController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  /// 🔹 Shared "advance focus or submit" logic used by both onEditingComplete
+  /// and onSubmitted, since some keyboards only reliably fire one of the two.
+  void _handleFieldSubmit(VoidCallback action) {
+    action();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final roleColor = AppTheme.getThemeForRole(controller.selectedRole.value.name, isDark: themeController.isDarkMode.value).primaryColor;
+      final roleColor = AppTheme.getThemeForRole(
+        controller.selectedRole.value.name,
+        isDark: themeController.isDarkMode.value,
+      ).primaryColor;
       final isDark = themeController.isDarkMode.value;
       final textColor = isDark ? Colors.white : const Color(0xFF1E1E1E);
       final subTextColor = isDark ? Colors.white70 : const Color(0xFF7D7D7D);
@@ -57,43 +89,49 @@ class _LoginViewState extends State<LoginView> {
                     Positioned(
                       top: -100,
                       right: -50,
-                      child: Container(
-                        width: 300,
-                        height: 300,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: roleColor.withValues(alpha: 0.15),
-                        ),
-                      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
-                            begin: const Offset(1, 1),
-                            end: const Offset(1.2, 1.2),
-                            duration: const Duration(seconds: 5),
-                          ),
+                      child:
+                          Container(
+                                width: 300,
+                                height: 300,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: roleColor.withValues(alpha: 0.15),
+                                ),
+                              )
+                              .animate(onPlay: (c) => c.repeat(reverse: true))
+                              .scale(
+                                begin: const Offset(1, 1),
+                                end: const Offset(1.2, 1.2),
+                                duration: const Duration(seconds: 5),
+                              ),
                     ),
                     Center(
-                      child: Container(
-                        width: 90,
-                        height: 90,
-                        decoration: BoxDecoration(
-                          color: roleColor.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: roleColor.withValues(alpha: 0.4),
-                              blurRadius: 30,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Remix.shield_keyhole_fill,
-                          size: 44,
-                          color: roleColor,
-                        ),
-                      ).animate(onPlay: (c) => c.repeat()).shimmer(
-                            duration: const Duration(seconds: 3),
-                            color: Colors.white24,
-                          ),
+                      child:
+                          Container(
+                                width: 90,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: roleColor.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: roleColor.withValues(alpha: 0.4),
+                                      blurRadius: 30,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Remix.shield_keyhole_fill,
+                                  size: 44,
+                                  color: roleColor,
+                                ),
+                              )
+                              .animate(onPlay: (c) => c.repeat())
+                              .shimmer(
+                                duration: const Duration(seconds: 3),
+                                color: Colors.white24,
+                              ),
                     ),
                   ],
                 ),
@@ -147,10 +185,10 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Optimized Role Grid
                   _buildRoleSelector(roleColor, isDark),
-                  
+
                   const SizedBox(height: 32),
 
                   // Mode/Input visibility conditional
@@ -160,7 +198,9 @@ class _LoginViewState extends State<LoginView> {
                       height: 54,
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : Colors.black.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
                           color: isDark ? Colors.white10 : Colors.black12,
@@ -199,6 +239,13 @@ class _LoginViewState extends State<LoginView> {
                         icon: Remix.mail_fill,
                         color: roleColor,
                         isDark: isDark,
+                        focusNode: _emailFocus,
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: () => _handleFieldSubmit(
+                          () => FocusScope.of(
+                            context,
+                          ).requestFocus(_passwordFocus),
+                        ),
                         onChanged: (v) => controller.email.value = v,
                       ),
                       const SizedBox(height: 16),
@@ -208,22 +255,33 @@ class _LoginViewState extends State<LoginView> {
                         icon: Remix.lock_2_fill,
                         color: roleColor,
                         isDark: isDark,
+                        focusNode: _passwordFocus,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: () => _handleFieldSubmit(() {
+                          _passwordFocus.unfocus();
+                          controller.login();
+                        }),
                         obscure: obscurePassword,
                         onChanged: (v) => controller.password.value = v,
                         suffix: IconButton(
                           icon: Icon(
-                            obscurePassword ? Remix.eye_off_line : Remix.eye_line,
+                            obscurePassword
+                                ? Remix.eye_off_line
+                                : Remix.eye_line,
                             color: subTextColor.withValues(alpha: 0.5),
                             size: 20,
                           ),
-                          onPressed: () => setState(() => obscurePassword = !obscurePassword),
+                          onPressed: () => setState(
+                            () => obscurePassword = !obscurePassword,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
+                          onPressed: () =>
+                              Get.toNamed(AppRoutes.forgotPassword),
                           child: Text(
                             "Forgot Password?",
                             style: GoogleFonts.outfit(
@@ -241,6 +299,10 @@ class _LoginViewState extends State<LoginView> {
                         icon: Remix.mail_send_fill,
                         color: roleColor,
                         isDark: isDark,
+                        focusNode: _emailFocus,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: () =>
+                            _handleFieldSubmit(() => controller.login()),
                         onChanged: (v) => controller.email.value = v,
                       ),
                     ],
@@ -249,27 +311,44 @@ class _LoginViewState extends State<LoginView> {
 
                     // Tactical Login Button
                     ElevatedButton(
-                      onPressed: controller.isLoading.value ? null : () => controller.login(),
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : () => controller.login(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: roleColor,
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                         elevation: 10,
                         shadowColor: roleColor.withValues(alpha: 0.4),
                       ),
-                      child: controller.isLoading.value 
-                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                controller.isEmailLogin.value ? 'INITIATE LOGIN' : 'RECOVERY ACCESS',
-                                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
                               ),
-                              const SizedBox(width: 12),
-                              const Icon(Remix.arrow_right_line, size: 20),
-                            ],
-                          ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  controller.isEmailLogin.value
+                                      ? 'INITIATE LOGIN'
+                                      : 'RECOVERY ACCESS',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Icon(Remix.arrow_right_line, size: 20),
+                              ],
+                            ),
                     ),
 
                     const SizedBox(height: 48),
@@ -277,7 +356,13 @@ class _LoginViewState extends State<LoginView> {
                     // Divider with premium OR
                     Row(
                       children: [
-                        Expanded(child: Divider(color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05))),
+                        Expanded(
+                          child: Divider(
+                            color: isDark
+                                ? Colors.white10
+                                : Colors.black.withValues(alpha: 0.05),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
@@ -290,7 +375,13 @@ class _LoginViewState extends State<LoginView> {
                             ),
                           ),
                         ),
-                        Expanded(child: Divider(color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05))),
+                        Expanded(
+                          child: Divider(
+                            color: isDark
+                                ? Colors.white10
+                                : Colors.black.withValues(alpha: 0.05),
+                          ),
+                        ),
                       ],
                     ),
 
@@ -301,15 +392,24 @@ class _LoginViewState extends State<LoginView> {
                       child: GestureDetector(
                         onTap: () => Get.toNamed(AppRoutes.registerView),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 32,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: roleColor.withValues(alpha: 0.3),
+                            ),
                           ),
                           child: RichText(
                             text: TextSpan(
                               text: "NEW MEMBER? ",
-                              style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
+                              style: GoogleFonts.outfit(
+                                color: subTextColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
                               children: [
                                 TextSpan(
                                   text: "CREATE ACCOUNT",
@@ -329,7 +429,11 @@ class _LoginViewState extends State<LoginView> {
                     Center(
                       child: Column(
                         children: [
-                          Icon(Remix.shield_user_line, size: 48, color: subTextColor.withValues(alpha: 0.2)),
+                          Icon(
+                            Remix.shield_user_line,
+                            size: 48,
+                            color: subTextColor.withValues(alpha: 0.2),
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             "PLEASE SELECT YOUR ROLE TO PROCEED",
@@ -359,20 +463,33 @@ class _LoginViewState extends State<LoginView> {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: UserRole.values.where((role) => role != UserRole.None).map((role) {
+      children: UserRole.values.where((role) => role != UserRole.None).map((
+        role,
+      ) {
         final isSelected = controller.selectedRole.value == role;
-        final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
-        
+        final thisColor = AppTheme.getThemeForRole(
+          role.name,
+          isDark: isDark,
+        ).primaryColor;
+
         return GestureDetector(
           onTap: () => controller.selectedRole.value = role,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: isSelected ? thisColor.withValues(alpha: 0.15) : (isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05)),
+              color: isSelected
+                  ? thisColor.withValues(alpha: 0.15)
+                  : (isDark
+                        ? Colors.white10
+                        : Colors.black.withValues(alpha: 0.05)),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected ? thisColor : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05)),
+                color: isSelected
+                    ? thisColor
+                    : (isDark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.black.withValues(alpha: 0.05)),
                 width: 1.5,
               ),
             ),
@@ -380,9 +497,13 @@ class _LoginViewState extends State<LoginView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  isSelected ? Remix.checkbox_circle_fill : Remix.checkbox_blank_circle_line,
+                  isSelected
+                      ? Remix.checkbox_circle_fill
+                      : Remix.checkbox_blank_circle_line,
                   size: 16,
-                  color: isSelected ? thisColor : (isDark ? Colors.white24 : Colors.black26),
+                  color: isSelected
+                      ? thisColor
+                      : (isDark ? Colors.white24 : Colors.black26),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -390,7 +511,9 @@ class _LoginViewState extends State<LoginView> {
                   style: GoogleFonts.outfit(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                    color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black38),
+                    color: isSelected
+                        ? thisColor
+                        : (isDark ? Colors.white38 : Colors.black38),
                   ),
                 ),
               ],
@@ -401,7 +524,12 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildToggleBtn(String label, bool active, Color color, VoidCallback t) {
+  Widget _buildToggleBtn(
+    String label,
+    bool active,
+    Color color,
+    VoidCallback t,
+  ) {
     return GestureDetector(
       onTap: t,
       child: AnimatedContainer(
@@ -410,18 +538,24 @@ class _LoginViewState extends State<LoginView> {
         decoration: BoxDecoration(
           color: active ? color : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
-          boxShadow: active ? [
-            BoxShadow(
-              color: color.withValues(alpha: 0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            )
-          ] : [],
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
         ),
         child: Text(
           label.toUpperCase(),
           style: GoogleFonts.outfit(
-            color: active ? Colors.white : (themeController.isDarkMode.value ? Colors.white54 : Colors.black54),
+            color: active
+                ? Colors.white
+                : (themeController.isDarkMode.value
+                      ? Colors.white54
+                      : Colors.black54),
             fontSize: 11,
             fontWeight: active ? FontWeight.w900 : FontWeight.w700,
             letterSpacing: 1,
@@ -437,6 +571,9 @@ class _LoginViewState extends State<LoginView> {
     required IconData icon,
     required Color color,
     required bool isDark,
+    FocusNode? focusNode,
+    TextInputAction textInputAction = TextInputAction.next,
+    VoidCallback? onSubmitted,
     bool obscure = false,
     Widget? suffix,
     Function(String)? onChanged,
@@ -446,37 +583,60 @@ class _LoginViewState extends State<LoginView> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.05),
             ),
           ),
           child: TextField(
             controller: controller,
+            focusNode: focusNode,
+            textInputAction: textInputAction,
+            // 🔹 onEditingComplete fires reliably across keyboards (Gboard,
+            // Samsung, etc.) when the user taps the tick/next/done button —
+            // onSubmitted alone is not always fired by every keyboard.
+            onEditingComplete: () => onSubmitted?.call(),
+            onSubmitted: (_) => onSubmitted?.call(),
             obscureText: obscure,
             onChanged: onChanged,
             cursorColor: color,
             style: GoogleFonts.outfit(
               fontSize: 16,
-              color: isDark ? Colors.white : color.withValues(alpha: 0.9), // Keep white in dark mode for readability, or use lightened role color? Actually, user said change as per role.
+              color: isDark ? Colors.white : color.withValues(alpha: 0.9),
               fontWeight: FontWeight.w600,
             ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: GoogleFonts.outfit(
-                color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.2), 
-                fontWeight: FontWeight.w500
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.2)
+                    : Colors.black.withValues(alpha: 0.2),
+                fontWeight: FontWeight.w500,
               ),
-              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.5), size: 22),
+              prefixIcon: Icon(
+                icon,
+                color: color.withValues(alpha: 0.5),
+                size: 22,
+              ),
               suffixIcon: suffix,
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(color: color.withValues(alpha: 0.8), width: 2),
+                borderSide: BorderSide(
+                  color: color.withValues(alpha: 0.8),
+                  width: 2,
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 20,
+              ),
             ),
           ),
         ),

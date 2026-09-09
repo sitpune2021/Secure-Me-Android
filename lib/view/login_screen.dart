@@ -1,14 +1,14 @@
+
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/app/theme/app_theme.dart';
 import 'package:secure_me/controller/login_controller/login_controller.dart';
-import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/view/common/tactical_button.dart';
-import 'package:flutter/material.dart'; // Added this import as it was missing for StatefulWidget, State, Scaffold, etc.
+import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,7 +22,36 @@ class _LoginScreenState extends State<LoginScreen> {
   final ThemeController _themeController = Get.find<ThemeController>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  // 🔹 FocusNodes to chain fields — "next" on keyboard moves to the following field
+  final _emailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // 🔹 Auto-open keyboard on the email field when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _emailFocus.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  /// 🔹 Shared "advance focus or submit" logic used by both onEditingComplete
+  /// and onSubmitted, since some keyboards only reliably fire one of the two.
+  void _handleFieldSubmit(VoidCallback action) {
+    action();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Obx(() {
         final isDark = _themeController.isDarkMode.value;
-        final roleColor = AppTheme.getThemeForRole(_loginController.selectedRole.value.name, isDark: isDark).primaryColor;
+        final roleColor = AppTheme.getThemeForRole(
+          _loginController.selectedRole.value.name,
+          isDark: isDark,
+        ).primaryColor;
         final textColor = isDark ? Colors.white : const Color(0xFF1E1E1E);
         final subTextColor = isDark ? Colors.white70 : const Color(0xFF7D7D7D);
 
@@ -52,45 +84,54 @@ class _LoginScreenState extends State<LoginScreen> {
                     Positioned(
                       top: -100,
                       right: -50,
-                      child: Container(
-                        width: 300,
-                        height: 300,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: roleColor.withValues(alpha: 0.15),
-                        ),
-                      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
-                            begin: const Offset(1, 1),
-                            end: const Offset(1.2, 1.2),
-                            duration: const Duration(seconds: 5),
-                          ),
+                      child:
+                          Container(
+                                width: 300,
+                                height: 300,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: roleColor.withValues(alpha: 0.15),
+                                ),
+                              )
+                              .animate(onPlay: (c) => c.repeat(reverse: true))
+                              .scale(
+                                begin: const Offset(1, 1),
+                                end: const Offset(1.2, 1.2),
+                                duration: const Duration(seconds: 5),
+                              ),
                     ),
                     Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            height: 90,
-                            width: 90,
-                            decoration: BoxDecoration(
-                              color: isDark ? Colors.white : Colors.white,
-                              borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: roleColor.withValues(alpha: 0.3),
-                                  blurRadius: 30,
-                                  offset: const Offset(0, 10),
+                                height: 90,
+                                width: 90,
+                                decoration: BoxDecoration(
+                                  color: isDark ? Colors.white : Colors.white,
+                                  borderRadius: BorderRadius.circular(24),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: roleColor.withValues(alpha: 0.3),
+                                      blurRadius: 30,
+                                      offset: const Offset(0, 10),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
-                              child: Image.asset(
-                                'assets/images/logo.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ).animate().scale(duration: const Duration(milliseconds: 600), curve: Curves.easeOutBack).fade(),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Image.asset(
+                                    'assets/images/logo.png',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )
+                              .animate()
+                              .scale(
+                                duration: const Duration(milliseconds: 600),
+                                curve: Curves.easeOutBack,
+                              )
+                              .fade(),
                           const SizedBox(height: 16),
                           Text(
                             'SECURE ME',
@@ -100,7 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               letterSpacing: 4,
                               color: textColor,
                             ),
-                          ).animate().fadeIn(delay: const Duration(milliseconds: 200)),
+                          ).animate().fadeIn(
+                            delay: const Duration(milliseconds: 200),
+                          ),
                         ],
                       ),
                     ),
@@ -114,17 +157,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 16),
                   Text(
-                    'WELCOME BACK',
-                    style: GoogleFonts.outfit(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                      letterSpacing: -1,
-                    ),
-                  ).animate().fadeIn(delay: const Duration(milliseconds: 300)).slideX(begin: -0.1),
-                  
+                        'WELCOME BACK',
+                        style: GoogleFonts.outfit(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                          letterSpacing: -1,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: const Duration(milliseconds: 300))
+                      .slideX(begin: -0.1),
+
                   const SizedBox(height: 4),
-                  
+
                   Text(
                     'Access your tactical safety network',
                     style: GoogleFonts.outfit(
@@ -133,15 +179,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 1.4,
                     ),
                   ).animate().fadeIn(delay: const Duration(milliseconds: 400)),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Skip role selector as app is only for user role
-                  
                   const SizedBox(height: 20),
-                  
+
                   // Always show fields
                   _buildInputField(
                     label: 'EMAIL ADDRESS',
@@ -150,11 +195,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     icon: Remix.mail_fill,
                     isDark: isDark,
                     color: roleColor,
+                    focusNode: _emailFocus,
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmit: () => _handleFieldSubmit(
+                      () => FocusScope.of(context).requestFocus(_passwordFocus),
+                    ),
                     onChanged: (val) => _loginController.email.value = val,
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   _buildInputField(
                     label: 'PASSWORD',
                     hintText: '••••••••',
@@ -164,11 +214,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     isDark: isDark,
                     color: roleColor,
                     showForgotPassword: true,
+                    focusNode: _passwordFocus,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmit: () => _handleFieldSubmit(() {
+                      _passwordFocus.unfocus();
+                      _handleLogin();
+                    }),
                     onChanged: (val) => _loginController.password.value = val,
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Log In Button
                   TacticalButton(
                     label: 'INITIATE LOGIN',
@@ -177,23 +233,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     isLoading: _loginController.isLoading.value,
                     color: roleColor,
                   ).animate().fadeIn(delay: const Duration(milliseconds: 500)),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Footer
                   Center(
                     child: GestureDetector(
                       onTap: () => Get.toNamed(AppRoutes.registerView),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 32,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: roleColor.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: roleColor.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: RichText(
                           text: TextSpan(
                             text: "NEW MEMBER? ",
-                            style: GoogleFonts.outfit(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w500),
+                            style: GoogleFonts.outfit(
+                              color: subTextColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
                             children: [
                               TextSpan(
                                 text: "CREATE ACCOUNT",
@@ -208,18 +273,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildBottomBadge(Remix.shield_check_fill, 'END-TO-END\nENCRYPTED', isDark),
-                      Container(width: 4, height: 4, decoration: BoxDecoration(color: isDark ? Colors.white10 : Colors.black12, shape: BoxShape.circle)),
-                      _buildBottomBadge(Remix.error_warning_fill, 'TACTICAL\nPROTECTION', isDark),
+                      _buildBottomBadge(
+                        Remix.shield_check_fill,
+                        'END-TO-END\nENCRYPTED',
+                        isDark,
+                      ),
+                      Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white10 : Colors.black12,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      _buildBottomBadge(
+                        Remix.error_warning_fill,
+                        'TACTICAL\nPROTECTION',
+                        isDark,
+                      ),
                     ],
                   ).animate().fadeIn(delay: const Duration(milliseconds: 600)),
-                  
+
                   const SizedBox(height: 24),
                 ]),
               ),
@@ -230,80 +310,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildRoleSelector(Color roleColor, bool isDark) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: UserRole.values.where((role) => role != UserRole.None).map((role) {
-        final isSelected = _loginController.selectedRole.value == role;
-        final thisColor = AppTheme.getThemeForRole(role.name, isDark: isDark).primaryColor;
-        
-        String getRoleDisplayName(UserRole role) {
-          switch (role) {
-            case UserRole.Police:
-              return "Police";
-            case UserRole.Manager:
-              return "Manager";
-            case UserRole.Gym_Person:
-              return "Gym";
-            case UserRole.None:
-              return "None";
-          }
-        }
-
-        IconData getRoleIcon(UserRole role) {
-          switch (role) {
-            case UserRole.Police:
-              return Remix.shield_star_fill;
-            case UserRole.Manager:
-              return Remix.briefcase_4_fill;
-            case UserRole.Gym_Person:
-              return Remix.user_smile_fill;
-            case UserRole.None:
-              return Remix.question_line;
-          }
-        }
-
-        return Padding(
-          padding: const EdgeInsets.only(right: 0),
-          child: GestureDetector(
-            onTap: () => _loginController.selectedRole.value = role,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isSelected ? thisColor.withValues(alpha: 0.12) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03)),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isSelected ? thisColor : (isDark ? Colors.white10 : Colors.black12),
-                  width: isSelected ? 1.5 : 1,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    getRoleIcon(role), 
-                    size: 16, 
-                    color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45)
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    getRoleDisplayName(role),
-                    style: GoogleFonts.outfit(
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                      color: isSelected ? thisColor : (isDark ? Colors.white38 : Colors.black45),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
 
   Widget _buildBottomBadge(IconData icon, String text, bool isDark) {
     return Row(
@@ -333,6 +339,9 @@ class _LoginScreenState extends State<LoginScreen> {
     required Color color,
     bool isPassword = false,
     bool showForgotPassword = false,
+    FocusNode? focusNode,
+    TextInputAction textInputAction = TextInputAction.next,
+    VoidCallback? onFieldSubmit,
     Function(String)? onChanged,
   }) {
     return Column(
@@ -368,14 +377,25 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.03),
             ),
           ),
           child: TextField(
             controller: controller,
+            focusNode: focusNode,
+            textInputAction: textInputAction,
+            // 🔹 onEditingComplete fires reliably across keyboards (Gboard,
+            // Samsung, etc.) when the user taps the tick/next/done button —
+            // onSubmitted alone is not always fired by every keyboard.
+            onEditingComplete: () => onFieldSubmit?.call(),
+            onSubmitted: (_) => onFieldSubmit?.call(),
             onChanged: onChanged,
             obscureText: isPassword && _obscurePassword,
             cursorColor: color,
@@ -387,27 +407,40 @@ class _LoginScreenState extends State<LoginScreen> {
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: GoogleFonts.outfit(
-                color: isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.2),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.2)
+                    : Colors.black.withValues(alpha: 0.2),
                 fontWeight: FontWeight.w500,
               ),
-              prefixIcon: Icon(icon, color: color.withValues(alpha: 0.5), size: 20),
-              suffixIcon: isPassword 
-                ? IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Remix.eye_off_fill : Remix.eye_fill,
-                      color: isDark ? Colors.white24 : Colors.black26,
-                      size: 20,
-                    ),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                  )
-                : null,
+              prefixIcon: Icon(
+                icon,
+                color: color.withValues(alpha: 0.5),
+                size: 20,
+              ),
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Remix.eye_off_fill : Remix.eye_fill,
+                        color: isDark ? Colors.white24 : Colors.black26,
+                        size: 20,
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                    )
+                  : null,
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(color: color.withValues(alpha: 0.8), width: 2),
+                borderSide: BorderSide(
+                  color: color.withValues(alpha: 0.8),
+                  width: 2,
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 14,
+              ),
             ),
           ),
         ),

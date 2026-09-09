@@ -158,11 +158,12 @@ class LoginController extends GetxController {
             // Notify global AuthController
             if (Get.isRegistered<AuthController>()) {
               final authController = Get.find<AuthController>();
-              
+
               UserRole role = UserRole.Manager;
-              final roleStr = (user['user_role'] ?? user['role'])?.toString() ?? 'Manager';
+              final roleStr =
+                  (user['user_role'] ?? user['role'])?.toString() ?? 'Manager';
               final normalizedRole = roleStr.toLowerCase();
-              
+
               if (normalizedRole.contains('gym')) {
                 role = UserRole.Gym_Person;
               } else if (normalizedRole.contains('police')) {
@@ -171,15 +172,17 @@ class LoginController extends GetxController {
                 role = UserRole.Manager;
               }
 
-              authController.setUser(UserModel(
-                 id: user['id']?.toString() ?? '',
-                 name: user['name'] ?? 'User',
-                 email: user['email'] ?? '',
-                 phone: (user['phone_no'] ?? user['phone']) ?? '',
-                 role: role,
-                 roleString: roleStr,
-                 profileImage: user['profile_image'],
-              ));
+              authController.setUser(
+                UserModel(
+                  id: user['id']?.toString() ?? '',
+                  name: user['name'] ?? 'User',
+                  email: user['email'] ?? '',
+                  phone: (user['phone_no'] ?? user['phone']) ?? '',
+                  role: role,
+                  roleString: roleStr,
+                  profileImage: user['profile_image'],
+                ),
+              );
             }
 
             dev.log(
@@ -221,7 +224,8 @@ class LoginController extends GetxController {
               );
               AppSnackbar.show(
                 title: "Data Error",
-                message: "Login response is missing required data. Please contact support.",
+                message:
+                    "Login response is missing required data. Please contact support.",
                 isError: true,
               );
               return;
