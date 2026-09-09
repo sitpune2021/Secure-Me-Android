@@ -329,17 +329,22 @@ class ProfileController extends GetxController {
     }
   }
 
-  Future<void> logout() async {
+  Future<Map<String, dynamic>> logout() async {
     isLoading.value = true;
     dev.log('🔄 Logging out...', name: 'ProfileController');
 
     try {
       String? token = await PreferenceHelper.getToken();
+      String? apiMessage;
+      bool apiSuccess = true;
+
       if (token != null && token.isNotEmpty) {
-        // According to user request #6, logout is a GET request to /api/auth/logout
-        await http
-            .get(
-              Uri.parse(AppUrl.logout),
+        final uri = Uri.parse(AppUrl.logout);
+        dev.log('🌐 LOGOUT URL: $uri', name: 'ProfileController');
+
+        final response = await http
+            .post(
+              uri,
               headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -347,25 +352,53 @@ class ProfileController extends GetxController {
               },
             )
             .timeout(const Duration(seconds: 15));
+
+        dev.log(
+          '📡 Logout Status: ${response.statusCode}',
+          name: 'ProfileController',
+        );
+        dev.log(
+          '📥 Logout RAW body: ${response.body}',
+          name: 'ProfileController',
+        );
+
+        try {
+          final data = jsonDecode(response.body) as Map<String, dynamic>;
+          apiMessage = data['message']?.toString();
+          apiSuccess =
+              (response.statusCode == 200) && (data['status'] != false);
+        } catch (e) {
+          dev.log(
+            '❌ Logout response not valid JSON: $e',
+            name: 'ProfileController',
+          );
+          apiMessage = null;
+        }
       }
 
       await PreferenceHelper.clearUserData();
       isLoading.value = false;
-      dev.log('✅ Logout successful', name: 'ProfileController');
-
-      AppSnackbar.show(
-        title: "Logout",
-        message: "Successfully logged out from current session.",
-        isSuccess: true,
+      dev.log(
+        '✅ Logout successful (local data cleared)',
+        name: 'ProfileController',
       );
 
       Get.offAllNamed(AppRoutes.loginView);
+
+      return {
+        'success': apiSuccess,
+        'message':
+            apiMessage ?? 'Successfully logged out from current session.',
+      };
     } catch (e) {
       isLoading.value = false;
       dev.log('❌ Error during logout: $e', name: 'ProfileController');
-      // Even if API fails, clear local data and go to login
       await PreferenceHelper.clearUserData();
       Get.offAllNamed(AppRoutes.loginView);
+      return {
+        'success': false,
+        'message': 'Logged out locally, but server request failed: $e',
+      };
     }
   }
 }

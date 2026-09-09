@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:secure_me/view/common/app_snackbar.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:secure_me/const/app_url.dart';
@@ -77,9 +78,19 @@ class _ProfileViewState extends State<ProfileView> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pop(ctx);
-                      profileController.logout();
+                      final result = await profileController.logout();
+                      final bool success = result['success'] == true;
+                      final String message =
+                          result['message']?.toString() ?? '';
+
+                      AppSnackbar.show(
+                        title: success ? "Logged Out" : "Logout Issue",
+                        message: message,
+                        isSuccess: success,
+                        isError: !success,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
