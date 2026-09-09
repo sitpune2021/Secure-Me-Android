@@ -40,12 +40,19 @@ class _ProfileViewState extends State<ProfileView> {
                 color: Colors.red.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Remix.logout_box_line, color: Colors.red, size: 32),
+              child: const Icon(
+                Remix.logout_box_line,
+                color: Colors.red,
+                size: 32,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
               "Sign Out",
-              style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -59,7 +66,12 @@ class _ProfileViewState extends State<ProfileView> {
                 Expanded(
                   child: TextButton(
                     onPressed: () => Navigator.pop(ctx),
-                    child: Text("Cancel", style: GoogleFonts.outfit(color: Theme.of(context).hintColor)),
+                    child: Text(
+                      "Cancel",
+                      style: GoogleFonts.outfit(
+                        color: Theme.of(context).hintColor,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -72,9 +84,14 @@ class _ProfileViewState extends State<ProfileView> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    child: Text("Sign Out", style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                    child: Text(
+                      "Sign Out",
+                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
@@ -118,24 +135,59 @@ class _ProfileViewState extends State<ProfileView> {
                     _buildSectionHeader("PERSONAL INFORMATION"),
                     const SizedBox(height: 12),
                     _buildInfoCard(context, [
-                      _InfoItem(icon: Remix.mail_line, label: "Email", value: email),
-                      _InfoItem(icon: Remix.phone_line, label: "Phone", value: phone),
+                      _InfoItem(
+                        icon: Remix.mail_line,
+                        label: "Email",
+                        value: email,
+                      ),
+                      _InfoItem(
+                        icon: Remix.phone_line,
+                        label: "Phone",
+                        value: phone,
+                      ),
                     ]),
                     const SizedBox(height: 32),
                     _buildSectionHeader("PREFERENCES"),
                     const SizedBox(height: 12),
                     _buildMenuSection(context, [
-                      _MenuData(icon: Remix.notification_4_line, label: "Notifications", color: Colors.indigo, route: AppRoutes.pushnotification),
-                      _MenuData(icon: Remix.palette_line, label: "Appearance", color: Colors.pink, route: AppRoutes.theme),
-                      _MenuData(icon: Remix.shield_user_line, label: "Privacy & Security", color: Colors.teal),
+                      _MenuData(
+                        icon: Remix.notification_4_line,
+                        label: "Notifications",
+                        color: Colors.indigo,
+                        route: AppRoutes.pushnotification,
+                      ),
+                      _MenuData(
+                        icon: Remix.palette_line,
+                        label: "Appearance",
+                        color: Colors.pink,
+                        route: AppRoutes.theme,
+                      ),
+                      _MenuData(
+                        icon: Remix.shield_user_line,
+                        label: "Privacy & Security",
+                        color: Colors.teal,
+                      ),
                     ]),
                     const SizedBox(height: 32),
                     _buildSectionHeader("SUPPORT"),
                     const SizedBox(height: 12),
                     _buildMenuSection(context, [
-                      _MenuData(icon: Remix.question_line, label: "Help Center", color: Colors.blue),
-                      _MenuData(icon: Remix.information_line, label: "About Secure Me", color: Colors.amber),
-                      _MenuData(icon: Remix.logout_box_r_line, label: "Sign Out", color: Colors.red, isDestructive: true),
+                      _MenuData(
+                        icon: Remix.question_line,
+                        label: "Help Center",
+                        color: Colors.blue,
+                      ),
+                      _MenuData(
+                        icon: Remix.information_line,
+                        label: "About Secure Me",
+                        color: Colors.amber,
+                      ),
+                      _MenuData(
+                        icon: Remix.logout_box_r_line,
+                        label: "Sign Out",
+                        color: Colors.red,
+                        isDestructive: true,
+                      ),
                     ]),
                     const SizedBox(height: 48),
                     Center(
@@ -143,7 +195,11 @@ class _ProfileViewState extends State<ProfileView> {
                         opacity: 0.3,
                         child: Text(
                           "VERSION 2.0.1",
-                          style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2),
+                          style: GoogleFonts.outfit(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -158,7 +214,12 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context, String name, String role, String? image) {
+  Widget _buildAppBar(
+    BuildContext context,
+    String name,
+    String role,
+    String? image,
+  ) {
     final primaryColor = Theme.of(context).primaryColor;
     final scafBg = Theme.of(context).scaffoldBackgroundColor;
 
@@ -233,7 +294,10 @@ class _ProfileViewState extends State<ProfileView> {
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
                   ),
                   child: Container(
                     padding: const EdgeInsets.all(4),
@@ -244,8 +308,16 @@ class _ProfileViewState extends State<ProfileView> {
                     child: CircleAvatar(
                       radius: 50,
                       backgroundColor: scafBg.withValues(alpha: 0.2),
-                      backgroundImage: image != null ? NetworkImage(AppUrl.buildImageUrl(image)) : null,
-                      child: image == null ? const Icon(Remix.user_3_fill, size: 40, color: Colors.white) : null,
+                      backgroundImage: image != null
+                          ? NetworkImage(AppUrl.buildImageUrl(image))
+                          : null,
+                      child: image == null
+                          ? const Icon(
+                              Remix.user_3_fill,
+                              size: 40,
+                              color: Colors.white,
+                            )
+                          : null,
                     ),
                   ),
                 ),
@@ -261,16 +333,26 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 0.5),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 0.5,
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Remix.shield_check_fill, size: 12, color: Colors.white.withValues(alpha: 0.9)),
+                      Icon(
+                        Remix.shield_check_fill,
+                        size: 12,
+                        color: Colors.white.withValues(alpha: 0.9),
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         role.toUpperCase(),
@@ -313,23 +395,53 @@ class _ProfileViewState extends State<ProfileView> {
       crossAxisSpacing: 12,
       childAspectRatio: 0.9,
       children: [
-        _buildActionTile(context, Remix.edit_box_line, "Edit Profile", Colors.blue, () => Get.toNamed(AppRoutes.editProfile)),
-        _buildActionTile(context, Remix.map_pin_user_line, "Locations", Colors.green, () => Get.toNamed(AppRoutes.location)),
-        _buildActionTile(context, Remix.contacts_line, "Contacts", Colors.orange, () => Get.toNamed(AppRoutes.contactList)),
+        _buildActionTile(
+          context,
+          Remix.edit_box_line,
+          "Edit Profile",
+          Colors.blue,
+          () => Get.toNamed(AppRoutes.editProfile),
+        ),
+        _buildActionTile(
+          context,
+          Remix.map_pin_user_line,
+          "Locations",
+          Colors.green,
+          () => Get.toNamed(AppRoutes.location),
+        ),
+        _buildActionTile(
+          context,
+          Remix.contacts_line,
+          "Contacts",
+          Colors.orange,
+          () => Get.toNamed(AppRoutes.contactList),
+        ),
       ],
     );
   }
 
-  Widget _buildActionTile(BuildContext context, IconData icon, String label, Color color, VoidCallback onTap) {
+  Widget _buildActionTile(
+    BuildContext context,
+    IconData icon,
+    String label,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+          ),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
         child: Column(
@@ -337,11 +449,21 @@ class _ProfileViewState extends State<ProfileView> {
           children: [
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
               child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(height: 12),
-            Text(label, style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
@@ -354,7 +476,9 @@ class _ProfileViewState extends State<ProfileView> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+        ),
       ),
       child: Column(
         children: items.map((item) {
@@ -368,16 +492,34 @@ class _ProfileViewState extends State<ProfileView> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.label, style: GoogleFonts.outfit(fontSize: 11, color: Theme.of(context).hintColor, fontWeight: FontWeight.w600)),
-                      Text(item.value, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(
+                        item.label,
+                        style: GoogleFonts.outfit(
+                          fontSize: 11,
+                          color: Theme.of(context).hintColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        item.value,
+                        style: GoogleFonts.outfit(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
-              if (!isLast) Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Divider(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
-              ),
+              if (!isLast)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Divider(
+                    color: Theme.of(
+                      context,
+                    ).dividerColor.withValues(alpha: 0.1),
+                  ),
+                ),
             ],
           );
         }).toList(),
@@ -386,31 +528,59 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildMenuSection(BuildContext context, List<_MenuData> items) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
-      ),
-      child: Column(
-        children: items.map((item) {
-          final isLast = items.indexOf(item) == items.length - 1;
-          return Column(
-            children: [
-              ListTile(
-                onTap: item.isDestructive ? () => _showLogoutDialog(context) : (item.route != null ? () => Get.toNamed(item.route!) : null),
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: item.color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-                  child: Icon(item.icon, color: item.color, size: 20),
+    return Material(
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+          ),
+        ),
+        child: Column(
+          children: items.map((item) {
+            final isLast = items.indexOf(item) == items.length - 1;
+            return Column(
+              children: [
+                ListTile(
+                  onTap: item.isDestructive
+                      ? () => _showLogoutDialog(context)
+                      : (item.route != null
+                            ? () => Get.toNamed(item.route!)
+                            : null),
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: item.color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(item.icon, color: item.color, size: 20),
+                  ),
+                  title: Text(
+                    item.label,
+                    style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: item.isDestructive ? Colors.red : null,
+                    ),
+                  ),
+                  trailing: const Icon(Remix.arrow_right_s_line, size: 18),
                 ),
-                title: Text(item.label, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w600, color: item.isDestructive ? Colors.red : null)),
-                trailing: const Icon(Remix.arrow_right_s_line, size: 18),
-              ),
-              if (!isLast) Divider(indent: 60, endIndent: 20, color: Theme.of(context).dividerColor.withValues(alpha: 0.1), height: 1),
-            ],
-          );
-        }).toList(),
+                if (!isLast)
+                  Divider(
+                    indent: 60,
+                    endIndent: 20,
+                    color: Theme.of(
+                      context,
+                    ).dividerColor.withValues(alpha: 0.1),
+                    height: 1,
+                  ),
+              ],
+            );
+          }).toList(),
+        ),
       ),
     );
   }
@@ -419,7 +589,12 @@ class _ProfileViewState extends State<ProfileView> {
     return Shimmer.fromColors(
       baseColor: Theme.of(context).dividerColor.withValues(alpha: 0.2),
       highlightColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
-      child: Center(child: Text("LOADING PROFILE...", style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
+      child: Center(
+        child: Text(
+          "LOADING PROFILE...",
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }
@@ -437,5 +612,11 @@ class _MenuData {
   final Color color;
   final String? route;
   final bool isDestructive;
-  _MenuData({required this.icon, required this.label, required this.color, this.route, this.isDestructive = false});
+  _MenuData({
+    required this.icon,
+    required this.label,
+    required this.color,
+    this.route,
+    this.isDestructive = false,
+  });
 }

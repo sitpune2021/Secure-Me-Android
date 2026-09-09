@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:developer';
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,7 +12,6 @@ import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/profile_controller/profile_controller.dart';
 import 'package:secure_me/const/app_url.dart';
-
 import 'package:secure_me/core/utils/preference_helper.dart';
 import 'package:secure_me/core/utils/validator.dart';
 import 'package:secure_me/view/common/tactical_button.dart';
@@ -143,9 +143,14 @@ class _EditProfileViewState extends State<EditProfileView> {
     required bool isDark,
   }) {
     final authController = Get.find<AuthController>();
-    final role = authController.user.value?.roleString ?? 
-                 profileController.userData['user_role'] ?? 'user';
-    final primaryColor = AppTheme.getThemeForRole(role, isDark: isDark).primaryColor;
+    final role =
+        authController.user.value?.roleString ??
+        profileController.userData['user_role'] ??
+        'user';
+    final primaryColor = AppTheme.getThemeForRole(
+      role,
+      isDark: isDark,
+    ).primaryColor;
 
     return GestureDetector(
       onTap: onTap,
@@ -157,11 +162,7 @@ class _EditProfileViewState extends State<EditProfileView> {
               color: primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              size: 32,
-              color: primaryColor,
-            ),
+            child: Icon(icon, size: 32, color: primaryColor),
           ),
           const SizedBox(height: 12),
           Text(
@@ -201,11 +202,13 @@ class _EditProfileViewState extends State<EditProfileView> {
       body: Obx(() {
         final dark = _effectiveDark;
         final authController = Get.find<AuthController>();
-        final role = authController.user.value?.roleString ?? 
-                     profileController.userData['user_role'] ?? 'user';
+        final role =
+            authController.user.value?.roleString ??
+            profileController.userData['user_role'] ??
+            'user';
         final themeData = AppTheme.getThemeForRole(role, isDark: dark);
         final primary = themeData.primaryColor;
-        
+
         final bg = AppColors.background(dark);
         final card = AppColors.card(dark);
         final txt = AppColors.text(dark);
@@ -273,28 +276,54 @@ class _EditProfileViewState extends State<EditProfileView> {
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      width: 1.5,
+                                    ),
                                   ),
                                   child: CircleAvatar(
                                     radius: 60,
                                     backgroundColor: Colors.white10,
                                     backgroundImage: _imageFile != null
                                         ? FileImage(_imageFile!)
-                                        : (_profileImage != null ? NetworkImage(AppUrl.buildImageUrl(_profileImage!)) : null),
-                                    child: (_profileImage == null && _imageFile == null)
-                                        ? const Icon(Remix.user_3_line, size: 50, color: Colors.white)
+                                        : (_profileImage != null
+                                              ? NetworkImage(
+                                                  AppUrl.buildImageUrl(
+                                                    _profileImage!,
+                                                  ),
+                                                )
+                                              : null),
+                                    child:
+                                        (_profileImage == null &&
+                                            _imageFile == null)
+                                        ? const Icon(
+                                            Remix.user_3_line,
+                                            size: 50,
+                                            color: Colors.white,
+                                          )
                                         : null,
                                   ),
                                 ),
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
+
+                            // Camera Icon
+                            GestureDetector(
+                              onTap: _pickImage,
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Remix.camera_switch_line,
+                                  size: 18,
+                                  color: primary,
+                                ),
                               ),
-                              child: Icon(Remix.camera_switch_line, size: 18, color: primary),
                             ),
                           ],
                         ),
@@ -318,7 +347,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                         decoration: BoxDecoration(
                           color: card,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: divider.withValues(alpha: 0.05)),
+                          border: Border.all(
+                            color: divider.withValues(alpha: 0.05),
+                          ),
                         ),
                         child: Column(
                           children: [
@@ -381,23 +412,38 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   void _saveProfile(Color primary) async {
+    dev.log('🟡 _saveProfile CALLED', name: 'EditProfileView');
     if (_formKey.currentState!.validate()) {
+      dev.log(
+        '🟢 Form validated, calling updateProfile...',
+        name: 'EditProfileView',
+      );
       setState(() => _isSaving = true);
-      bool success = await profileController.updateProfile(
+      final result = await profileController.updateProfile(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
         image: _imageFile,
       );
+      dev.log('🔵 updateProfile returned: $result', name: 'EditProfileView');
       setState(() => _isSaving = false);
+
+      final bool success = result['success'] == true;
+      final String message = result['message']?.toString() ?? '';
+
+      AppSnackbar.show(
+        title: success ? "Profile Synchronized" : "Update Failed",
+        message: message,
+        isSuccess: success,
+        isError: !success,
+      );
+
       if (success) {
-        AppSnackbar.show(
-          title: "Profile Synchronized",
-          message: "Your tactical profile has been updated successfully.",
-          isSuccess: true,
-        );
-        Get.back();
+        await Future.delayed(const Duration(milliseconds: 900));
+        if (mounted) Get.back();
       }
+    } else {
+      dev.log('🔴 Form validation FAILED', name: 'EditProfileView');
     }
   }
 

@@ -61,7 +61,6 @@ class ProfileController extends GetxController {
           .get(
             Uri.parse(AppUrl.profile),
             headers: {
-              // 'Content-Type': 'application/json',
               'Accept': 'application/json',
               'Authorization': 'Bearer ${token.trim()}',
             },
@@ -84,7 +83,14 @@ class ProfileController extends GetxController {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['status'] == true) {
-        userData.value = data['data'];
+        // 🔹 API nests the actual user object under data['data']['user'] —
+        // unwrap it here rather than assuming data['data'] is the user map.
+        final Map<String, dynamic> rawData =
+            (data['data'] as Map<String, dynamic>?) ?? {};
+        final Map<String, dynamic> apiUser =
+            (rawData['user'] as Map<String, dynamic>?) ?? rawData;
+
+        userData.value = apiUser;
         dev.log(
           '✅ Profile retrieved successfully: ${userData['name']}',
           name: 'ProfileController',
@@ -109,6 +115,17 @@ class ProfileController extends GetxController {
           await PreferenceHelper.saveUserCreatedAt(userData['created_at']);
         }
 
+        // --- Trust & Verification (Safety System) ---
+        // 🔹 Backend doesn't currently return is_verified/trust_score/
+        // people_helped (only is_active/is_available seen so far) — these
+        // fall back to defaults until those fields exist or their real
+        // names are confirmed.
+        final bool isVerified = userData['is_verified'] == true;
+        final int trustScore =
+            int.tryParse('${userData['trust_score'] ?? 50}') ?? 50;
+        final int peopleHelped =
+            int.tryParse('${userData['people_helped'] ?? 0}') ?? 0;
+
         // --- Sync with global AuthController ---
         if (Get.isRegistered<AuthController>()) {
           final auth = Get.find<AuthController>();
@@ -117,16 +134,22 @@ class ProfileController extends GetxController {
             final norm = rawRole.toLowerCase();
             if (norm.contains('gym')) {
               roleEnum = UserRole.Gym_Person;
-            } else if (norm.contains('police')) roleEnum = UserRole.Police;
+            } else if (norm.contains('police')) {
+              roleEnum = UserRole.Police;
+            }
           }
 
           auth.updateUserData(
+            id: userData['id']?.toString(),
             name: userData['name'],
             email: userData['email'],
             phone: userData['phone_no'],
             profileImage: userData['profile_image'],
             roleString: rawRole,
             role: roleEnum,
+            isVerified: isVerified,
+            trustScore: trustScore,
+            peopleHelped: peopleHelped,
           );
         }
       } else {
@@ -140,7 +163,8 @@ class ProfileController extends GetxController {
       dev.log('❌ Error fetching profile: $e', name: 'ProfileController');
       AppSnackbar.show(
         title: "Connection Error",
-        message: "Failed to load profile. Please check your network connection.",
+        message:
+            "Failed to load profile. Please check your network connection.",
         isError: true,
       );
     }
@@ -187,7 +211,7 @@ class ProfileController extends GetxController {
     }
   }
 
-  Future<bool> updateProfile({
+  Future<Map<String, dynamic>> updateProfile({
     required String name,
     required String email,
     required String phone,
@@ -198,12 +222,8 @@ class ProfileController extends GetxController {
     final phoneError = Validator.validatePhone(phone);
 
     if (nameError != null || emailError != null || phoneError != null) {
-      AppSnackbar.show(
-        title: "Validation Error",
-        message: nameError ?? emailError ?? phoneError!,
-        isError: true,
-      );
-      return false;
+      final msg = nameError ?? emailError ?? phoneError!;
+      return {'success': false, 'message': msg};
     }
 
     isLoading.value = true;
@@ -214,14 +234,13 @@ class ProfileController extends GetxController {
 
       if (token == null || token.isEmpty) {
         isLoading.value = false;
-        return false;
+        return {'success': false, 'message': 'No auth token found'};
       }
 
-      // Use MultipartRequest for profile update to support image
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(AppUrl.updateProfile),
-      );
+      final uri = Uri.parse(AppUrl.updateProfile);
+      dev.log('🌐 PROFILE UPDATE URL: $uri', name: 'ProfileController');
+
+      var request = http.MultipartRequest('POST', uri);
 
       request.headers.addAll({
         'Accept': 'application/json',
@@ -231,12 +250,10 @@ class ProfileController extends GetxController {
       request.fields['name'] = name;
       request.fields['email'] = email;
       request.fields['phone_no'] = phone;
-      request.fields['_method'] =
-          'PUT'; // Common requirement for Laravel multipart updates
 
       if (image != null) {
         request.files.add(
-          await http.MultipartFile.fromPath('image', image.path),
+          await http.MultipartFile.fromPath('profile_image', image.path),
         );
         dev.log(
           '📸 Profile image attached: ${image.path}',
@@ -244,45 +261,71 @@ class ProfileController extends GetxController {
         );
       }
 
+      dev.log(
+        '📤 Request fields: ${request.fields}',
+        name: 'ProfileController',
+      );
+
       var streamedResponse = await request.send().timeout(
         const Duration(seconds: 30),
       );
       var response = await http.Response.fromStream(streamedResponse);
 
-      final data = jsonDecode(response.body);
+      dev.log(
+        '📡 Update Profile Status: ${response.statusCode}',
+        name: 'ProfileController',
+      );
+      dev.log(
+        '📥 Update Profile RAW body: ${response.body}',
+        name: 'ProfileController',
+      );
+
+      Map<String, dynamic> data;
+      try {
+        data = jsonDecode(response.body) as Map<String, dynamic>;
+      } catch (e) {
+        dev.log('❌ Response was not valid JSON: $e', name: 'ProfileController');
+        isLoading.value = false;
+        return {
+          'success': false,
+          'message':
+              'Unexpected server response (status ${response.statusCode})',
+        };
+      }
+
+      final String? apiMessage = data['message']?.toString();
+      dev.log('💬 Parsed apiMessage: $apiMessage', name: 'ProfileController');
 
       if (response.statusCode == 200 && data['status'] == true) {
         dev.log(
-          '✅ Profile updated successfully: ${data['message']}',
+          '✅ Profile updated successfully: $apiMessage',
           name: 'ProfileController',
         );
-
-        // Fetch fresh profile data to sync everything
         await fetchProfile();
-
-        return true;
+        return {
+          'success': true,
+          'message': apiMessage ?? 'Profile updated successfully',
+        };
       } else {
         isLoading.value = false;
         dev.log(
-          '❌ Failed to update profile: ${data['message']}',
+          '❌ Failed to update profile: $apiMessage',
           name: 'ProfileController',
         );
-        AppSnackbar.show(
-          title: "Error",
-          message: data['message'] ?? "Failed to update profile",
-          isError: true,
-        );
-        return false;
+        return {
+          'success': false,
+          'message':
+              apiMessage ??
+              'Failed to update profile (status ${response.statusCode})',
+        };
       }
     } catch (e) {
       isLoading.value = false;
       dev.log('❌ Error updating profile: $e', name: 'ProfileController');
-      AppSnackbar.show(
-        title: "Error",
-        message: "Could not connect to the server",
-        isError: true,
-      );
-      return false;
+      return {
+        'success': false,
+        'message': 'Could not connect to the server: $e',
+      };
     }
   }
 
