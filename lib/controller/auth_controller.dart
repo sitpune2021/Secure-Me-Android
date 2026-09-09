@@ -1,3 +1,4 @@
+
 import 'dart:developer' as dev;
 import 'package:get/get.dart';
 import 'package:secure_me/app/routes/app_pages.dart';
@@ -14,7 +15,8 @@ class AuthController extends GetxController {
 
   // New fields for managing login/registration state
   final Rx<UserRole> selectedRole = UserRole.None.obs;
-  bool _isPhoneLogin = false; // Tracks if the user is trying to login with phone
+  bool _isPhoneLogin =
+      false; // Tracks if the user is trying to login with phone
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -39,41 +41,50 @@ class AuthController extends GetxController {
   void onInit() {
     super.onInit();
     _loadUserSession();
-    // Proactively request core permissions on startup
+
     requestInitialPermissions();
+  }
+
+  @override
+  void onClose() {
+    // 🔹 Dispose controllers owned by this GetxController to avoid leaks
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.onClose();
   }
 
   void _loadUserSession() async {
     final token = await PreferenceHelper.getToken();
     final isLoggedIn = await PreferenceHelper.isLoggedIn();
-    
-    if (token != null && isLoggedIn) {
-       final id = await PreferenceHelper.getUserId() ?? '';
-       final name = await PreferenceHelper.getUserName() ?? 'User';
-       final email = await PreferenceHelper.getUserEmail() ?? '';
-       final phone = await PreferenceHelper.getUserPhone() ?? '';
-       final roleStr = await PreferenceHelper.getUserRole() ?? 'user';
-       final profileImage = await PreferenceHelper.getUserProfileImage();
-       
-        UserRole role = UserRole.Manager;
-        final normalizedRole = roleStr.toLowerCase();
-        if (normalizedRole.contains('gym')) {
-          role = UserRole.Gym_Person;
-        } else if (normalizedRole.contains('police')) {
-          role = UserRole.Police;
-        } else {
-          role = UserRole.Manager;
-        }
 
-        user.value = UserModel(
-         id: id,
-         name: name,
-         email: email,
-         phone: phone,
-         role: role,
-         roleString: roleStr,
-         profileImage: profileImage,
-       );
+    if (token != null && isLoggedIn) {
+      final id = await PreferenceHelper.getUserId() ?? '';
+      final name = await PreferenceHelper.getUserName() ?? 'User';
+      final email = await PreferenceHelper.getUserEmail() ?? '';
+      final phone = await PreferenceHelper.getUserPhone() ?? '';
+      final roleStr = await PreferenceHelper.getUserRole() ?? 'user';
+      final profileImage = await PreferenceHelper.getUserProfileImage();
+
+      UserRole role = UserRole.Manager;
+      final normalizedRole = roleStr.toLowerCase();
+      if (normalizedRole.contains('gym')) {
+        role = UserRole.Gym_Person;
+      } else if (normalizedRole.contains('police')) {
+        role = UserRole.Police;
+      } else {
+        role = UserRole.Manager;
+      }
+
+      user.value = UserModel(
+        id: id,
+        name: name,
+        email: email,
+        phone: phone,
+        role: role,
+        roleString: roleStr,
+        profileImage: profileImage,
+      );
     }
   }
 
@@ -120,7 +131,7 @@ class AuthController extends GetxController {
     // Mock Forgot Password delay
     await Future.delayed(const Duration(seconds: 1));
     Get.snackbar(
-      "Reset Link Sent", 
+      "Reset Link Sent",
       "A password reset link has been sent to $email",
       backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.7),
       colorText: Colors.white,
@@ -148,27 +159,21 @@ class AuthController extends GetxController {
   }
 
   // --- Early Permission Onboarding ---
+  // Location permission intentionally excluded here — see onInit() note above.
   Future<void> requestInitialPermissions() async {
-    dev.log("🔐 Checking initial safety permissions...", name: 'AuthController');
-    
+    dev.log(
+      "🔐 Checking initial safety permissions...",
+      name: 'AuthController',
+    );
+
     // Core permissions required for the app to function properly
     Map<Permission, PermissionStatus> statuses = await [
-      Permission.locationWhenInUse,
       Permission.microphone,
       Permission.contacts,
     ].request();
 
-    if (statuses[Permission.locationWhenInUse] != PermissionStatus.granted) {
-      dev.log("⚠️ Location permission not granted initially.");
-    }
-    
     if (statuses[Permission.microphone] != PermissionStatus.granted) {
       dev.log("⚠️ Microphone permission not granted initially.");
-    }
-    
-    // Check if background location is needed for persistent SOS
-    if (statuses[Permission.locationWhenInUse] == PermissionStatus.granted) {
-      await Permission.locationAlways.request();
     }
   }
 }

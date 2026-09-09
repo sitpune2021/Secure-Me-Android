@@ -14,6 +14,37 @@ import 'package:secure_me/core/utils/preference_helper.dart';
 import 'package:secure_me/core/utils/error_helper.dart';
 import 'package:secure_me/core/utils/validator.dart';
 
+String? _extractErrorMessage(dynamic data) {
+  try {
+    if (data is! Map) return null;
+
+    // 1️⃣ Prefer a direct top-level message if present
+    final directMessage = data['message'];
+    if (directMessage is String && directMessage.trim().isNotEmpty) {
+      return directMessage;
+    }
+
+    // 2️⃣ Fall back to the first validation error inside `errors`
+    final errors = data['errors'];
+    if (errors is Map && errors.isNotEmpty) {
+      final firstKey = errors.keys.first;
+      final firstValue = errors[firstKey];
+
+      if (firstValue is List && firstValue.isNotEmpty) {
+        return firstValue.first.toString();
+      } else if (firstValue is String) {
+        return firstValue;
+      }
+    } else if (errors is List && errors.isNotEmpty) {
+      return errors.first.toString();
+    }
+
+    return null;
+  } catch (_) {
+    return null;
+  }
+}
+
 class RegisterController extends GetxController {
   var isLoading = false.obs;
   var selectedImage = Rx<File?>(null);
@@ -23,7 +54,7 @@ class RegisterController extends GetxController {
     try {
       final XFile? image = await _picker.pickImage(
         source: source,
-        imageQuality: 70, // Compress image for faster upload
+        imageQuality: 70,
       );
 
       if (image != null) {
@@ -48,6 +79,7 @@ class RegisterController extends GetxController {
     required String role,
     double? latitude,
     double? longitude,
+    String? fcmToken, // 🔔 currently null until FCM feature is wired up
   }) async {
     isLoading.value = true;
 
@@ -56,7 +88,10 @@ class RegisterController extends GetxController {
     final phoneError = Validator.validatePhone(phone);
     final passwordError = Validator.validatePassword(password);
 
-    if (nameError != null || emailError != null || phoneError != null || passwordError != null) {
+    if (nameError != null ||
+        emailError != null ||
+        phoneError != null ||
+        passwordError != null) {
       isLoading.value = false;
       AppSnackbar.show(
         title: "Validation Error",
@@ -80,9 +115,12 @@ class RegisterController extends GetxController {
       request.fields['phone_no'] = phone;
       request.fields['password'] = password;
       request.fields['user_role'] = role;
-      
+
       if (latitude != null) request.fields['latitude'] = latitude.toString();
       if (longitude != null) request.fields['longitude'] = longitude.toString();
+
+      // 🔔 FCM token — sent as literal "null" string until push feature is added
+      request.fields['fcm_token'] = fcmToken ?? 'null';
 
       // Add image if selected
       if (selectedImage.value != null) {
@@ -156,9 +194,10 @@ class RegisterController extends GetxController {
             if (Get.isRegistered<AuthController>()) {
               final authController = Get.find<AuthController>();
               UserRole role;
-              final roleStr = (user['user_role'] ?? user['role'])?.toString() ?? 'Manager';
+              final roleStr =
+                  (user['user_role'] ?? user['role'])?.toString() ?? 'Manager';
               final normalizedRole = roleStr.toLowerCase();
-              
+
               if (normalizedRole.contains('gym')) {
                 role = UserRole.Gym_Person;
               } else if (normalizedRole.contains('police')) {
@@ -167,15 +206,17 @@ class RegisterController extends GetxController {
                 role = UserRole.Manager;
               }
 
-              authController.setUser(UserModel(
-                 id: user['id']?.toString() ?? '',
-                 name: user['name'] ?? 'User',
-                 email: user['email'] ?? '',
-                 phone: (user['phone_no'] ?? user['phone']) ?? '',
-                 role: role,
-                 roleString: roleStr,
-                 profileImage: user['profile_image'],
-              ));
+              authController.setUser(
+                UserModel(
+                  id: user['id']?.toString() ?? '',
+                  name: user['name'] ?? 'User',
+                  email: user['email'] ?? '',
+                  phone: (user['phone_no'] ?? user['phone']) ?? '',
+                  role: role,
+                  roleString: roleStr,
+                  profileImage: user['profile_image'],
+                ),
+              );
             }
           } else if (token != null) {
             await PreferenceHelper.saveToken(token);
@@ -196,7 +237,7 @@ class RegisterController extends GetxController {
         } else {
           AppSnackbar.show(
             title: "Registry Failed",
-            message: data['message'] ?? "Please check your details",
+            message: _extractErrorMessage(data) ?? "Please check your details",
             isError: true,
           );
         }
@@ -205,9 +246,12 @@ class RegisterController extends GetxController {
           '❌ Registration failed with status: ${response.statusCode}',
           name: 'RegisterController',
         );
+
+        String? dynamicMessage = _extractErrorMessage(data);
+
         AppSnackbar.show(
           title: ErrorHelper.getErrorTitle(response.statusCode),
-          message: ErrorHelper.getFriendlyMessage(response),
+          message: dynamicMessage ?? ErrorHelper.getFriendlyMessage(response),
           isError: true,
         );
       }

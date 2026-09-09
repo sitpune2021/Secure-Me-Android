@@ -6,6 +6,10 @@ class Validator {
     if (value.trim().length < 3) {
       return 'Name must be at least 3 characters';
     }
+    final nameRegExp = RegExp(r'^[a-zA-Z\s]+$');
+    if (!nameRegExp.hasMatch(value.trim())) {
+      return 'Name can only contain letters';
+    }
     return null;
   }
 
