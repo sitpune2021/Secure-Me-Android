@@ -31,24 +31,25 @@ class AppUrl {
   }
 
   static const String register = "$baseUrl/auth/register"; // fix
-  static const String login = "$baseUrl/auth/login";  // fix 
+  static const String login = "$baseUrl/auth/login"; // fix
   static const String sendOtp = "$baseUrl/auth/send-otp"; // fix
   static const String verifyOtp = "$baseUrl/auth/verify-otp"; // fix
   static const String resendOtp = "$baseUrl/auth/resend-otp"; // missing
-  static const String logout = "$baseUrl/auth/logout"; // fix 
+  static const String logout = "$baseUrl/auth/logout"; // fix
 
-  static const String profile = "$baseUrl/auth/profile";  // fix 
-  static const String userRole = "$baseUrl/auth/user-role"; // fix 
-  static const String updateProfile = "$baseUrl/auth/update-profile"; // fix 
+  static const String profile = "$baseUrl/auth/profile"; // fix
+  static const String userRole = "$baseUrl/auth/user-role"; // fix
+  static const String updateProfile = "$baseUrl/auth/update-profile"; // fix
 
   static const String contacts = "$baseUrl/contacts";
   static const String addContact = "$baseUrl/add/contacts";
   static const String updateContact = "$baseUrl/update/contacts";
   static const String deleteContact = "$baseUrl/delete/contacts";
 
-  static const String signalTrigger = "$baseUrl/signal/trigger";
-  static const String updateLocation = "$baseUrl/auth/user/update-location";  //new
-  static const String signalRespond = "$baseUrl/signal/respond";
+  static const String signalTrigger = "$baseUrl/auth/signal/trigger"; // fix
+  static const String updateLocation =
+      "$baseUrl/auth/user/update-location"; //new
+  static const String signalRespond = "$baseUrl/auth/signal/respond";
 
   static const String communities = "$baseUrl/community";
   static const String createCommunity = "$baseUrl/community/create";

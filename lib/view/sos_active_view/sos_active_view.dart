@@ -31,25 +31,38 @@ class SosActivatedView extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(24),
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: constraints.maxHeight - 48), // Adjust for padding
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 48,
+                    ), // Adjust for padding
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // Header Status
                         _buildHeaderStatus(primaryColor, sosController),
-                        
+
                         // Main SOS Indicator (Centered vertically if space allows)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 32),
-                          child: _buildMainIndicator(primaryColor, sosController),
+                          child: _buildMainIndicator(
+                            primaryColor,
+                            sosController,
+                          ),
                         ),
 
                         // Response Section + Action Buttons
                         Column(
                           children: [
-                            _buildResponseSection(context, primaryColor, sosController),
+                            _buildResponseSection(
+                              context,
+                              primaryColor,
+                              sosController,
+                            ),
                             const SizedBox(height: 32),
-                            _buildActionButtons(context, primaryColor, sosController),
+                            _buildActionButtons(
+                              context,
+                              primaryColor,
+                              sosController,
+                            ),
                           ],
                         ),
                       ],
@@ -66,17 +79,19 @@ class SosActivatedView extends StatelessWidget {
 
   Widget _buildAnimatedBackground(Color color) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: RadialGradient(
-          colors: [color.withValues(alpha: 0.35), Colors.black],
-          center: Alignment.center,
-          radius: 1.2,
-        ),
-      ),
-    ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(
-      duration: const Duration(seconds: 3),
-      color: color.withValues(alpha: 0.1),
-    );
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              colors: [color.withValues(alpha: 0.35), Colors.black],
+              center: Alignment.center,
+              radius: 1.2,
+            ),
+          ),
+        )
+        .animate(onPlay: (c) => c.repeat(reverse: true))
+        .shimmer(
+          duration: const Duration(seconds: 3),
+          color: color.withValues(alpha: 0.1),
+        );
   }
 
   Widget _buildStatusIndicator(String status) {
@@ -96,16 +111,25 @@ class SosActivatedView extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ).animate(onPlay: (controller) => controller.repeat())
-           .scale(duration: const Duration(seconds: 1), begin: const Offset(1, 1), end: const Offset(1.5, 1.5))
-           .fadeOut(),
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              )
+              .animate(onPlay: (controller) => controller.repeat())
+              .scale(
+                duration: const Duration(seconds: 1),
+                begin: const Offset(1, 1),
+                end: const Offset(1.5, 1.5),
+              )
+              .fadeOut(),
           const SizedBox(width: 8),
           Text(
             status,
-            style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+            style: GoogleFonts.outfit(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
         ],
       ),
@@ -124,20 +148,27 @@ class SosActivatedView extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-          ).animate(onPlay: (c) => c.repeat()).fadeOut(duration: const Duration(milliseconds: 500)),
-          const SizedBox(width: 8),
-          Obx(() => Text(
-                controller.sosStatus.value.toUpperCase().replaceAll('_', ' '),
-                style: GoogleFonts.outfit(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
                   color: Colors.red,
-                  letterSpacing: 1.5,
+                  shape: BoxShape.circle,
                 ),
-              )),
+              )
+              .animate(onPlay: (c) => c.repeat())
+              .fadeOut(duration: const Duration(milliseconds: 500)),
+          const SizedBox(width: 8),
+          Obx(
+            () => Text(
+              controller.sosStatus.value.toUpperCase().replaceAll('_', ' '),
+              style: GoogleFonts.outfit(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                color: Colors.red,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -150,121 +181,171 @@ class SosActivatedView extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             // Waves
-            ...List.generate(3, (i) => 
-               Container(
-                width: 140 + (i * 40),
-                height: 140 + (i * 40),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: color.withValues(alpha: 0.2 - (i * 0.05)), width: 2),
-                ),
-              ).animate(onPlay: (c) => c.repeat()).scale(
-                begin: const Offset(1, 1),
-                end: const Offset(1.5, 1.5),
-                duration: Duration(milliseconds: 1500 + (i * 500)),
-              ).fadeOut()
+            ...List.generate(
+              3,
+              (i) =>
+                  Container(
+                        width: 140 + (i * 40),
+                        height: 140 + (i * 40),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: color.withValues(alpha: 0.2 - (i * 0.05)),
+                            width: 2,
+                          ),
+                        ),
+                      )
+                      .animate(onPlay: (c) => c.repeat())
+                      .scale(
+                        begin: const Offset(1, 1),
+                        end: const Offset(1.5, 1.5),
+                        duration: Duration(milliseconds: 1500 + (i * 500)),
+                      )
+                      .fadeOut(),
             ),
-            
+
             // Core Button
             Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 40, spreadRadius: 10),
-                ],
-              ),
-              child: const Icon(Remix.error_warning_fill, color: Colors.white, size: 60),
-            ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
-              begin: const Offset(1, 1),
-              end: const Offset(1.1, 1.1),
-              duration: const Duration(milliseconds: 600),
-            ),
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.5),
+                        blurRadius: 40,
+                        spreadRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Remix.error_warning_fill,
+                    color: Colors.white,
+                    size: 60,
+                  ),
+                )
+                .animate(onPlay: (c) => c.repeat(reverse: true))
+                .scale(
+                  begin: const Offset(1, 1),
+                  end: const Offset(1.1, 1.1),
+                  duration: const Duration(milliseconds: 600),
+                ),
           ],
         ),
         const SizedBox(height: 48),
-        Obx(() => Text(
-          controller.isTriggering.value ? "ACTIVATING..." : "SOS ACTIVATED",
-          style: GoogleFonts.outfit(
-            fontSize: 28,
-            fontWeight: FontWeight.w900,
-            color: Colors.white,
-            letterSpacing: 1,
+        Obx(
+          () => Text(
+            controller.isTriggering.value ? "ACTIVATING..." : "SOS ACTIVATED",
+            style: GoogleFonts.outfit(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 1,
+            ),
           ),
-        )),
+        ),
         const SizedBox(height: 8),
-        Obx(() => Text(
-          controller.isTriggering.value 
-            ? "Establishing secure connection..." 
-            : controller.triggerMessage.value.isNotEmpty 
-                ? controller.triggerMessage.value 
+        Obx(
+          () => Text(
+            controller.isTriggering.value
+                ? "Establishing secure connection..."
+                : controller.triggerMessage.value.isNotEmpty
+                ? controller.triggerMessage.value
                 : "Your live location and responders are being\nactively synced with your safety network.",
-          textAlign: TextAlign.center,
-          style: GoogleFonts.outfit(
-            fontSize: 14,
-            color: Colors.white60,
-            height: 1.5,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.outfit(
+              fontSize: 14,
+              color: Colors.white60,
+              height: 1.5,
+            ),
           ),
-        )),
-        
+        ),
+
         const SizedBox(height: 24),
-        
+
         // Voice Recording Indicator
-        Obx(() => controller.isRecording.value 
-          ? Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Remix.mic_fill, color: Colors.white, size: 16),
-                  const SizedBox(width: 8),
-                  Text(
-                    "RECORDING AUDIO: ${controller.recordingDuration.value}s",
-                    style: GoogleFonts.outfit(
-                      fontSize: 12, 
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(duration: const Duration(seconds: 1))
-          : const SizedBox.shrink()),
+        Obx(
+          () => controller.isRecording.value
+              ? Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.red.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Remix.mic_fill,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "RECORDING AUDIO: ${controller.recordingDuration.value}s",
+                            style: GoogleFonts.outfit(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .shimmer(duration: const Duration(seconds: 1))
+              : const SizedBox.shrink(),
+        ),
       ],
     ).animate().fadeIn(duration: const Duration(milliseconds: 600)).slideY(begin: 0.1);
   }
 
-  Widget _buildResponseSection(BuildContext context, Color primary, SosController controller) {
+  Widget _buildResponseSection(
+    BuildContext context,
+    Color primary,
+    SosController controller,
+  ) {
     return Column(
       children: [
         // ── Instant Emergency Group Banner ──────────────────────────────────
         Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-          margin: const EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            color: Colors.green.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
-          ),
-          child: Row(
-            children: [
-              const Icon(Remix.chat_history_fill, color: Colors.green, size: 14),
-              const SizedBox(width: 8),
-              Text(
-                "INSTANT EMERGENCY RESPONSE GROUP ACTIVE",
-                style: GoogleFonts.outfit(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.green, letterSpacing: 0.5),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
               ),
-            ],
-          ),
-        ).animate(onPlay: (c) => c.repeat()).shimmer(duration: const Duration(seconds: 3)),
+              child: Row(
+                children: [
+                  const Icon(
+                    Remix.chat_history_fill,
+                    color: Colors.green,
+                    size: 14,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "INSTANT EMERGENCY RESPONSE GROUP ACTIVE",
+                    style: GoogleFonts.outfit(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.green,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            )
+            .animate(onPlay: (c) => c.repeat())
+            .shimmer(duration: const Duration(seconds: 3)),
 
         // ── Response Units List ──────────────────────────────────────────────
         Container(
@@ -290,7 +371,11 @@ class SosActivatedView extends StatelessWidget {
                       letterSpacing: 1,
                     ),
                   ),
-                  Obx(() => _buildStatusIndicator(controller.sosStatus.value.toUpperCase())),
+                  Obx(
+                    () => _buildStatusIndicator(
+                      controller.sosStatus.value.toUpperCase(),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -299,29 +384,40 @@ class SosActivatedView extends StatelessWidget {
               _buildPrivacyToggle(controller),
               const SizedBox(height: 24),
 
-              Obx(() => Column(
-                children: controller.responseGroups.map((group) {
-                  return _buildResponseTile(
-                    group["category"],
-                    (group["members"] as List).join(", "),
-                    _getIconForCategory(group["icon"]),
-                    _getColorForCategory(group["category"]),
-                  );
-                }).toList(),
-              )),
-              
+              Obx(
+                () => Column(
+                  children: controller.responseGroups.map((group) {
+                    return _buildResponseTile(
+                      group["category"],
+                      (group["members"] as List).join(", "),
+                      _getIconForCategory(group["icon"]),
+                      _getColorForCategory(group["category"]),
+                    );
+                  }).toList(),
+                ),
+              ),
+
               const SizedBox(height: 12),
               const Divider(color: Colors.white10),
               const SizedBox(height: 12),
-              
+
               Row(
                 children: [
-                  const Icon(Remix.information_line, color: Colors.white30, size: 14),
+                  const Icon(
+                    Remix.information_line,
+                    color: Colors.white30,
+                    size: 14,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       "This temporary group will auto-delete once resolved. Logs only for police/family.",
-                      style: GoogleFonts.outfit(fontSize: 10, color: Colors.white30, height: 1.4, fontWeight: FontWeight.w500),
+                      style: GoogleFonts.outfit(
+                        fontSize: 10,
+                        color: Colors.white30,
+                        height: 1.4,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -335,25 +431,40 @@ class SosActivatedView extends StatelessWidget {
 
   IconData _getIconForCategory(String iconType) {
     switch (iconType) {
-      case "strength": return Remix.body_scan_fill;
-      case "police": return Remix.shield_user_fill;
-      case "community": return Remix.group_fill;
-      case "family": return Remix.heart_fill;
-      default: return Remix.user_3_line;
+      case "strength":
+        return Remix.body_scan_fill;
+      case "police":
+        return Remix.shield_user_fill;
+      case "community":
+        return Remix.group_fill;
+      case "family":
+        return Remix.heart_fill;
+      default:
+        return Remix.user_3_line;
     }
   }
 
   Color _getColorForCategory(String category) {
     switch (category) {
-      case "Gym Bros": return Colors.orange;
-      case "Police Officers": return Colors.blue;
-      case "Local Helpers": return Colors.green;
-      case "Family Members": return Colors.pink;
-      default: return Colors.white;
+      case "Gym Bros":
+        return Colors.orange;
+      case "Police Officers":
+        return Colors.blue;
+      case "Local Helpers":
+        return Colors.green;
+      case "Family Members":
+        return Colors.pink;
+      default:
+        return Colors.white;
     }
   }
 
-  Widget _buildResponseTile(String title, String status, IconData icon, Color color) {
+  Widget _buildResponseTile(
+    String title,
+    String status,
+    IconData icon,
+    Color color,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Row(
@@ -371,8 +482,23 @@ class SosActivatedView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 14, letterSpacing: 0.5)),
-                Text(status, style: GoogleFonts.outfit(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.w500)),
+                Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                Text(
+                  status,
+                  style: GoogleFonts.outfit(
+                    color: Colors.white54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
             ),
           ),
@@ -382,138 +508,183 @@ class SosActivatedView extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, Color color, SosController controller) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    Color color,
+    SosController controller,
+  ) {
     return Column(
-      children: [
-        Row(
           children: [
-            Expanded(
-              child: _buildSecondaryButton(
-                "CALL POLICE", 
-                Remix.phone_fill, 
-                Colors.blue.shade800,
-                onTap: () => controller.makeCall("100"),
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSecondaryButton(
+                    "CALL POLICE",
+                    Remix.phone_fill,
+                    Colors.blue.shade800,
+                    onTap: () => controller.makeCall("100"),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildSecondaryButton(
+                    "GROUP CHAT",
+                    Remix.chat_voice_fill,
+                    Colors.orange.shade800,
+                    onTap: () {
+                      // Navigate to emergency group chat
+                      Get.to(
+                        () => const EmergencyChatView(
+                          groupId: "INCIDENT-SOS-991",
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildSecondaryButton(
-                "GROUP CHAT", 
-                Remix.chat_voice_fill, 
-                Colors.orange.shade800,
-                onTap: () {
-                  // Navigate to emergency group chat
-                  Get.to(() => const EmergencyChatView(groupId: "INCIDENT-SOS-991"));
-                },
-              ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSecondaryButton(
+                    "ESCAPE ROUTE",
+                    Remix.map_pin_user_fill,
+                    Colors.green.shade800,
+                    onTap: () {
+                      AppSnackbar.show(
+                        title: "Finding Safety",
+                        message:
+                            "Calculating safest route to nearest Police Station.",
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildSecondaryButton(
+                    "CANCEL EMERGENCY",
+                    Remix.close_line,
+                    Colors.white.withValues(alpha: 0.1),
+                    isDestructive: true,
+                    onTap: () {
+                      AppSnackbar.show(
+                        title: "Security Lock",
+                        message: "Tap and HOLD to deactivate emergency signal.",
+                        isWarning: true,
+                      );
+                    },
+                    onLongPress: () {
+                      _showCancelPinDialog(context, controller);
+                    },
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 16),
+            _buildVoiceActionTile(controller),
           ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSecondaryButton(
-                "ESCAPE ROUTE", 
-                Remix.map_pin_user_fill, 
-                Colors.green.shade800,
-                onTap: () {
-                  AppSnackbar.show(title: "Finding Safety", message: "Calculating safest route to nearest Police Station.");
-                },
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildSecondaryButton(
-                "CANCEL EMERGENCY", 
-                Remix.close_line, 
-                Colors.white.withValues(alpha: 0.1), 
-                isDestructive: true,
-                onTap: () {
-                  AppSnackbar.show(
-                    title: "Security Lock", 
-                    message: "Tap and HOLD to deactivate emergency signal.",
-                    isWarning: true,
-                  );
-                },
-                onLongPress: () {
-                  _showCancelPinDialog(context, controller);
-                },
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _buildVoiceActionTile(controller),
-      ],
-    ).animate().fadeIn(delay: const Duration(milliseconds: 400)).slideY(begin: 0.1);
+        )
+        .animate()
+        .fadeIn(delay: const Duration(milliseconds: 400))
+        .slideY(begin: 0.1);
   }
 
   Widget _buildVoiceActionTile(SosController controller) {
-    return Obx(() => GestureDetector(
-      onTap: () {
-        if (controller.isRecording.value) {
-          controller.stopVoiceRecording();
-        } else {
-          controller.startVoiceRecording();
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: controller.isRecording.value ? Colors.red.shade900 : Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: controller.isRecording.value ? Colors.red.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.05),
+    return Obx(
+      () => GestureDetector(
+        onTap: () {
+          if (controller.isRecording.value) {
+            controller.stopVoiceRecording();
+          } else {
+            controller.startVoiceRecording();
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: controller.isRecording.value
+                ? Colors.red.shade900
+                : Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: controller.isRecording.value
+                  ? Colors.red.withValues(alpha: 0.5)
+                  : Colors.white.withValues(alpha: 0.05),
+            ),
+            boxShadow: controller.isRecording.value
+                ? [
+                    BoxShadow(
+                      color: Colors.red.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                : null,
           ),
-          boxShadow: controller.isRecording.value ? [
-            BoxShadow(color: Colors.red.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2)
-          ] : null,
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  controller.isRecording.value
+                      ? Remix.stop_circle_fill
+                      : Remix.mic_2_fill,
+                  color: Colors.white,
+                ),
               ),
-              child: Icon(
-                controller.isRecording.value ? Remix.stop_circle_fill : Remix.mic_2_fill,
-                color: Colors.white,
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      controller.isRecording.value
+                          ? "TAP TO STOP & SYNC"
+                          : "RECORD SITUATION LOG",
+                      style: GoogleFonts.outfit(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    Text(
+                      controller.isRecording.value
+                          ? "Active recording: ${controller.recordingDuration.value}s"
+                          : "Send tactical audio to responders.",
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        color: Colors.white60,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    controller.isRecording.value ? "TAP TO STOP & SYNC" : "RECORD SITUATION LOG",
-                    style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5),
-                  ),
-                  Text(
-                    controller.isRecording.value ? "Active recording: ${controller.recordingDuration.value}s" : "Send tactical audio to responders.",
-                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.white60),
-                  ),
-                ],
-              ),
-            ),
-            if (controller.isRecording.value)
-              const Icon(Remix.pulse_fill, color: Colors.white, size: 20)
-                .animate(onPlay: (c) => c.repeat(reverse: true))
-                .scale(end: const Offset(1.3, 1.3)),
-          ],
+              if (controller.isRecording.value)
+                const Icon(Remix.pulse_fill, color: Colors.white, size: 20)
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .scale(end: const Offset(1.3, 1.3)),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   void _showCancelPinDialog(BuildContext context, SosController controller) {
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 56,
-      textStyle: GoogleFonts.outfit(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+      textStyle: GoogleFonts.outfit(
+        fontSize: 20,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -530,11 +701,19 @@ class SosActivatedView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Remix.shield_keyhole_fill, color: Colors.blue, size: 48),
+              const Icon(
+                Remix.shield_keyhole_fill,
+                color: Colors.blue,
+                size: 48,
+              ),
               const SizedBox(height: 16),
               Text(
                 "VERIFY IDENTITY",
-                style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                style: GoogleFonts.outfit(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -557,9 +736,9 @@ class SosActivatedView extends StatelessWidget {
                     // Controller handles closing overlays and returning to home.
                     // No additional Get.back() needed here to avoid over-popping.
                     AppSnackbar.show(
-                      title: "Identity Verified", 
-                      message: "Emergency broadcast has been decommissioned.", 
-                      isSuccess: true
+                      title: "Identity Verified",
+                      message: "Emergency broadcast has been decommissioned.",
+                      isSuccess: true,
                     );
                   }
                 },
@@ -567,7 +746,14 @@ class SosActivatedView extends StatelessWidget {
               const SizedBox(height: 32),
               TextButton(
                 onPressed: () => Get.back(),
-                child: Text("CANCEL VERIFICATION", style: GoogleFonts.outfit(color: Colors.white30, fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(
+                  "CANCEL VERIFICATION",
+                  style: GoogleFonts.outfit(
+                    color: Colors.white30,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
@@ -578,27 +764,38 @@ class SosActivatedView extends StatelessWidget {
   }
 
   Widget _buildPrivacyToggle(SosController controller) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Material(
         color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Colors.white10),
+        ),
+        child: Obx(
+          () => SwitchListTile(
+            value: controller.isAnonymous.value,
+            onChanged: (val) => controller.isAnonymous.value = val,
+            title: Text(
+              "ANONYMOUS MODE",
+              style: GoogleFonts.outfit(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            subtitle: Text(
+              "Hide your identity from community helpers. Recommended for discreet rescue.",
+              style: GoogleFonts.outfit(fontSize: 11, color: Colors.white60),
+            ),
+            activeThumbColor: Colors.blue,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+          ),
+        ),
       ),
-      child: Obx(() => SwitchListTile(
-        value: controller.isAnonymous.value,
-        onChanged: (val) => controller.isAnonymous.value = val,
-        title: Text(
-          "ANONYMOUS MODE", 
-          style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)
-        ),
-        subtitle: Text(
-          "Hide your identity from community helpers. Recommended for discreet rescue.", 
-          style: GoogleFonts.outfit(fontSize: 11, color: Colors.white60)
-        ),
-        activeThumbColor: Colors.blue,
-        contentPadding: EdgeInsets.zero,
-      )),
     );
   }
 
@@ -608,12 +805,22 @@ class SosActivatedView extends StatelessWidget {
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } else {
-      AppSnackbar.show(title: "Navigation Error", message: "Could not open map application.", isError: true);
+      AppSnackbar.show(
+        title: "Navigation Error",
+        message: "Could not open map application.",
+        isError: true,
+      );
     }
   }
 
-  Widget _buildSecondaryButton(String label, IconData icon, Color color,
-      {bool isDestructive = false, VoidCallback? onTap, VoidCallback? onLongPress}) {
+  Widget _buildSecondaryButton(
+    String label,
+    IconData icon,
+    Color color, {
+    bool isDestructive = false,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+  }) {
     return GestureDetector(
       onTap: onTap ?? (label == "ESCAPE ROUTE" ? _launchMaps : null),
       onLongPress: onLongPress,
@@ -629,7 +836,14 @@ class SosActivatedView extends StatelessWidget {
           children: [
             Icon(icon, color: Colors.white, size: 18),
             const SizedBox(width: 8),
-            Text(label, style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
       ),
