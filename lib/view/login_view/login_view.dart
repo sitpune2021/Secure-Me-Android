@@ -192,7 +192,7 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 32),
 
                   // Mode/Input visibility conditional
-                  if (controller.selectedRole.value != UserRole.None) ...[
+                  if (controller.selectedRole.value != UserRole.none) ...[
                     // Method Switcher
                     Container(
                       height: 54,
@@ -463,7 +463,7 @@ class _LoginViewState extends State<LoginView> {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: UserRole.values.where((role) => role != UserRole.None).map((
+      children: UserRole.values.where((role) => role != UserRole.none).map((
         role,
       ) {
         final isSelected = controller.selectedRole.value == role;

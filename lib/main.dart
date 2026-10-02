@@ -98,7 +98,7 @@ class AppRouter extends StatelessWidget {
           name: 'AppRouter',
         );
 
-        if (user.role == UserRole.None) {
+        if (user.role == UserRole.none) {
           return const LoginScreen();
         }
         return const HomeView();

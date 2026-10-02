@@ -16,19 +16,43 @@ class ContactListView extends StatefulWidget {
   State<ContactListView> createState() => _ContactListViewState();
 }
 
-class _ContactListViewState extends State<ContactListView> {
+class _ContactListViewState extends State<ContactListView>
+    with SingleTickerProviderStateMixin {
   final ContactController controller = Get.put(ContactController());
-  final ScrollController _scrollController = ScrollController();
+
+  late final TabController _tabController;
+
+  // Separate scroll controllers so pagination only fires on the API tab.
+  final ScrollController _apiScrollController = ScrollController();
+  final ScrollController _localScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
+    _apiScrollController.addListener(_onApiScroll);
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
+  void _onTabChanged() {
+    // Only react once the swipe/tap settles on the new tab, not on every
+    // intermediate frame while dragging.
+    if (_tabController.indexIsChanging) return;
+
+    if (_tabController.index == 0) {
+      if (!controller.isLoading.value) {
+        controller.fetchContacts(loadMore: false);
+      }
+    } else {
+      if (!controller.isPhoneLoading.value) {
+        controller.fetchPhoneContacts();
+      }
+    }
+  }
+
+  void _onApiScroll() {
+    if (_apiScrollController.position.pixels >=
+        _apiScrollController.position.maxScrollExtent - 200) {
       if (controller.hasMore.value && !controller.isLoading.value) {
         controller.fetchContacts(loadMore: true);
       }
@@ -37,7 +61,11 @@ class _ContactListViewState extends State<ContactListView> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _apiScrollController.removeListener(_onApiScroll);
+    _apiScrollController.dispose();
+    _localScrollController.dispose();
+    _tabController.removeListener(_onTabChanged);
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -55,10 +83,8 @@ class _ContactListViewState extends State<ContactListView> {
 
     return Scaffold(
       backgroundColor: scaffoldBg,
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
           // ── Premium Tactical Appbar ─────────────────────────────────────
           SliverAppBar(
             expandedHeight: 180,
@@ -212,51 +238,173 @@ class _ContactListViewState extends State<ContactListView> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  // ── Tabs: Dynamic (API) vs Local (Phone) ─────────────────
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? cardColor
+                          : theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    padding: const EdgeInsets.all(4),
+                    child: TabBar(
+                      controller: _tabController,
+                      dividerColor: Colors.transparent,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicator: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      labelColor: Colors.white,
+                      unselectedLabelColor: textColor.withValues(alpha: 0.4),
+                      labelStyle: GoogleFonts.outfit(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                      unselectedLabelStyle: GoogleFonts.outfit(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                      tabs: [
+                        Obx(
+                          () => Tab(
+                            text: "SENTINELS (${controller.contacts.length})",
+                          ),
+                        ),
+                        Obx(
+                          () => Tab(
+                            text: "LOCAL (${controller.phoneContacts.length})",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-
-          // ── Tactical Sentinel List ─────────────────────────────────────
-          Obx(() {
-            final contactsList = controller.filteredContacts;
-            final isLoading =
-                controller.isLoading.value || controller.isPhoneLoading.value;
-
-            if (isLoading && contactsList.isEmpty) {
-              return SliverFillRemaining(
-                child: _buildEmptyStateLoader(primaryColor),
-              );
-            }
-
-            if (contactsList.isEmpty) {
-              return SliverFillRemaining(
-                child: _buildNoContactsFound(primaryColor, textColor),
-              );
-            }
-
-            return SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
-              sliver: SliverReorderableList(
-                itemCount: contactsList.length,
-                onReorderItem: (oldIndex, newIndex) =>
-                    controller.reorderSentinels(oldIndex, newIndex),
-                itemBuilder: (context, index) {
-                  return _buildReorderableContactCard(
-                    contactsList[index],
-                    primaryColor,
-                    textColor,
-                    cardColor,
-                    isDark,
-                    index,
-                  );
-                },
-              ),
-            );
-          }),
         ],
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildApiContactsTab(primaryColor, textColor, cardColor, isDark),
+            _buildLocalContactsTab(primaryColor, textColor, cardColor, isDark),
+          ],
+        ),
       ),
     );
+  }
+
+  // ── Tab 1: Dynamic / API Sentinels (reorderable) ─────────────────────
+  Widget _buildApiContactsTab(
+    Color primaryColor,
+    Color textColor,
+    Color cardColor,
+    bool isDark,
+  ) {
+    return Obx(() {
+      final contactsList = controller.filteredApiContacts;
+      final isLoading = controller.isLoading.value;
+
+      if (isLoading && contactsList.isEmpty) {
+        return _buildEmptyStateLoader(primaryColor);
+      }
+
+      if (contactsList.isEmpty) {
+        return RefreshIndicator(
+          color: primaryColor,
+          onRefresh: () => controller.fetchContacts(loadMore: false),
+          child: Stack(
+            children: [
+              ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [SizedBox(height: 300)],
+              ),
+              _buildNoContactsFound(primaryColor, textColor),
+            ],
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        color: primaryColor,
+        onRefresh: () => controller.fetchContacts(loadMore: false),
+        child: ReorderableListView.builder(
+          scrollController: _apiScrollController,
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+          itemCount: contactsList.length,
+          onReorderItem: (oldIndex, newIndex) =>
+              controller.reorderSentinels(oldIndex, newIndex),
+          itemBuilder: (context, index) {
+            return _buildReorderableContactCard(
+              contactsList[index],
+              primaryColor,
+              textColor,
+              cardColor,
+              isDark,
+              index,
+            );
+          },
+        ),
+      );
+    });
+  }
+
+  // ── Tab 2: Local / Phone Contacts (invite-only, no reorder) ──────────
+  Widget _buildLocalContactsTab(
+    Color primaryColor,
+    Color textColor,
+    Color cardColor,
+    bool isDark,
+  ) {
+    return Obx(() {
+      final contactsList = controller.filteredLocalContacts;
+      final isLoading = controller.isPhoneLoading.value;
+
+      if (isLoading && contactsList.isEmpty) {
+        return _buildEmptyStateLoader(primaryColor);
+      }
+
+      if (contactsList.isEmpty) {
+        return RefreshIndicator(
+          color: primaryColor,
+          onRefresh: () => controller.fetchPhoneContacts(),
+          child: Stack(
+            children: [
+              ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [SizedBox(height: 300)],
+              ),
+              _buildNoContactsFound(primaryColor, textColor),
+            ],
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        color: primaryColor,
+        onRefresh: () => controller.fetchPhoneContacts(),
+        child: ListView.builder(
+          controller: _localScrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+          itemCount: contactsList.length,
+          itemBuilder: (context, index) {
+            return _buildContactCard(
+              contactsList[index],
+              primaryColor,
+              textColor,
+              cardColor,
+              isDark,
+              index,
+            );
+          },
+        ),
+      );
+    });
   }
 
   Widget _buildSectionLabel(String text, Color primary, Color textColor) {
@@ -294,25 +442,30 @@ class _ContactListViewState extends State<ContactListView> {
   }
 
   Widget _buildNoContactsFound(Color primary, Color textColor) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Remix.user_search_line,
-          size: 80,
-          color: primary.withValues(alpha: 0.1),
+    return SizedBox.expand(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Remix.user_search_line,
+              size: 80,
+              color: primary.withValues(alpha: 0.1),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "NO SENTINELS DETECTED",
+              style: GoogleFonts.outfit(
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                color: textColor.withValues(alpha: 0.2),
+                letterSpacing: 1,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
-        Text(
-          "NO SENTINELS DETECTED",
-          style: GoogleFonts.outfit(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            color: textColor.withValues(alpha: 0.2),
-            letterSpacing: 1,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -667,15 +820,19 @@ class _ContactListViewState extends State<ContactListView> {
     );
 
     if (result == true && contact.id != -1) {
-      final success = await controller.deleteContact(contact.id!);
-      if (success) {
-        Get.snackbar(
-          "Status Updated",
-          "Sentinel decommissioned successfully.",
-          backgroundColor: theme.cardColor,
-          colorText: theme.textTheme.bodyLarge?.color,
-        );
-      }
+      final deleteResult = await controller.deleteContact(contact.id!);
+
+      Get.snackbar(
+        deleteResult.success ? "Status Updated" : "Error",
+        deleteResult.message,
+        backgroundColor: deleteResult.success
+            ? theme.cardColor
+            : Colors.redAccent,
+        colorText: deleteResult.success
+            ? theme.textTheme.bodyLarge?.color
+            : Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 }

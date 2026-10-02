@@ -199,11 +199,11 @@ class RegisterController extends GetxController {
               final normalizedRole = roleStr.toLowerCase();
 
               if (normalizedRole.contains('gym')) {
-                role = UserRole.Gym_Person;
+                role = UserRole.gymPerson;
               } else if (normalizedRole.contains('police')) {
-                role = UserRole.Police;
+                role = UserRole.police;
               } else {
-                role = UserRole.Manager;
+                role = UserRole.manager;
               }
 
               authController.setUser(

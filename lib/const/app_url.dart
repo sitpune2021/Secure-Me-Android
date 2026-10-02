@@ -41,10 +41,10 @@ class AppUrl {
   static const String userRole = "$baseUrl/auth/user-role"; // fix
   static const String updateProfile = "$baseUrl/auth/update-profile"; // fix
 
-  static const String contacts = "$baseUrl/contacts";
-  static const String addContact = "$baseUrl/add/contacts";
+  static const String contacts = "$baseUrl/auth/contacts"; // fix
+  static const String addContact = "$baseUrl/auth/add/contacts";
   static const String updateContact = "$baseUrl/update/contacts";
-  static const String deleteContact = "$baseUrl/delete/contacts";
+  static const String deleteContact = "$baseUrl/auth/delete/contacts"; // fix
 
   static const String signalTrigger = "$baseUrl/auth/signal/trigger"; // fix
   static const String updateLocation =

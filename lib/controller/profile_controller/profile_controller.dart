@@ -129,13 +129,13 @@ class ProfileController extends GetxController {
         // --- Sync with global AuthController ---
         if (Get.isRegistered<AuthController>()) {
           final auth = Get.find<AuthController>();
-          UserRole roleEnum = UserRole.Manager;
+          UserRole roleEnum = UserRole.manager;
           if (rawRole != null) {
             final norm = rawRole.toLowerCase();
             if (norm.contains('gym')) {
-              roleEnum = UserRole.Gym_Person;
+              roleEnum = UserRole.gymPerson;
             } else if (norm.contains('police')) {
-              roleEnum = UserRole.Police;
+              roleEnum = UserRole.police;
             }
           }
 

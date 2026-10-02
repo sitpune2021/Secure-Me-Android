@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ class AddContactController extends GetxController {
   var isLoading = false.obs;
   String? _token;
 
-  // Track if we are editing an existing contact
   var isEditing = false.obs;
   var editingContactId = (-1).obs;
 
@@ -26,7 +26,10 @@ class AddContactController extends GetxController {
 
   Future<void> _loadToken() async {
     _token = await PreferenceHelper.getToken();
-    dev.log('take token from sharedrefrence', name: 'AddContactController');
+    dev.log(
+      'token loaded from shared preferences',
+      name: 'AddContactController',
+    );
   }
 
   Future<void> addContact({
@@ -36,11 +39,14 @@ class AddContactController extends GetxController {
     required String userRole,
     int priority = 1,
     bool isNotifyOnSos = true,
+    double? latitude,
+    double? longitude,
   }) async {
     final nameError = Validator.validateName(name);
     final phoneError = Validator.validatePhone(phoneNo);
-    // Email may be optional for contacts, but if provided, validate it.
-    final emailError = (email.isNotEmpty) ? Validator.validateEmail(email) : null;
+    final emailError = (email.isNotEmpty)
+        ? Validator.validateEmail(email)
+        : null;
 
     if (nameError != null || phoneError != null || emailError != null) {
       AppSnackbar.show(
@@ -72,6 +78,21 @@ class AddContactController extends GetxController {
           ? '${AppUrl.updateContact}/${editingContactId.value}'
           : AppUrl.addContact;
 
+      // ✅ Log API URL
+      dev.log(
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        name: 'AddContactController',
+      );
+      dev.log('📡 API URL     : $url', name: 'AddContactController');
+      dev.log(
+        '📝 Method      : POST (MultipartRequest)',
+        name: 'AddContactController',
+      );
+      dev.log(
+        '🔑 Token       : ${_token!.trim()}',
+        name: 'AddContactController',
+      );
+
       var request = http.MultipartRequest('POST', Uri.parse(url));
       request.headers.addAll({
         'Accept': 'application/json',
@@ -84,11 +105,46 @@ class AddContactController extends GetxController {
       request.fields['user_role'] = userRole;
       request.fields['priority'] = priority.toString();
       request.fields['is_notify_on_sos'] = isNotifyOnSos ? "1" : "0";
+      if (latitude != null) request.fields['latitude'] = latitude.toString();
+      if (longitude != null) request.fields['longitude'] = longitude.toString();
+
+      // ✅ Log all fields being sent
+      dev.log('📦 Request Fields:', name: 'AddContactController');
+      request.fields.forEach((key, value) {
+        dev.log('   $key: $value', name: 'AddContactController');
+      });
+      dev.log(
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        name: 'AddContactController',
+      );
+
+      dev.log(
+        'Sending contact: name=$name, phone=$phoneNo, role=$userRole, lat=$latitude, lng=$longitude',
+        name: 'AddContactController',
+      );
 
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 30),
       );
       final response = await http.Response.fromStream(streamedResponse);
+
+      // ✅ Log response
+      dev.log(
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        name: 'AddContactController',
+      );
+      dev.log(
+        '📥 Response Status : ${response.statusCode}',
+        name: 'AddContactController',
+      );
+      dev.log(
+        '📥 Response Body   : ${response.body}',
+        name: 'AddContactController',
+      );
+      dev.log(
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        name: 'AddContactController',
+      );
 
       if (response.statusCode == 401) {
         await PreferenceHelper.clearUserData();
@@ -103,8 +159,23 @@ class AddContactController extends GetxController {
         if (data['status'] == true ||
             data['status'] == 1 ||
             data['status'] == "true") {
-          Get.back(); // Go back to previous screen FIRST
+          dev.log(
+            '✅ Contact ${isEditing.value ? "updated" : "added"} successfully',
+            name: 'AddContactController',
+          );
 
+          // 1️⃣ Refresh list FIRST so data is ready when we land back
+          if (Get.isRegistered<ContactController>()) {
+            dev.log(
+              '🔄 Refreshing contact list...',
+              name: 'AddContactController',
+            );
+            await Get.find<ContactController>().fetchContacts(loadMore: false);
+          }
+
+          // 2️⃣ Navigate back
+          Get.back();
+          // Show snackbar FIRST before navigating back
           Get.snackbar(
             "Success",
             data['message'] ??
@@ -114,12 +185,9 @@ class AddContactController extends GetxController {
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.green,
             colorText: Colors.white,
+            duration: const Duration(seconds: 2),
+            animationDuration: const Duration(milliseconds: 300),
           );
-
-          if (Get.isRegistered<ContactController>()) {
-            dev.log("Refreshing contact list...", name: "AddContactController");
-            Get.find<ContactController>().fetchContacts(loadMore: false);
-          }
         } else {
           Get.snackbar(
             "Error",
@@ -145,7 +213,7 @@ class AddContactController extends GetxController {
         );
       }
     } catch (e) {
-      dev.log("Error adding contact: $e");
+      dev.log("Error adding contact: $e", name: 'AddContactController');
       Get.snackbar(
         "Error",
         "Something went wrong. Please try again.",

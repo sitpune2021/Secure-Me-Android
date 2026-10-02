@@ -70,7 +70,7 @@ android {
         }
 
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true            // Shrinks & optimizes release APK
             isShrinkResources = true
             proguardFiles(

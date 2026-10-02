@@ -18,7 +18,7 @@ class LoginController extends GetxController {
   var password = ''.obs;
   var isEmailLogin = true.obs;
   var isLoading = false.obs;
-  var selectedRole = UserRole.Manager.obs;
+  var selectedRole = UserRole.manager.obs;
 
   Future<void> login() async {
     if (isEmailLogin.value) {
@@ -159,17 +159,17 @@ class LoginController extends GetxController {
             if (Get.isRegistered<AuthController>()) {
               final authController = Get.find<AuthController>();
 
-              UserRole role = UserRole.Manager;
+              UserRole role = UserRole.manager;
               final roleStr =
                   (user['user_role'] ?? user['role'])?.toString() ?? 'Manager';
               final normalizedRole = roleStr.toLowerCase();
 
               if (normalizedRole.contains('gym')) {
-                role = UserRole.Gym_Person;
+                role = UserRole.gymPerson;
               } else if (normalizedRole.contains('police')) {
-                role = UserRole.Police;
+                role = UserRole.police;
               } else {
-                role = UserRole.Manager;
+                role = UserRole.manager;
               }
 
               authController.setUser(

@@ -25,8 +25,10 @@ class Contact {
   String? name;
   String? email;
   String? phoneNo;
-  int priority; // Emergency priority (1 is highest)
+  int priority;
   bool isNotifyOnSos;
+  double? latitude; // ← add
+  double? longitude; // ← add
 
   Contact({
     this.id,
@@ -36,16 +38,25 @@ class Contact {
     this.phoneNo,
     this.priority = 1,
     this.isNotifyOnSos = true,
+    this.latitude, // ← add
+    this.longitude, // ← add
   });
 
   Contact.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        userRole = json['user_role'],
-        name = json['name'],
-        email = json['email'],
-        phoneNo = json['phone_no'],
-        priority = json['priority'] ?? 1,
-        isNotifyOnSos = json['is_notify_on_sos'] ?? true;
+    : id = json['id'],
+      userRole = json['user_role'],
+      name = json['name'],
+      email = json['email'],
+      phoneNo = json['phone_no'],
+      priority = json['priority'] ?? 1,
+      isNotifyOnSos = json['is_notify_on_sos'] ?? true,
+      // ← safely parse whether API returns String or double
+      latitude = json['latitude'] != null
+          ? double.tryParse(json['latitude'].toString())
+          : null,
+      longitude = json['longitude'] != null
+          ? double.tryParse(json['longitude'].toString())
+          : null;
 
   Contact copyWith({
     int? id,
@@ -55,6 +66,8 @@ class Contact {
     String? phoneNo,
     int? priority,
     bool? isNotifyOnSos,
+    double? latitude, // ← add
+    double? longitude, // ← add
   }) {
     return Contact(
       id: id ?? this.id,
@@ -64,10 +77,11 @@ class Contact {
       phoneNo: phoneNo ?? this.phoneNo,
       priority: priority ?? this.priority,
       isNotifyOnSos: isNotifyOnSos ?? this.isNotifyOnSos,
+      latitude: latitude ?? this.latitude, // ← add
+      longitude: longitude ?? this.longitude, // ← add
     );
   }
 }
-
 
 class Pagination {
   int? currentPage;

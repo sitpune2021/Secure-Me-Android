@@ -17,7 +17,7 @@ class AuthController extends GetxController {
   final RxBool isLoading = false.obs;
 
   // New fields for managing login/registration state
-  final Rx<UserRole> selectedRole = UserRole.None.obs;
+  final Rx<UserRole> selectedRole = UserRole.none.obs;
   bool _isPhoneLogin =
       false; // Tracks if the user is trying to login with phone
   final TextEditingController _emailController = TextEditingController();
@@ -69,14 +69,14 @@ class AuthController extends GetxController {
       final roleStr = await PreferenceHelper.getUserRole() ?? 'user';
       final profileImage = await PreferenceHelper.getUserProfileImage();
 
-      UserRole role = UserRole.Manager;
+      UserRole role = UserRole.manager;
       final normalizedRole = roleStr.toLowerCase();
       if (normalizedRole.contains('gym')) {
-        role = UserRole.Gym_Person;
+        role = UserRole.gymPerson;
       } else if (normalizedRole.contains('police')) {
-        role = UserRole.Police;
+        role = UserRole.police;
       } else {
-        role = UserRole.Manager;
+        role = UserRole.manager;
       }
 
       user.value = UserModel(

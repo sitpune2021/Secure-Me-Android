@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum UserRole { None, Police, Manager, Gym_Person }
+enum UserRole { none, police, manager, gymPerson }
 
 class UserModel extends Equatable {
   final String id;
@@ -10,7 +10,7 @@ class UserModel extends Equatable {
   final UserRole role;
   final String roleString;
   final String? profileImage;
-  
+
   // Verification & Trust (Safety System)
   final bool isVerified;
   final int trustScore; // 0-100 based on previous help given
@@ -31,16 +31,16 @@ class UserModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        email,
-        phone,
-        role,
-        profileImage,
-        isVerified,
-        trustScore,
-        peopleHelped
-      ];
+    id,
+    name,
+    email,
+    phone,
+    role,
+    profileImage,
+    isVerified,
+    trustScore,
+    peopleHelped,
+  ];
 
   UserModel copyWith({
     String? id,
