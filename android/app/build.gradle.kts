@@ -9,9 +9,6 @@ plugins {
     // 🔥 Firebase plugin (Google Services)
     id("com.google.gms.google-services")
 
-    // Kotlin Android plugin
-    id("org.jetbrains.kotlin.android")
-
     // Flutter Gradle plugin (needed for Flutter integration)
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -70,7 +67,11 @@ android {
         }
 
         getByName("release") {
-            signingConfig = signingConfigs.getByName("debug")
+            if (keystoreProperties.isNotEmpty()) {
+                    signingConfigs.getByName("release")
+                } else {
+                    signingConfigs.getByName("debug")
+                }
             isMinifyEnabled = true            // Shrinks & optimizes release APK
             isShrinkResources = true
             proguardFiles(
