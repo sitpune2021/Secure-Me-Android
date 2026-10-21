@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
-import 'package:secure_me/view/login_screen.dart';
 import 'package:secure_me/app/routes/app_routes.dart';
 import 'package:secure_me/controller/profile_controller/profile_controller.dart';
 import 'package:secure_me/controller/permission_controller/permission_controller.dart';
