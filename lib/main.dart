@@ -16,6 +16,7 @@ import 'package:secure_me/controller/location_controller.dart';
 import 'package:secure_me/controller/community_safety_controller.dart';
 import 'package:secure_me/controller/incident_controller.dart';
 import 'package:secure_me/view/home_view/home_view.dart';
+import 'package:secure_me/view/role_selection_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,6 +83,7 @@ class AppRouterWrapper extends StatelessWidget {
   }
 }
 
+
 class AppRouter extends StatelessWidget {
   AppRouter({super.key});
 
@@ -99,12 +101,12 @@ class AppRouter extends StatelessWidget {
         );
 
         if (user.role == UserRole.none) {
-          return const LoginScreen();
+          return const RoleSelectionScreen(); // was LoginScreen
         }
         return const HomeView();
       }
 
-      return const LoginScreen();
+      return const RoleSelectionScreen(); // was LoginScreen
     });
   }
 }
