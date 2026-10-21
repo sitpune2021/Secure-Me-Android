@@ -266,4 +266,115 @@ class RegisterController extends GetxController {
       isLoading.value = false;
     }
   }
+
+
+  Future<void> addProtectorContact({
+  required String name,
+  required String email,
+  required String phone,
+  required String password,
+  required String role, // "Police"
+  double? latitude,
+  double? longitude,
+  String? fcmToken,
+}) async {
+  isLoading.value = true;
+
+  final nameError = Validator.validateName(name);
+  final emailError = Validator.validateEmail(email);
+  final phoneError = Validator.validatePhone(phone);
+  final passwordError = Validator.validatePassword(password);
+
+  if (nameError != null ||
+      emailError != null ||
+      phoneError != null ||
+      passwordError != null) {
+    isLoading.value = false;
+    AppSnackbar.show(
+      title: "Validation Error",
+      message: nameError ?? emailError ?? phoneError ?? passwordError!,
+      isError: true,
+    );
+    return;
+  }
+
+  try {
+    dev.log("🚀 Adding protector: $email", name: 'RegisterController');
+
+    var request =
+        http.MultipartRequest('POST', Uri.parse(AppUrl.addContact));
+
+    request.fields['user_role'] = role;
+    request.fields['name'] = name;
+    request.fields['email'] = email;
+    request.fields['phone_no'] = phone;
+    request.fields['password'] = password;
+
+    if (latitude != null) request.fields['latitude'] = latitude.toString();
+    if (longitude != null) request.fields['longitude'] = longitude.toString();
+
+    request.fields['fcm_token'] = fcmToken ?? 'null';
+
+    if (selectedImage.value != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath('image', selectedImage.value!.path),
+      );
+    }
+
+    request.headers.addAll({'Accept': 'application/json'});
+
+    // Send the saved token if one exists (Postman shows an Authorization header)
+    final token = await PreferenceHelper.getToken();
+    if (token != null && token.isNotEmpty) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    var streamedResponse = await request.send().timeout(
+      const Duration(seconds: 30),
+    );
+    var response = await http.Response.fromStream(streamedResponse);
+
+    dev.log("📡 Status: ${response.statusCode}", name: 'RegisterController');
+    dev.log("📡 Body: ${response.body}", name: 'RegisterController');
+
+    if (response.body.isEmpty) {
+      throw Exception("Server returned an empty response");
+    }
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (data['status'] == true) {
+        AppSnackbar.show(
+          title: "Protector Added",
+          message: data['message'] ?? "Account created successfully",
+          isSuccess: true,
+        );
+        Get.offAllNamed(AppRoutes.loginView);
+      } else {
+        AppSnackbar.show(
+          title: "Registry Failed",
+          message: _extractErrorMessage(data) ?? "Please check your details",
+          isError: true,
+        );
+      }
+    } else {
+      AppSnackbar.show(
+        title: ErrorHelper.getErrorTitle(response.statusCode),
+        message: _extractErrorMessage(data) ??
+            ErrorHelper.getFriendlyMessage(response),
+        isError: true,
+      );
+    }
+  } catch (e) {
+    dev.log("❌ Connection Error: $e", name: 'RegisterController');
+    AppSnackbar.show(
+      title: "Connection Error",
+      message: "Could not reach server. Please check your internet.",
+      isError: true,
+    );
+  } finally {
+    isLoading.value = false;
+  }
+}
 }
