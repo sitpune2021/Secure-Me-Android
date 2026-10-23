@@ -67,7 +67,8 @@ android {
         }
 
         getByName("release") {
-            if (keystoreProperties.isNotEmpty()) {
+            //if (keystoreProperties.isNotEmpty()) 
+             signingConfig = if (keystoreProperties.isNotEmpty()){
                     signingConfigs.getByName("release")
                 } else {
                     signingConfigs.getByName("debug")
