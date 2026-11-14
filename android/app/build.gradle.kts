@@ -1,53 +1,39 @@
-// Import Java utilities for keystore handling
 import java.util.Properties
 import java.io.FileInputStream
 
 plugins {
-    // Core Android app plugin
     id("com.android.application")
-
-    // 🔥 Firebase plugin (Google Services)
     id("com.google.gms.google-services")
-
-    // Flutter Gradle plugin (needed for Flutter integration)
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// 🧩 Load keystore properties (for release signing)
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties()
+
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
     namespace = "com.sit.secure_me"
-    compileSdk = 37      // Flutter defaults to 34; you can keep flutter.compileSdkVersion
+    compileSdk = 37
 
     ndkVersion = flutter.ndkVersion
 
     defaultConfig {
         applicationId = "com.sit.secure_me"
-        minSdk = flutter.minSdkVersion       // Minimum required for Firebase
+        minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        multiDexEnabled = true  // Recommended for Firebase
+        multiDexEnabled = true
     }
 
-    // ✅ Compatibility
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
-    }
-}
-
-    // ✅ Signing configuration
     signingConfigs {
         create("release") {
             if (keystoreProperties.isNotEmpty()) {
@@ -59,7 +45,6 @@ android {
         }
     }
 
-    // ✅ Build Types
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
@@ -67,14 +52,15 @@ android {
         }
 
         getByName("release") {
-            //if (keystoreProperties.isNotEmpty()) 
-             signingConfig = if (keystoreProperties.isNotEmpty()){
-                    signingConfigs.getByName("release")
-                } else {
-                    signingConfigs.getByName("debug")
-                }
-            isMinifyEnabled = true            // Shrinks & optimizes release APK
+            signingConfig = if (keystoreProperties.isNotEmpty()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
+
+            isMinifyEnabled = true
             isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -83,7 +69,13 @@ android {
     }
 }
 
-// ✅ Required for Flutter integration
+// Kotlin compiler configuration for AGP Built-in Kotlin.
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+
 flutter {
     source = "../.."
 }

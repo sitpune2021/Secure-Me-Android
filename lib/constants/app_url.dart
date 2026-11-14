@@ -1,34 +1,9 @@
 class AppUrl {
+  AppUrl._();
+
+  // Base URLs
   static const String host = "https://secureme.thecanatech.com";
-  static const String storageUrl = "$host/storage";
   static const String baseUrl = "$host/api";
-
-  static String buildImageUrl(String path) {
-    if (path.isEmpty) return path;
-
-    if (path.startsWith('http')) {
-      // If the URL already contains /storage/ or is from the host and NOT a broken reference, return it
-      if (path.contains('/storage/') || path.contains('/admin-assets/')) {
-        return path;
-      }
-
-      // Handle cases where the server might return an absolute URL from another source/IP
-      // that we want to unify to our current host
-      if (!path.startsWith(host)) {
-        final uri = Uri.tryParse(path);
-        if (uri != null && uri.pathSegments.isNotEmpty) {
-          return '$storageUrl/${uri.pathSegments.last}';
-        }
-      }
-      return path;
-    }
-
-    if (path.startsWith('/storage/') || path.startsWith('storage/')) {
-      return '$host/${path.replaceFirst(RegExp(r'^\/'), '')}';
-    }
-
-    return '$storageUrl/$path';
-  }
 
   static const String register = "$baseUrl/auth/register"; // fix
   static const String login = "$baseUrl/auth/login"; // fix
@@ -37,20 +12,24 @@ class AppUrl {
   static const String resendOtp = "$baseUrl/auth/resend-otp"; // missing
   static const String logout = "$baseUrl/auth/logout"; // fix
 
+  // User Profile
   static const String profile = "$baseUrl/auth/profile"; // fix
   static const String userRole = "$baseUrl/auth/user-role"; // fix
   static const String updateProfile = "$baseUrl/auth/update-profile"; // fix
 
+  // Emergency Contacts
   static const String contacts = "$baseUrl/auth/contacts"; // fix
   static const String addContact = "$baseUrl/auth/add/contacts";
   static const String updateContact = "$baseUrl/update/contacts";
   static const String deleteContact = "$baseUrl/auth/delete/contacts"; // fix
 
+  // Emergency Signal
   static const String signalTrigger = "$baseUrl/auth/signal/trigger"; // fix
   static const String updateLocation =
       "$baseUrl/auth/user/update-location"; //new
   static const String signalRespond = "$baseUrl/auth/signal/respond";
 
+  // Community
   static const String communities = "$baseUrl/community";
   static const String createCommunity = "$baseUrl/community/create";
   static const String addCommunityContact = "$baseUrl/community/add-contacts";

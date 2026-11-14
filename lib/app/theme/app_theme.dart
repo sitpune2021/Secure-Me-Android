@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
@@ -71,6 +71,23 @@ class AppTheme {
       textTheme: GoogleFonts.outfitTextTheme(
         (isDark ? ThemeData.dark() : ThemeData.light()).textTheme,
       ),
+      // textTheme: TextTheme(
+      //   displayLarge: GoogleFonts.outfit(),
+      //   displayMedium: GoogleFonts.outfit(),
+      //   displaySmall: GoogleFonts.outfit(),
+      //   headlineLarge: GoogleFonts.outfit(),
+      //   headlineMedium: GoogleFonts.outfit(),
+      //   headlineSmall: GoogleFonts.outfit(),
+      //   titleLarge: GoogleFonts.outfit(),
+      //   titleMedium: GoogleFonts.outfit(),
+      //   titleSmall: GoogleFonts.outfit(),
+      //   bodyLarge: GoogleFonts.outfit(),
+      //   bodyMedium: GoogleFonts.outfit(),
+      //   bodySmall: GoogleFonts.outfit(),
+      //   labelLarge: GoogleFonts.outfit(),
+      //   labelMedium: GoogleFonts.outfit(),
+      //   labelSmall: GoogleFonts.outfit(),
+      // ),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
@@ -88,13 +105,17 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: GoogleFonts.outfit(fontWeight: FontWeight.w700),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+        fillColor: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.black.withValues(alpha: 0.05),
         hintStyle: GoogleFonts.outfit(color: hintColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

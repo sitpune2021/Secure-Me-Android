@@ -1,12 +1,14 @@
 import 'dart:developer' as dev;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:secure_me/app/theme/app_theme.dart';
+import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/controller/profile_controller/profile_controller.dart';
 import 'package:secure_me/controller/home_controller/home_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/app/routes/app_pages.dart';
+import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/view/fake_call_view/fake_call_view.dart';
 import 'package:secure_me/view/manager_dashboard.dart';
 import 'package:secure_me/view/safety_radar_view.dart';
@@ -28,6 +30,9 @@ class _HomeViewState extends State<HomeView> {
   final ProfileController profileController = Get.put(ProfileController());
   final VoiceController voiceController = Get.put(VoiceController());
   String greeting = "Good Morning";
+
+  final AuthController _authController = Get.find<AuthController>();
+  bool get _isUserRole => _authController.user.value?.role == UserRole.manager;
 
   @override
   void initState() {
@@ -63,9 +68,13 @@ class _HomeViewState extends State<HomeView> {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: _buildBody(controller.currentIndex.value),
           bottomNavigationBar: _buildBottomNav(),
-          floatingActionButton: buildSosButton(),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: _isUserRole ? buildSosButton() : null,
+          floatingActionButtonLocation: _isUserRole
+              ? FloatingActionButtonLocation.centerDocked
+              : null,
+          // floatingActionButton: buildSosButton(),
+          // floatingActionButtonLocation:
+          //     FloatingActionButtonLocation.centerDocked,
         ),
       );
     });
@@ -105,12 +114,14 @@ class _HomeViewState extends State<HomeView> {
                 // ── SOS Activation Panel (Modern) ────────────────────────────────────────
                 _buildSOSStatusPanel(),
 
-                const SizedBox(height: 32),
+                if (_isUserRole) ...[
+                  const SizedBox(height: 32),
 
-                // ── Slide to Activate SOS (New Feature) ──────────────────────────────────
-                _buildSlideToSOS(),
+                  // ── Slide to Activate SOS (New Feature) ──────────────────────────────────
+                  _buildSlideToSOS(),
 
-                const SizedBox(height: 32),
+                  const SizedBox(height: 32),
+                ],
 
                 // ── Quick Support Section (Grid) ────────────────────────────────────────
                 Text(
@@ -158,7 +169,8 @@ class _HomeViewState extends State<HomeView> {
                   onTap: () => Get.toNamed(AppRoutes.contactList),
                 ),
 
-                const SizedBox(height: 120), // Padding for SOS button
+                // const SizedBox(height: 120), // Padding for SOS button
+                SizedBox(height: _isUserRole ? 120 : 60),
               ], // Children
             ), // Column
           ), // SingleChildScrollView
@@ -641,33 +653,39 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(
-                    2,
-                    (i) => _buildNavItem(navItems[i], i),
-                  ),
+      child: _isUserRole
+          // ── With SOS: split layout leaving centre gap for FAB ──
+          ? Stack(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(
+                          2,
+                          (i) => _buildNavItem(navItems[i], i),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 80), // Space for SOS button
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(
+                          2,
+                          (i) => _buildNavItem(navItems[i + 2], i + 2),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 80), // Space for SOS button
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(
-                    2,
-                    (i) => _buildNavItem(navItems[i + 2], i + 2),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+              ],
+            ) // ── Without SOS: all 4 items evenly spaced ──
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(4, (i) => _buildNavItem(navItems[i], i)),
+            ),
     );
   }
 

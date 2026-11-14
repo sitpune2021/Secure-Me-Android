@@ -1,17 +1,17 @@
 import 'dart:io';
 import 'dart:developer';
 import 'dart:developer' as dev;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/app/theme/app_color.dart';
 import 'package:secure_me/app/theme/app_theme.dart';
+import 'package:secure_me/constants/storage_url.dart';
 import 'package:secure_me/controller/auth_controller.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/controller/profile_controller/profile_controller.dart';
-import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/core/utils/preference_helper.dart';
 import 'package:secure_me/core/utils/validator.dart';
 import 'package:secure_me/view/common/tactical_button.dart';
@@ -290,7 +290,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                                         ? FileImage(_imageFile!)
                                         : (_profileImage != null
                                               ? NetworkImage(
-                                                  AppUrl.buildImageUrl(
+                                                  StorageUrl.buildImageUrl(
                                                     _profileImage!,
                                                   ),
                                                 )

@@ -395,7 +395,7 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:secure_me/const/app_url.dart';
+import 'package:secure_me/constants/app_url.dart';
 import 'package:fast_contacts/fast_contacts.dart' as fast;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:secure_me/model/contact_model.dart';

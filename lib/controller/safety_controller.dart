@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:secure_me/model/signal_model.dart';
 import 'dart:async';

@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:secure_me/constants/storage_url.dart';
 import 'package:secure_me/view/common/app_snackbar.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:secure_me/app/routes/app_pages.dart';
-import 'package:secure_me/const/app_url.dart';
 import 'package:secure_me/controller/profile_controller/profile_controller.dart';
 import 'package:remixicon/remixicon.dart';
 
@@ -320,7 +320,7 @@ class _ProfileViewState extends State<ProfileView> {
                       radius: 50,
                       backgroundColor: scafBg.withValues(alpha: 0.2),
                       backgroundImage: image != null
-                          ? NetworkImage(AppUrl.buildImageUrl(image))
+                          ? NetworkImage(StorageUrl.buildImageUrl(image))
                           : null,
                       child: image == null
                           ? const Icon(

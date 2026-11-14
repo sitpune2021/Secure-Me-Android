@@ -1,72 +1,148 @@
+# name: secure_me
+# description: "A new Flutter project."
+# publish_to: 'none' 
+
+# version: 1.0.0+1
+
+# environment:
+#   sdk: ^3.14.0
+
+# dependencies:
+#   flutter:
+#     sdk: flutter
+
+#   cupertino_icons: ^2.0.0
+#   get: ^4.7.2
+ 
+#   intl: ^0.20.2
+#   # shared_preferences: ^2.5.3
+#   http: ^1.5.0
+#   pinput: ^6.0.0
+#   remixicon: ^4.9.3
+#   google_fonts: ^9.0.0
+#   flutter_callkit_incoming: ^3.1.6
+#   geolocator: ^14.0.2
+#   google_maps_flutter: ^2.13.1
+#   share_plus: ^13.3.0
+#   url_launcher: ^6.2.6
+#   get_storage: ^2.1.1
+#   permission_handler: ^13.0.2
+#   connectivity_plus: ^7.0.0
+#   internet_connection_checker: ^1.0.0+1
+#   flutter_ringtone_player: ^4.0.0+4
+#   vibration: ^3.1.3
+#   upgrader: ^13.7.0
+#   firebase_core: ^4.15.0
+
+
+#   path_provider: any
+#   image_picker: ^1.2.1
+#   shimmer: ^4.0.0
+#   fast_contacts: ^6.0.0
+#   equatable: ^3.0.0
+#   flutter_animate: ^4.5.2
+#   speech_to_text: ^7.4.0
+#   record: ^7.1.1
+#   uuid: ^4.5.3
+#   dio: ^5.8.0+1
+#   firebase_messaging: ^16.6.0
+
+#   material_ui: any
+#   shared_preferences: any
+
+# dev_dependencies:
+#   flutter_test:
+#     sdk: flutter
+
+#   flutter_lints: ^6.0.0
+#   flutter_launcher_icons: ^0.14.4
+#   build_runner: ^2.4.15
+
+# flutter:
+#   uses-material-design: true
+
+#   assets:
+#     - assets/images/
+
+
 name: secure_me
-description: "A new Flutter project."
-
-publish_to: 'none' 
-
+description: Secure Me Flutter Application
+publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.0
-
+  sdk: ^3.14.0
 
 dependencies:
   flutter:
     sdk: flutter
-
   
-  cupertino_icons: ^2.0.0
-  get: ^4.7.2
- 
-  intl: ^0.20.2
-  shared_preferences: ^2.5.3
-  http: ^1.5.0
-  pinput: ^6.0.0
-  remixicon: ^4.9.3
-  google_fonts: ^8.2.1
-  flutter_callkit_incoming: ^3.1.6
-  geolocator: ^14.0.2
-  google_maps_flutter: ^2.13.1
-  share_plus: ^13.3.0
-  url_launcher: ^6.2.6
+  flutter_localizations:
+    sdk: flutter
+
+  # Standalone Material UI
+  material_ui: any
+
+  # GetX - standalone Material UI migration
+  get: any
+
   get_storage: ^2.1.1
-  permission_handler: ^13.0.2
+  shared_preferences: any
+
+  # UI and Design
+  cupertino_icons: ^2.0.0
+  google_fonts: ^9.0.0
+  remixicon: ^4.9.3
+  shimmer: ^4.0.0
+  flutter_animate: ^4.5.2
+  pinput: ^6.0.0
+
+  # Networking
+  http: ^1.5.0
+  dio: ^5.8.0+1
   connectivity_plus: ^7.0.0
   internet_connection_checker: ^1.0.0+1
-  flutter_ringtone_player: ^4.0.0+4
-  vibration: ^3.1.3
-  upgrader: ^13.7.0
+
+  # Firebase
   firebase_core: ^4.15.0
+  firebase_messaging: ^16.6.0
 
+  # Location and Maps
+  geolocator: ^14.0.2
+  google_maps_flutter: ^2.13.1
 
+  # Device and Platform
+  permission_handler: ^13.0.2
   path_provider: any
   image_picker: ^1.2.1
-  shimmer: ^4.0.0
+  share_plus: ^13.3.0
+  url_launcher: ^6.2.6
+  vibration: ^3.1.3
+  flutter_ringtone_player: ^4.0.0
+  flutter_callkit_incoming: ^3.1.6
   fast_contacts: ^6.0.0
-  equatable: ^3.0.0
-  flutter_animate: ^4.5.2
+
+  # Speech and Audio
   speech_to_text: ^7.4.0
   record: ^7.1.1
+
+  # Utilities
+  intl: ^0.20.2
+  equatable: ^3.0.0
   uuid: ^4.5.3
-  dio: ^5.8.0+1
-  firebase_messaging: ^16.6.0
+  upgrader: ^13.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4
   build_runner: ^2.4.15
 
-
-
 flutter:
-
-
   uses-material-design: true
 
   assets:
     - assets/images/
-

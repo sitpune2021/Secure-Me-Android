@@ -9,7 +9,7 @@ import 'package:remixicon/remixicon.dart';
 import 'package:secure_me/controller/theme_controller/theme_controller.dart';
 import 'package:secure_me/model/user_model.dart';
 import 'package:secure_me/view/common/tactical_button.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

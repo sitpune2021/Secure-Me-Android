@@ -1,4 +1,3 @@
-
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:secure_me/app/routes/app_pages.dart';
 import 'package:secure_me/view/add_contact_view/add_contact_view.dart';
@@ -25,7 +24,10 @@ class AppPages {
   static final pages = [
     GetPage(name: AppRoutes.loginView, page: () => const LoginScreen()),
     GetPage(name: AppRoutes.otpView, page: () => OtpView()),
-    GetPage(name: AppRoutes.forgotPassword, page: () => const ForgotPasswordView()),
+    GetPage(
+      name: AppRoutes.forgotPassword,
+      page: () => const ForgotPasswordView(),
+    ),
     GetPage(name: AppRoutes.homeView, page: () => HomeView()),
     GetPage(name: AppRoutes.notification, page: () => NotificationView()),
     GetPage(name: AppRoutes.profile, page: () => ProfileView()),
@@ -43,10 +45,7 @@ class AppPages {
     GetPage(name: AppRoutes.sosActivate, page: () => SosActivatedView()),
     GetPage(name: AppRoutes.registerView, page: () => const RegisterScreen()),
     GetPage(name: AppRoutes.shareLiveLocation, page: () => ShareLocationView()),
-    GetPage(name: AppRoutes.theme, page: ()=>ThemeModeView()),
+    GetPage(name: AppRoutes.theme, page: () => ThemeModeView()),
     GetPage(name: AppRoutes.safetyRadar, page: () => const SafetyRadarView()),
-    // GetPage(name: AppRoutes.help, page: () => const HelpView()),
-    // GetPage(name: AppRoutes.appInfo, page: () => const AppInfoView()),
-    // GetPage(name: AppRoutes.feedback, page: () => const FeedbackView()),
   ];
 }
